@@ -1,0 +1,126 @@
+{
+    "name": "snsb",
+    "displayName": "ServiceNow Script Bridge",
+    "description": "Work with ServiceNow Ressource straight from Vs Code.",
+    "version": "0.3.0",
+    "publisher": "ambs",
+    "engines": {
+        "vscode": "^1.21.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./out/extension",
+    "contributes": {
+        "configuration": [
+            {
+                "title": "ServiceNow Scripting Bridge",
+                "properties": {
+                    "snsb.uploadOnSave": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "Automatically upload record on save",
+                        "scope": "window"
+                    },
+                    "snsb.addOnOpen": {
+                        "type": "boolean",
+                        "default": true,
+                        "description": "On open automatically add record to workspace record if outdated",
+                        "scope": "window"
+                    }
+                }
+            }
+        ],
+        "menus": {
+            "explorer/context": [
+                {
+                    "group": "snsb",
+                    "command": "snsb.updateRecord",
+                    "when": "resourceScheme == file"
+                },
+                {
+                    "group": "snsb",
+                    "command": "snsb.saveRecord",
+                    "when": "resourceScheme == file"
+                }
+            ],
+            "commandPalette": [
+                {
+                    "command": "snsb.saveRecord",
+                    "when": "false"
+                },
+                {
+                    "command": "snsb.updateRecord",
+                    "when": "false"
+                }
+            ]
+        },
+        "commands": [
+            {
+                "command": "snsb.setUpdateset",
+                "title": "Change Update Set",
+                "category": "snsb"
+            },
+            {
+                "command": "snsb.connect",
+                "title": "Connect to ServiceNow",
+                "category": "snsb"
+            },
+            {
+                "command": "snsb.clearWorkSpaceState",
+                "title": "Clear Instance",
+                "category": "snsb"
+            },
+            {
+                "command": "snsb.rebuildCache",
+                "title": "Refresh Records",
+                "category": "snsb"
+            },
+            {
+                "command": "snsb.getWidget",
+                "title": "Add Widget to Workspace",
+                "category": "snsb"
+            },
+            {
+                "command": "snsb.saveRecord",
+                "title": "Save record to ServiceNow",
+                "category": "snsb"
+            },
+            {
+                "command": "snsb.updateRecord",
+                "title": "Update record from ServiceNow",
+                "category": "snsb"
+            },
+            {
+                "command": "snsb.getInclude",
+                "title": "Add Script Include to Workspace",
+                "category": "snsb"
+            },
+            {
+                "command": "snsb.getTheme",
+                "title": "Add Theme to Workspace",
+                "category": "snsb"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^3.0.0",
+        "vscode": "^1.1.6",
+        "tslint": "^5.8.0",
+        "@types/node": "^7.0.43",
+        "@types/mocha": "^2.2.42"
+    },
+    "dependencies": {
+        "axios": "^0.18.0"
+    }
+}
