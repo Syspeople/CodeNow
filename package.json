@@ -2,7 +2,7 @@
     "name": "snsb",
     "displayName": "ServiceNow Script Bridge",
     "description": "Work with ServiceNow Ressource straight from Vs Code.",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "publisher": "ambs",
     "engines": {
         "vscode": "^1.21.0"
