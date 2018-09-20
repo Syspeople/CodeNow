@@ -414,10 +414,30 @@ declare class GlideSPScriptable
      * @param fieldName The field to find information for
      */
     getField(gr: GlideRecord, fieldName: string): object
+
+    /**
+     * Checks the specified list of field names, and returns an array of valid field names.
+     * @param gr The GlideRecord to check
+     * @param fieldNames A comma separated list of field names.
+     */
+    getFields(gr: GlideRecord, fieldNames: string): Array<string>;
+
+    /**
+     * Checks the specified list of field names and returns an object of valid field names.
+     * @param gr The GlideRecord to check
+     * @param fieldNames A comma separated list of field names.
+     */
+    getFieldsObject(gr: GlideRecord, fieldNames: string): object;
+
+    /**
+     * Return the form.
+     * @param tableName The name of the table.
+     * @param sysId The form's sys_id.
+     */
+    getForm(tableName: string, sysId: string): object;
 }
 
 declare var gs: GlideSystem;
-
 declare class GlideSystem
 {
     /**
