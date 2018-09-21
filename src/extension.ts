@@ -126,6 +126,17 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    let openInPlatform = vscode.commands.registerCommand("snsb.openInPlatform", (uri) =>
+    {
+        if (instance.IsInitialized())
+        {
+            var recordLocal = wm.GetRecord(uri);
+            if (recordLocal)
+            {
+                instance.OpenInPlatform(recordLocal);
+            }
+        }
+    });
 
     let setUpdateSet = vscode.commands.registerCommand("snsb.setUpdateset", () =>
     {
@@ -366,6 +377,7 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    context.subscriptions.push(openInPlatform);
     context.subscriptions.push(setUpdateSet);
     context.subscriptions.push(connect);
     context.subscriptions.push(getInclude);

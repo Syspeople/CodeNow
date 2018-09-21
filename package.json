@@ -45,6 +45,11 @@
                     "group": "snsb",
                     "command": "snsb.saveRecord",
                     "when": "resourceScheme == file"
+                },
+                {
+                    "group": "snsb",
+                    "command": "snsb.openInPlatform",
+                    "when": "resourceScheme == file"
                 }
             ],
             "commandPalette": [
@@ -55,10 +60,19 @@
                 {
                     "command": "snsb.updateRecord",
                     "when": "false"
+                },
+                {
+                    "command": "snsb.openInPlatform",
+                    "when": "false"
                 }
             ]
         },
         "commands": [
+            {
+                "command": "snsb.openInPlatform",
+                "title": "Open in Platform",
+                "category": "snsb"
+            },
             {
                 "command": "snsb.setUpdateset",
                 "title": "Change Update Set",
@@ -86,12 +100,12 @@
             },
             {
                 "command": "snsb.saveRecord",
-                "title": "Save record to ServiceNow",
+                "title": "Force Save",
                 "category": "snsb"
             },
             {
                 "command": "snsb.updateRecord",
-                "title": "Update record from ServiceNow",
+                "title": "Force Import",
                 "category": "snsb"
             },
             {
@@ -121,6 +135,8 @@
         "@types/mocha": "^2.2.42"
     },
     "dependencies": {
-        "axios": "^0.18.0"
+        "@types/opn": "^5.1.0",
+        "axios": "^0.18.0",
+        "opn": "^5.4.0"
     }
 }
