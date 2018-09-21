@@ -366,6 +366,9 @@ declare class GlideSession
 
 
 }
+/**
+ * Available in Widget Server script
+ */
 declare var $sp: GlideSPScriptable;
 declare class GlideSPScriptable
 {
@@ -435,6 +438,145 @@ declare class GlideSPScriptable
      * @param sysId The form's sys_id.
      */
     getForm(tableName: string, sysId: string): object;
+
+    /**
+     * Returns KB articles in the specified category and its subcategories.
+     * 
+     * To avoid performance issues, do not use this method to return articles in large categories or articles with inline images. Instead, use getKBArticleSummaries().
+     * @param sys_id Sys_id of the KB article category.
+     * @param limit Maximum number of KB articles returned.
+     * @returns The articles within the category and its subcategories with: A workflow_state of published and a valid_to date greater than or equal to the current date.
+     */
+    getKBCategoryArticles(sys_id: string, limit: number): Array<object>;
+
+    /**
+     * Returns Knowledge Base article summaries in the specified category and its subcategories.
+     * @param sys_id Sys_id of the KB article category.
+     * @param limit Maximum number of KB articles returned.
+     * @param maxChars Maximum number of characters to return from the article text. For full article text, set the value to -1.
+     */
+    getKBCategoryArticleSummaries(sys_id: string, limit: number, maxChars: number): Array<object>;
+
+    /**
+     * Returns the number of articles in the defined Knowledge Base.
+     * @param sys_id Sys_id of a Knowledge Base record.
+     */
+    getKBCount(sys_id: string): number;
+
+    /**
+     * Returns a list of the specified table's columns in the specified view.
+     * @param tableName Name of the table
+     * @param view The view by which to filter the columns
+     */
+    getListColumns(tableName: string, view: string): object;
+
+    /**
+     * Returns the (?id=) portion of the URL based on the sp_menu type.
+     * 
+     * @param page 
+     */
+    getMenuHREF(page: GlideRecord): string;
+
+    /**
+     * Returns an array of menu items for the specified instance.
+     * @param sysId 	sysId of the instance
+     */
+    getMenuItems(sysId: string): Array<object>;
+
+    /**
+     * Returns the value of the specified parameter.
+     * @param name The name of the key from the query string or post body.
+     * @returns Returns the specified parameter as an object. Returns null if there is no request, JSON request, or widget.
+     */
+    getParameter(name: string): object;
+
+    /**
+     * Returns the portal's GlideRecord.
+     */
+    getPortalRecord(): GlideRecord;
+
+    /**
+     * Returns the current portal context.
+     */
+    getRecord(): GlideRecord;
+
+    /**
+     * Copies display values for the specified fields into the data parameter.
+     * @param data The display values for the specified fields are copied to this object.
+     * @param from The GlideRecord to process.
+     * @param names A comma-separated list of field names.
+     */
+    getRecordDisplayValues(data: object, from: GlideRecord, names: string): void;
+
+    /**
+     * For the specified fields, copies the element's name, display value, and value into the data parameter.
+     * @param data The display values for the specified fields are copied to this object.
+     * @param from The GlideRecord to process.
+     * @param names A comma-separated list of field names.
+     */
+    getRecordElements(data: object, from: GlideRecord, names: string): void;
+
+    /**
+     * Copies values for the specified field names from the GlideRecord into the data parameter.
+     * @param data 
+     * @param from 
+     * @param names 
+     */
+    getRecordValues(data: object, from: GlideRecord, names: string): void;
+
+    /**
+     * Returns an array of Service Catalog variables associated with a record.
+     * @param gr The record to retrieve Service Catalog variables for. Must be a record with Service Catalog variables defined, such as a requested item [sc_req_item] record or an incident submitted through a record producer.
+     * @param includeNilResponses 	Optional parameter. If true, variables with no user-defined value are included in the array.
+     */
+    getRecordVariablesArray(gr: GlideRecord, includeNilResponses?: boolean): Array<object>;
+
+    /**
+     * Gets the activity stream for the specified record. This method works on tables that extend the task table.
+     * 
+     * **Note** The user_login property contains the User ID of the current user. The user_sys_id and iser_full_name properties reference the creator of the queried record.
+     * @param table The table name
+     * @param sysId The sys_id of the record
+     * @returns If a table extending the task table is specified, contains the display_value, sys_id, short_description,number, entries, user_sys_id, user_full_name, user_login, label, table, and journal_fields properties; otherwise contains the table and sys_id properties.
+     */
+    getStream(table: string, sysId: string): object;
+
+    /**
+     * Returns the user's initials.
+     */
+    getUserInitials(): string;
+
+    /**
+     * Returns the value of the specified parameter.
+     * @param name 	Name of the parameter
+     * @returns Value of the specified parameter. Null if the request does not exist or has no such parameter, the rectangle does not exist or has no such parameter, or the portal is null or has no such parameter.
+     */
+    getValue(name: string): object;
+
+    /**
+     * Copies values from the request or instance to the data parameter.
+     * @param data Receives the parameter values.
+     * @param names Comma-separated string of field names.
+     */
+    getValues(data: object, names: string): void;
+
+    /**
+     * Gets a widget by id or sys_id, executes that widget's server script using the provided options, then returns the widget model.
+     * @param sysID The widget sys_id or widget_id
+     * @param options An object to pass to the widget's server script. Refer to this object as options in your server script.
+     * @returns A widget model to be used with sp-widget.
+     */
+    getWidget(sysID: string, options: object): object;
+
+    /**
+     * Transforms a URL requesting a list or form in the platform UI into the URL of the corresponding id=list or id=form Service Portal page.
+     * 
+     * Use this method to perform tasks such as redirecting a user after login to the correct Service Portal page when they request a platform UI form or list URL. Note that the id=list and id=form page targets are not customizable.
+     * 
+     * **Note**: Table, sys_id, and sysparm_query values are preserved from the original URL; sysparm_view is not.
+     * @param url Platform UI URL
+     */
+    mapUrlToSPUrl(url: string): string;
 }
 
 declare var gs: GlideSystem;
