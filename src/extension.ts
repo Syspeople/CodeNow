@@ -126,14 +126,26 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-    let openInPlatform = vscode.commands.registerCommand("snsb.openInPlatform", (uri) =>
+    let openInPlatformRecord = vscode.commands.registerCommand("snsb.openInPlatformRecord", (uri) =>
     {
         if (instance.IsInitialized())
         {
             var recordLocal = wm.GetRecord(uri);
             if (recordLocal)
             {
-                instance.OpenInPlatform(recordLocal);
+                instance.OpenInPlatformRecord(recordLocal);
+            }
+        }
+    });
+
+    let openInPlatformList = vscode.commands.registerCommand("snsb.openInPlatformList", (uri) =>
+    {
+        if (instance.IsInitialized())
+        {
+            var recordLocal = wm.GetRecord(uri);
+            if (recordLocal)
+            {
+                instance.OpenInPlatformList(recordLocal);
             }
         }
     });
@@ -300,8 +312,6 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-
-
     let clearWorkState = vscode.commands.registerCommand("snsb.clearWorkSpaceState", () =>
     {
         wsm.ClearState();
@@ -377,7 +387,8 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-    context.subscriptions.push(openInPlatform);
+    context.subscriptions.push(openInPlatformRecord);
+    context.subscriptions.push(openInPlatformList);
     context.subscriptions.push(setUpdateSet);
     context.subscriptions.push(connect);
     context.subscriptions.push(getInclude);
