@@ -133,7 +133,6 @@ export class WorkspaceManager
                 this.OverwriteFile(`${this.GetPathRecordScript(uri)}`, (<ISysScriptInclude>record).script);
                 console.info(`${(<ISysScriptInclude>record).name} have been saved to workspace`);
                 break;
-
             case "sp_widget":
                 this.OverwriteFile(`${this.GetPathRecordOptions(uri)}`, this.GetOptionsPretty(record));
                 this.OverwriteFile(`${this.GetPathRecordScript(uri)}`, (<ISpWidget>record).script);
@@ -142,12 +141,10 @@ export class WorkspaceManager
                 this.OverwriteFile(`${this.GetPathRecordHtmlTemplate(uri)}`, (<ISpWidget>record).template);
                 console.info(`${(<ISpWidget>record).name} have been saved to workspace`);
                 break;
-
             case "sp_theme":
                 this.OverwriteFile(`${this.GetPathRecordOptions(uri)}`, this.GetOptionsPretty(record));
                 this.OverwriteFile(`${this.GetPathRecordCss(uri)}`, (<ISpTheme>record).css_variables);
                 break;
-
             default:
                 console.warn(`UpdateRecord: Record ${record.sys_class_name} not recognized`);
                 break;
