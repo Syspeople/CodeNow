@@ -16,3 +16,5 @@ export * from './SysProperty';
 export * from './ISysUserSession';
 export * from './ISysUpdateSet';
 export * from './UpdateSet';
+export * from './ISpCss';
+export * from './StyleSheet';
