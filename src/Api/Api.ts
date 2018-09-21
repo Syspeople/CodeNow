@@ -479,7 +479,7 @@ export class Api
     }
 
     /**
-     * return a promise with the full widget
+     * return a promise with the full Record
      * @param record 
      */
     public GetRecord(record: ISysMetadata): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>> | undefined
