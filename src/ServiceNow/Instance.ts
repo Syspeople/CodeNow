@@ -91,30 +91,22 @@ export class Instance
     {
         return new Promise((resolve, reject) =>
         {
-            try
+            this._url = Url;
+            this._userName = UserName;
+            this._wsm = wsm;
+
+            this._ApiProxy = new Api(this, Password);
+            let p = this.InitializeUpdateSet(wsm, nm);
+
+            p.then(() =>
             {
-                this._url = Url;
-                this._userName = UserName;
-                this._wsm = wsm;
-
-                this._ApiProxy = new Api(this, Password);
-                let p = this.InitializeUpdateSet(wsm, nm);
-
-                p.then(() =>
-                {
-                    this.TestConnection(nm);
-                    resolve();
-                }).catch((error) =>
-                {
-                    console.error(error);
-                    reject(error);
-                });
-
-            } catch (error)
+                this.TestConnection(nm);
+                resolve();
+            }).catch((error) =>
             {
                 console.error(error);
                 reject(error);
-            }
+            });
         });
     }
 
@@ -183,7 +175,7 @@ export class Instance
             }).catch((er) =>
             {
                 console.log(er);
-                reject();
+                reject(er);
             });
         });
 
