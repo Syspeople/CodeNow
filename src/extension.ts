@@ -55,7 +55,7 @@ export function activate(context: vscode.ExtensionContext)
                             nm.SetNotificationState(NotifationState.Connected);
                         }).catch((er) =>
                         {
-                            throw er;
+                            console.error(er);
                         });
                     }
                 }
