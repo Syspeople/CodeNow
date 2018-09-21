@@ -3,25 +3,16 @@ import * as vscode from 'vscode';
 import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
+import opn = require('opn');
 
-
-/*
-   ServiceNow related Stuff
-   */
-//Controller Class for ServiceNow Instance
-//Instantiate to reset credentials
 export class Instance
 {
-    // constructor(Url?: URL, UserName?: string, Password?: string, workspaceStateManager?: WorkspaceStateManager)
-    // {
-    //     if (Url && UserName && Password && workspaceStateManager)
-    //     {
-    //         this.Initialize(Url, UserName, Password, workspaceStateManager);
-    //     }
-    // }
+    /**
+     * Initialize() have to be invoked.
+     */
+    constructor() { }
 
     private _wsm: WorkspaceStateManager | undefined;
-
 
     private _userName: string | undefined;
     public get UserName(): string | undefined
@@ -180,6 +171,20 @@ export class Instance
         });
 
     }
+
+    /**
+     * OpenInPlatform
+     */
+    public OpenInPlatform(record: ISysMetadata): void
+    {
+        //nav_to.do?uri=%2Fsys_script_include.do%3Fsys_id%3D8a060ae7c0a80027000b70aecfd1f263
+        if (this._url)
+        {
+            let url = `${this._url.href}nav_to.do?uri=/${record.sys_class_name}.do?sys_id=${record.sys_id}`;
+            opn(url);
+        }
+    }
+
     public SaveRecord<T extends ISysMetadata>(record: T): Promise<ISysMetadata> | undefined
     {
         return new Promise((resolve, reject) =>

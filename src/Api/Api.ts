@@ -21,7 +21,6 @@ export class Api
     private _Properties: Array<ISysProperty> = new Array<ISysProperty>();
 
     private _Cookies: Array<ICookie> = [];
-    //private _session_store: string = "";
 
     private get _session_store(): string | undefined
     {
