@@ -48,7 +48,12 @@
                 },
                 {
                     "group": "snsb",
-                    "command": "snsb.openInPlatform",
+                    "command": "snsb.openInPlatformRecord",
+                    "when": "resourceScheme == file"
+                },
+                {
+                    "group": "snsb",
+                    "command": "snsb.openInPlatformList",
                     "when": "resourceScheme == file"
                 }
             ],
@@ -62,15 +67,24 @@
                     "when": "false"
                 },
                 {
-                    "command": "snsb.openInPlatform",
+                    "command": "snsb.openInPlatformRecord",
+                    "when": "false"
+                },
+                {
+                    "command": "snsb.openInPlatformList",
                     "when": "false"
                 }
             ]
         },
         "commands": [
             {
-                "command": "snsb.openInPlatform",
-                "title": "Open in Platform",
+                "command": "snsb.openInPlatformRecord",
+                "title": "Open Record in Platform",
+                "category": "snsb"
+            },
+            {
+                "command": "snsb.openInPlatformList",
+                "title": "Open List in Platform",
                 "category": "snsb"
             },
             {
@@ -100,12 +114,12 @@
             },
             {
                 "command": "snsb.saveRecord",
-                "title": "Force Save",
+                "title": "Save Record",
                 "category": "snsb"
             },
             {
                 "command": "snsb.updateRecord",
-                "title": "Force Import",
+                "title": "Update Import",
                 "category": "snsb"
             },
             {

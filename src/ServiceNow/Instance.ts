@@ -173,14 +173,26 @@ export class Instance
     }
 
     /**
-     * OpenInPlatform
+     * OpenInPlatform Opens a record in hte default browser
      */
-    public OpenInPlatform(record: ISysMetadata): void
+    public OpenInPlatformRecord(record: ISysMetadata): void
     {
         //nav_to.do?uri=%2Fsys_script_include.do%3Fsys_id%3D8a060ae7c0a80027000b70aecfd1f263
         if (this._url)
         {
             let url = `${this._url.href}nav_to.do?uri=/${record.sys_class_name}.do?sys_id=${record.sys_id}`;
+            opn(url);
+        }
+    }
+
+    /**
+     * OpenInPlatform open the list for a specified table in the default browser
+     */
+    public OpenInPlatformList(record: ISysMetadata): void
+    {
+        if (this._url)
+        {
+            let url = `${this._url.href}nav_to.do?uri=/${record.sys_class_name}_list.do`;
             opn(url);
         }
     }
@@ -209,7 +221,7 @@ export class Instance
                                 resolve(new Theme(<ISpTheme>res.data.result));
                                 break;
                             default:
-                                console.warn(`SaveRecord:  Record ${r.sys_class_name} not recognized`);
+                                console.warn(`SaveRecord: Record ${r.sys_class_name} not recognized`);
                                 break;
                         }
                     }).catch((er) =>
