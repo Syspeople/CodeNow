@@ -63,8 +63,9 @@ if the workspace is already associated with a ServiceNow instance only the passw
 ### Change Update Set
 Choose an active UpdateSet and set is as your working update set. Only in progress update sets in the global scope is available. 
 
-**IMPORTANT** Update set changes do not apply to active sessions. Be sure to validate your update set in your browser if working in UI and in VsCode at the same time.
-The extension will automatically use the previusly selected update set. if it has been closed default i selected. 
+**IMPORTANT** Update set changes do not apply to active sessions. Be sure to validate your update set in your browser if working in the web UI and in VsCode at the same time.
+
+The extension will automatically use the previuosly selected update set. if it has been closed, default i selected. 
 
 
 ### Add Script Include To Workspace
