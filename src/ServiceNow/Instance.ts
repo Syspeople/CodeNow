@@ -1,12 +1,13 @@
 import { URL } from "url";
 import * as vscode from 'vscode';
-import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet } from "./all";
+import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import opn = require('opn');
 
 export class Instance
 {
+
     /**
      * Initialize() have to be invoked.
      */
@@ -220,8 +221,11 @@ export class Instance
                             case "sp_theme":
                                 resolve(new Theme(<ISpTheme>res.data.result));
                                 break;
+                            case "sp_css":
+                                resolve(new StyleSheet(<ISpCss>res.data.result));
+                                break;
                             default:
-                                console.warn(`SaveRecord: Record ${r.sys_class_name} not recognized`);
+                                console.warn(`SaveRecord: Record from ${r.sys_class_name} not recognized`);
                                 break;
                         }
                     }).catch((er) =>
@@ -269,7 +273,24 @@ export class Instance
             }
         });
     }
-
+    getStyleSheets(): Promise<Array<StyleSheet>>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this._wsm)
+            {
+                let si = this._wsm.GetStyleSheet();
+                if (si)
+                {
+                    resolve(si);
+                }
+            }
+            else
+            {
+                reject("No records found");
+            }
+        });
+    }
     /**
          * GetScriptIncludes
          * Returns all available script includes as an array.
@@ -414,6 +435,36 @@ export class Instance
         }
     }
 
+    private GetStyleSheetsUpstream(): Promise<Array<StyleSheet>>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                var include = this.ApiProxy.GetStyleSheets();
+
+                if (include)
+                {
+                    let result = new Array<StyleSheet>();
+
+                    include.then((res) =>
+                    {
+                        res.data.result.forEach((element) =>
+                        {
+                            result.push(new StyleSheet(<ISpCss>element));
+                        });
+                        resolve(result);
+
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                        reject(er);
+                    });
+                }
+            }
+        });
+    }
+
     private GetScriptIncludesUpStream(): Promise<Array<ScriptInclude>>
     {
         return new Promise((resolve, reject) =>
@@ -437,6 +488,7 @@ export class Instance
                     }).catch((er) =>
                     {
                         console.error(er);
+                        reject(er);
                     });
                 }
             }
@@ -472,6 +524,7 @@ export class Instance
                     }).catch((er) =>
                     {
                         console.error(er);
+                        reject(er);
                     });
                 }
             }
@@ -507,6 +560,7 @@ export class Instance
                     }).catch((er) =>
                     {
                         console.error(er);
+                        reject(er);
                     });
                 }
             }
@@ -592,6 +646,20 @@ export class Instance
             {
                 console.error(er);
             });
+
+            let styleSheets = this.GetStyleSheetsUpstream();
+            styleSheets.then((res) =>
+            {
+                if (this._wsm)
+                {
+                    this._wsm.SetStyleSheet(res);
+                }
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+
+
         }
     }
 

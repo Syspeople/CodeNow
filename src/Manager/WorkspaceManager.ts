@@ -1,7 +1,6 @@
 import * as fileSystem from 'fs';
 import * as vscode from 'vscode';
-import * as ServiceNow from '../ServiceNow/all';
-import { ISysMetadata, Instance, ScriptInclude, ISysScriptInclude, ISpWidget, Theme, ISpTheme } from '../ServiceNow/all';
+import { ISysMetadata, Instance, ScriptInclude, ISysScriptInclude, ISpWidget, Widget, Theme, ISpTheme, StyleSheet } from '../ServiceNow/all';
 
 export class WorkspaceManager
 {
@@ -32,7 +31,7 @@ export class WorkspaceManager
     /**
      * Addinstance Creates the base folder structure in workspace.
      */
-    public AddInstanceFolder(i: ServiceNow.Instance): void
+    public AddInstanceFolder(i: Instance): void
     {
         if (this.HasWorkspace())
         {
@@ -72,7 +71,7 @@ export class WorkspaceManager
                         return si;
 
                     case "sp_widget":
-                        let Widget = new ServiceNow.Widget(<ISpWidget>serialized);
+                        let widget = new Widget(<ISpWidget>serialized);
 
                         //get script
                         let script = this.ReadTextFile(this.GetPathRecordScript(uri));
@@ -83,21 +82,21 @@ export class WorkspaceManager
                         //take each individually empty can be valid.
                         if (script)
                         {
-                            Widget.script = script;
+                            widget.script = script;
                         }
                         if (clientScript)
                         {
-                            Widget.client_script = clientScript;
+                            widget.client_script = clientScript;
                         }
                         if (html)
                         {
-                            Widget.template = html;
+                            widget.template = html;
                         }
                         if (css)
                         {
-                            Widget.css = css;
+                            widget.css = css;
                         }
-                        return Widget;
+                        return widget;
 
                     case "sp_theme":
                         let t = new Theme(<ISpTheme>serialized);
@@ -110,7 +109,17 @@ export class WorkspaceManager
                             t.css_variables = tCss;
                         }
                         return t;
+                    case "sp_css":
+                        let styleSheet = new StyleSheet(<StyleSheet>serialized);
 
+                        let ssCss = this.ReadTextFile(this.GetPathRecordCss(uri));
+
+                        if (ssCss)
+                        {
+                            styleSheet.css = ssCss;
+                        }
+
+                        return styleSheet;
                     default:
                         console.warn(`GetRecord: Record ${serialized.sys_class_name} not recognized`);
                         break;
@@ -119,7 +128,7 @@ export class WorkspaceManager
         }
         catch (e)
         {
-            console.error(e);
+            console.error(e.message);
         }
     }
 
@@ -144,6 +153,10 @@ export class WorkspaceManager
             case "sp_theme":
                 this.OverwriteFile(`${this.GetPathRecordOptions(uri)}`, this.GetOptionsPretty(record));
                 this.OverwriteFile(`${this.GetPathRecordCss(uri)}`, (<ISpTheme>record).css_variables);
+                break;
+            case "sp_css":
+                this.OverwriteFile(`${this.GetPathRecordOptions(uri)}`, this.GetOptionsPretty(record));
+                this.OverwriteFile(`${this.GetPathRecordCss(uri)}`, (<StyleSheet>record).css);
                 break;
             default:
                 console.warn(`UpdateRecord: Record ${record.sys_class_name} not recognized`);
@@ -197,7 +210,15 @@ export class WorkspaceManager
                     this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.options.json`, this.GetOptionsPretty(record));
                     this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.scss`, (<ISpTheme>record).css_variables);
                     break;
+                case "sp_css":
+                    this.CreateFolder(recordPath);
+                    recordName = (<StyleSheet>record).name;
+                    MetaDir = `${recordPath}${this._delimiter}${recordName}`;
+                    this.CreateFolder(MetaDir);
 
+                    this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.options.json`, this.GetOptionsPretty(record));
+                    this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.scss`, (<StyleSheet>record).css);
+                    break;
                 default:
                     console.warn(`AddRecord: Record ${record.sys_class_name} not recognized`);
                     break;
@@ -255,7 +276,7 @@ export class WorkspaceManager
         return JSON.stringify(record, null, 2);
     }
 
-    private GetPathInstance(i: ServiceNow.Instance): string | undefined
+    private GetPathInstance(i: Instance): string | undefined
     {
         let workspaceRoot = this.GetPathWorkspace();
 
@@ -341,7 +362,7 @@ export class WorkspaceManager
         }
         catch (e)
         {
-            console.error(e);
+            console.error(e.message);
         }
     }
 

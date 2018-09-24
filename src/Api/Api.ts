@@ -1,7 +1,8 @@
 import * as Axios from "axios";
-import { Instance, ISysMetadata, ISysScriptInclude, ISpWidget, ISysProperty, SysProperty, ISpTheme, ISysUserSession, ISysUpdateSet } from "../ServiceNow/all";
+import { Instance, ISysMetadata, ISysScriptInclude, ISpWidget, ISysProperty, SysProperty, ISpTheme, ISysUserSession, ISysUpdateSet, ISpCss } from "../ServiceNow/all";
 import { IServiceNowResponse, ICookie } from "./all";
 import * as qs from "querystring";
+import { ISysUiScript } from "../ServiceNow/ISysUiScript";
 
 export class Api
 {
@@ -17,6 +18,9 @@ export class Api
     private _SNSpThemeTable: string = `${this._SNTableSuffix}/sp_theme`;
     private _SNSysUserSession: string = `${this._SNTableSuffix}/sys_user_session`;
     private _SNSysUpdateSet: string = `${this._SNTableSuffix}/sys_update_set`;
+    private _SNSpStyleSheet: string = `${this._SNTableSuffix}/sp_css`;
+    private _SNSysUiScript: string = `${this._SNTableSuffix}/sys_ui_script`;
+
     private _SNXmlHttp: string = `xmlhttp.do`;
     private _Properties: Array<ISysProperty> = new Array<ISysProperty>();
 
@@ -436,25 +440,21 @@ export class Api
         if (this.HttpClient)
         {
             let url: string;
+            //trim data to speed up patch
             switch (record.sys_class_name)
             {
                 case "sys_script_include":
-                    //api/now/table/sys_script_include/e0085ebbdb171780e1b873dcaf96197e
                     url = `${this._SNScriptIncludeTable} /${record.sys_id}`;
-
                     //@ts-ignore
                     let si = record as ISysScriptInclude;
-                    //trim data to speed up patch
                     return this.HttpClient.patch<IServiceNowResponse<ISysScriptInclude>>(url, {
                         "script": si.script
                     });
 
                 case "sp_widget":
                     url = `${this._SNWidgetTable}/${record.sys_id}`;
-
                     //@ts-ignore
                     let widget = record as ISpWidget;
-                    //trim data to speed up patch
                     return this.HttpClient.patch<IServiceNowResponse<ISpWidget>>(url, {
                         "script": widget.script,
                         "css": widget.css,
@@ -462,15 +462,19 @@ export class Api
                         'template': widget.template
                     });
                 case "sp_theme":
-                    //api/now/table/sys_script_include/e0085ebbdb171780e1b873dcaf96197e
                     url = `${this._SNSpThemeTable}/${record.sys_id}`;
                     //@ts-ignore
                     let theme = record as ISpTheme;
-                    //trim data to speed up patch
                     return this.HttpClient.patch<IServiceNowResponse<ISpTheme>>(url, {
                         "css_variables": theme.css_variables
                     });
-
+                case "sp_css":
+                    url = `${this._SNSpStyleSheet}/${record.sys_id}`;
+                    //@ts-ignore
+                    let styleSheet = record as ISpCss;
+                    return this.HttpClient.patch<IServiceNowResponse<ISpCss>>(url, {
+                        "css": styleSheet.css
+                    });
                 default:
                     console.warn("PatchRecord: Record not Recognized");
                     break;
@@ -495,6 +499,8 @@ export class Api
                     return this.HttpClient.get<IServiceNowResponse<ISpWidget>>(`${this._SNWidgetTable}/${sysid}`);
                 case "sp_theme":
                     return this.HttpClient.get<IServiceNowResponse<ISpTheme>>(`${this._SNSpThemeTable}/${sysid}`);
+                case "sp_css":
+                    return this.HttpClient.get<IServiceNowResponse<ISpCss>>(`${this._SNSpStyleSheet}/${sysid}`);
                 default:
                     console.warn(`GetRecord: Record ${record.sys_class_name} not recognized`);
                     break;
@@ -556,14 +562,42 @@ export class Api
     /**
      * GetUpdateSets
      * 
-     * Returns all update sets that are in progress
+     * Returns all update sets that are in progress, limited to global scope
      */
     public GetUpdateSets(): Axios.AxiosPromise<IServiceNowResponse<Array<ISysUpdateSet>>> | undefined
     {
         if (this.HttpClient)
         {
             //update sets in global and in progress
-            let url = `${this._SNSysUpdateSet}?sysparm_query=application=global^state=in progress`;
+            let url = `${this._SNSysUpdateSet}?sysparm_query=state=in progress`;
+            return this.HttpClient.get(url);
+        }
+    }
+
+    /**
+    * GetStyleSheets
+    * 
+    */
+    public GetStyleSheets(): Axios.AxiosPromise<IServiceNowResponse<Array<ISpCss>>> | undefined
+    {
+        if (this.HttpClient)
+        {
+            //style sheets thats is not protected or read only.
+            let url = `${this._SNSpStyleSheet}?sys_policy=""`;
+            return this.HttpClient.get(url);
+        }
+    }
+
+    /**
+    * GetUiScripts
+    * 
+    */
+    public GetUiScripts(): Axios.AxiosPromise<IServiceNowResponse<Array<ISysUiScript>>> | undefined
+    {
+        if (this.HttpClient)
+        {
+            //update sets in global and in progress
+            let url = `${this._SNSysUiScript}?sys_policy=""`;
             return this.HttpClient.get(url);
         }
     }

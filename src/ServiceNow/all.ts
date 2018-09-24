@@ -1,5 +1,4 @@
 export * from './Instance';
-export * from '../Api/Api';
 export * from './ISysMetadata';
 export * from './IRelation';
 export * from './ISysScriptInclude';

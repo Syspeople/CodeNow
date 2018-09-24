@@ -131,6 +131,11 @@
                 "command": "snsb.getTheme",
                 "title": "Add Theme to Workspace",
                 "category": "snsb"
+            },
+            {
+                "command": "snsb.getStyleSheet",
+                "title": "Add StyleSheet to Workspace",
+                "category": "snsb"
             }
         ]
     },

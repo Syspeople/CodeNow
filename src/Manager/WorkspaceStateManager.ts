@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
 import { StateKeys } from "./StateKeys";
-import { ScriptInclude, Widget, UpdateSet } from "../ServiceNow/all";
+import { ScriptInclude, Widget, UpdateSet, StyleSheet } from "../ServiceNow/all";
 import { Theme } from '../ServiceNow/Theme';
+import { ISysUiScript } from '../ServiceNow/ISysUiScript';
 
 //get update and manage workpace state.
 export class WorkspaceStateManager
@@ -121,13 +122,33 @@ export class WorkspaceStateManager
         return this._context.workspaceState.get(StateKeys.theme.toString());
     }
 
-    public SetUpdateSet(sysId: UpdateSet): void
+    public SetUpdateSet(us: UpdateSet): void
     {
-        this._context.workspaceState.update(StateKeys.updateSet.toString(), sysId);
+        this._context.workspaceState.update(StateKeys.updateSet.toString(), us);
     }
 
     public GetUpdateSet(): UpdateSet | undefined
     {
         return this._context.workspaceState.get(StateKeys.updateSet.toString());
+    }
+
+    public SetStyleSheet(css: Array<StyleSheet>): void
+    {
+        this._context.workspaceState.update(StateKeys.StyleSheets.toString(), css);
+    }
+
+    public GetStyleSheet(): Array<StyleSheet> | undefined
+    {
+        return this._context.workspaceState.get(StateKeys.StyleSheets.toString());
+    }
+
+    public SetUiScript(us: ISysUiScript): void
+    {
+        this._context.workspaceState.update(StateKeys.UiScripts.toString(), us);
+    }
+
+    public GetUiScript(): ISysUiScript | undefined
+    {
+        return this._context.workspaceState.get(StateKeys.UiScripts.toString());
     }
 }
