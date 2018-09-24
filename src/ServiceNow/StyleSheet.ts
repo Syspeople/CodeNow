@@ -1,10 +1,9 @@
 import { Record, ISpCss } from "./all";
+import { QuickPickItem } from "vscode";
 
-export class StyleSheet extends Record implements ISpCss
+export class StyleSheet extends Record implements ISpCss, QuickPickItem
 {
-    /**
-     *
-     */
+
     constructor(css: ISpCss)
     {
         super(css);
@@ -12,6 +11,19 @@ export class StyleSheet extends Record implements ISpCss
         this.name = css.name;
         this.css = css.css;
     }
+
+    public get label(): string
+    {
+        return this.name;
+    }
+
+
+    public get description(): string
+    {
+        return "";
+    }
+
+    detail?: string | undefined = undefined;
 
     name: string;
     css: string;

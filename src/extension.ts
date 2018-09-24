@@ -56,6 +56,8 @@ export function activate(context: vscode.ExtensionContext)
                         }).catch((er) =>
                         {
                             console.error(er);
+                            vscode.window.showErrorMessage(er);
+                            wsm.ClearState();
                         });
                     }
                 }
@@ -105,10 +107,10 @@ export function activate(context: vscode.ExtensionContext)
                                                 nm.SetNotificationState(NotifationState.Connected);
                                             }).catch((er) =>
                                             {
-                                                throw er;
-                                            }
-
-                                            );
+                                                console.error(er);
+                                                vscode.window.showErrorMessage(er);
+                                                wsm.ClearState();
+                                            });
                                         }
                                     } catch (error)
                                     {
@@ -241,6 +243,31 @@ export function activate(context: vscode.ExtensionContext)
         if (instance.IsInitialized())
         {
             let themes = instance.GetThemes();
+            themes.then((res) =>
+            {
+                vscode.window.showQuickPick(res).then((item) =>
+                {
+                    if (item)
+                    {
+                        wm.AddRecord(item, instance);
+                    }
+                });
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance");
+        }
+    });
+
+    let getStyleSheet = vscode.commands.registerCommand("snsb.getStyleSheet", () =>
+    {
+        if (instance.IsInitialized())
+        {
+            let themes = instance.getStyleSheets();
             themes.then((res) =>
             {
                 vscode.window.showQuickPick(res).then((item) =>
@@ -394,6 +421,7 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(getInclude);
     context.subscriptions.push(getWidget);
     context.subscriptions.push(getTheme);
+    context.subscriptions.push(getStyleSheet);
     context.subscriptions.push(saveRecord);
     context.subscriptions.push(updateRecord);
     context.subscriptions.push(clearWorkState);

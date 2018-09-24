@@ -8,5 +8,7 @@ export enum StateKeys
     scriptIncludes,
     widget,
     theme,
-    updateSet
+    updateSet,
+    StyleSheets,
+    UiScripts
 }
