@@ -2,7 +2,7 @@ import { URL } from "url";
 import * as vscode from 'vscode';
 import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet } from "./all";
 import { Api } from "../Api/all";
-import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
+import { WorkspaceStateManager, StatusBarManager, NotifationState } from "../Manager/all";
 import opn = require('opn');
 
 export class Instance
@@ -93,9 +93,11 @@ export class Instance
             p.then(() =>
             {
                 this.TestConnection(nm);
+                nm.SetNotificationState(NotifationState.Connected);
                 resolve();
             }).catch((error) =>
             {
+                nm.SetNotificationState(NotifationState.NotConnected);
                 console.error(error);
                 reject(error);
             });

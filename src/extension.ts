@@ -52,12 +52,11 @@ export function activate(context: vscode.ExtensionContext)
                         p.then(() =>
                         {
                             wm.AddInstanceFolder(instance);
-                            nm.SetNotificationState(NotifationState.Connected);
                         }).catch((er) =>
                         {
-                            console.error(er);
-                            vscode.window.showErrorMessage(er);
                             wsm.ClearState();
+                            console.error(er);
+                            throw er;
                         });
                     }
                 }
@@ -115,7 +114,6 @@ export function activate(context: vscode.ExtensionContext)
                                     } catch (error)
                                     {
                                         wsm.ClearState();
-                                        nm.SetNotificationState(NotifationState.NotConnected);
                                         vscode.window.showErrorMessage("error.message");
                                         throw error;
                                     }
@@ -342,6 +340,7 @@ export function activate(context: vscode.ExtensionContext)
     let clearWorkState = vscode.commands.registerCommand("snsb.clearWorkSpaceState", () =>
     {
         wsm.ClearState();
+        nm.SetNotificationState(NotifationState.NotConnected);
     });
 
     let rebuildCache = vscode.commands.registerCommand("snsb.rebuildCache", () =>
