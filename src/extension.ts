@@ -65,14 +65,14 @@ export function activate(context: vscode.ExtensionContext)
         }
         else
         {
-            option.prompt = "Service Now instance Url";
+            option.prompt = "ServiceNow Instance Name";
             let PromiseUrl = vscode.window.showInputBox(option);
 
             PromiseUrl.then((res) =>
             {
                 if (res !== undefined)
                 {
-                    wsm.SetUrl(res);
+                    wsm.SetUrl(`https://${res}.service-now.com`);
 
                     option.prompt = "Enter User Name";
                     let PromiseUserName = vscode.window.showInputBox(option);
