@@ -184,7 +184,7 @@ export class Instance
         if (this._url)
         {
             let url = `${this._url.href}nav_to.do?uri=/${record.sys_class_name}.do?sys_id=${record.sys_id}`;
-            opn(url);
+            opn(url, { wait: false });
         }
     }
 
@@ -196,7 +196,7 @@ export class Instance
         if (this._url)
         {
             let url = `${this._url.href}nav_to.do?uri=/${record.sys_class_name}_list.do`;
-            opn(url);
+            opn(url, { wait: false });
         }
     }
 
