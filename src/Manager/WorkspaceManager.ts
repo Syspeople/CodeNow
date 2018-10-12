@@ -92,7 +92,7 @@ export class WorkspaceManager
                         {
                             widget.template = html;
                         }
-                        if (css)
+                        if (css || css === "")
                         {
                             widget.css = css;
                         }
