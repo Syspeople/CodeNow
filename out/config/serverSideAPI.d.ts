@@ -579,6 +579,130 @@ declare class GlideSPScriptable
     mapUrlToSPUrl(url: string): string;
 }
 
+declare var $scope: Scope;
+
+declare class Scope
+{
+    /**
+     *Does not have an constructor. available via global variable: $scope
+     */
+    constructor();
+
+    /**
+     * Creates a new child scope.
+     * 
+     * The parent scope will propagate the $digest() event. The scope can be removed from the scope hierarchy using $destroy().
+     * 
+     * $destroy() must be called on a scope when it is desired for the scope and its child scopes to be permanently detached from the parent and thus stop participating in model change detection and listener notification by invoking.
+     * @param isolate If true, then the scope does not prototypically inherit from the parent scope. The scope is isolated, as it can not see parent scope properties. When creating widgets, it is useful for the widget to not accidentally read parent state.
+     * @param parent The Scope that will be the $parent of the newly created scope. Defaults to this scope if not provided. This is used when creating a transclude scope to correctly place it in the scope hierarchy while maintaining the correct prototypical inheritance.
+     */
+    $new(isolate: boolean, parent: Scope): Scope;
+
+    /**
+     * Registers a listener callback to be executed whenever the watchExpression changes.
+     * * The watchExpression is called on every call to $digest() and should return the value that will be watched. (watchExpression should not change its value when executed multiple times with the same input because it may be executed multiple times by $digest(). That is, watchExpression should be idempotent.)
+     * * The listener is called only when the value from the current watchExpression and the previous call to watchExpression are not equal (with the exception of the initial run, see below). Inequality is determined according to reference inequality, strict comparison via the !== Javascript operator, unless objectEquality == true (see next point)
+     * * When objectEquality == true, inequality of the watchExpression is determined according to the angular.equals function. To save the value of the object for later comparison, the angular.copy function is used. This therefore means that watching complex objects will have adverse memory and performance implications.
+     * * This should not be used to watch for changes in objects that are (or contain) File objects due to limitations with angular.copy.
+     * * The watch listener may change the model, which may trigger other listeners to fire. This is achieved by rerunning the watchers until no changes are detected. The rerun iteration limit is 10 to prevent an infinite loop deadlock.
+     * 
+     * If you want to be notified whenever $digest is called, you can register a watchExpression function with no listener. (Be prepared for multiple calls to your watchExpression because it will execute multiple times in a single $digest cycle if a change is detected.)
+     * 
+     * After a watcher is registered with the scope, the listener fn is called asynchronously (via $evalAsync) to initialize the watcher. In rare cases, this is undesirable because the listener is called when the result of watchExpression didn't change. To detect this scenario within the listener fn, you can compare the newVal and oldVal. If these two values are identical (===) then the listener was called due to initialization.
+     * @param watchExpression Expression that is evaluated on each $digest cycle. A change in the return value triggers a call to the listener.
+     * @param listener Callback called whenever the value of watchExpression changes.
+     * @param objectEquality Compare for object equality using angular.equals instead of comparing for reference equality.
+     * @returns Returns a deregistration function for this listener.
+     */
+    $watch(watchExpression: Function | string, listener: Function, objectEquality?: boolean): Function;
+
+    /**
+     * A variant of $watch() where it watches an array of watchExpressions. If any one expression in the collection changes the listener is executed.
+     *  * The items in the watchExpressions array are observed via the standard $watch operation. Their return values are examined for changes on every call to $digest.
+     *  * The listener is called whenever any expression in the watchExpressions array changes.
+     * @param watchExpressions Array of expressions that will be individually watched using $watch()
+     * @param listener Callback called whenever the return value of any expression in watchExpressions changes The newValues array contains the current values of the watchExpressions, with the indexes matching those of watchExpression and the oldValues array contains the previous values of the watchExpressions, with the indexes matching those of watchExpression The scope refers to the current scope.
+     * @returns Returns a de-registration function for all listeners.
+     */
+    $watchGroup(watchExpressions: Array<Function | string>, listener: Function): Function;
+
+    /**
+     * Shallow watches the properties of an object and fires whenever any of the properties change (for arrays, this implies watching the array items; for object maps, this implies watching the properties). If a change is detected, the listener callback is fired.
+     * * The obj collection is observed via standard $watch operation and is examined on every call to $digest() to see if any items have been added, removed, or moved.
+     * * The listener is called whenever anything within the obj has changed. Examples include adding, removing, and moving items belonging to an object or array.
+     * @param obj Evaluated as expression. The expression value should evaluate to an object or an array which is observed on each $digest cycle. Any shallow change within the collection will trigger a call to the listener.
+     * @param listener a callback function called when a change is detected.
+     */
+    $watchCollection(obj: Function | string, listener: Function): Function;
+
+    /**
+     * Processes all of the watchers of the current scope and its children. Because a watcher's listener can change the model, the $digest() keeps calling the watchers until no more listeners are firing. 
+     * This means that it is possible to get into an infinite loop. This function will throw 'Maximum iteration limit exceeded.' if the number of iterations exceeds 10.
+     * 
+     * Usually, you don't call $digest() directly in controllers or in directives. Instead, you should call $apply() (typically from within a directive), which will force a $digest().
+     * If you want to be notified whenever $digest() is called, you can register a watchExpression function with $watch() with no listener.
+     * In unit tests, you may need to call $digest() to simulate the scope life cycle.
+     */
+    $digest(): void;
+
+    /**
+     * Suspend watchers of this scope subtree so that they will not be invoked during digest.
+     * This can be used to optimize your application when you know that running those watchers is redundant.
+     * 
+     * **Warning**
+     * 
+     * Suspending scopes from the digest cycle can have unwanted and difficult to debug results. Only use this approach if you are confident that you know what you are doing and have ample tests to ensure that bindings get updated as you expect.
+     * 
+     * Some of the things to consider are:
+     * * Any external event on a directive/component will not trigger a digest while the hosting scope is suspended - even if the event handler calls $apply() or $rootScope.$digest()
+     * * Transcluded content exists on a scope that inherits from outside a directive but exists as a child of the directive's containing scope. If the containing scope is suspended the transcluded scope will also be suspended, even if the scope from which the transcluded scope inherits is not suspended
+     * * Multiple directives trying to manage the suspended status of a scope can confuse each other:
+     * * * A call to $suspend() on an already suspended scope is a no-op.
+     * * * A call to $resume() on a non-suspended scope is a no-op.
+     * * * If two directives suspend a scope, then one of them resumes the scope, the scope will no longer be suspended. This could result in the other directive believing a scope to be suspended when it is not.
+     * * If a parent scope is suspended then all its descendants will be also excluded from future digests whether or not they have been suspended themselves. Note that this also applies to isolate child scopes.
+     * * Calling $digest() directly on a descendant of a suspended scope will still run the watchers for that scope and its descendants. When digesting we only check whether the current scope is locally suspended, rather than checking whether it has a suspended ancestor.
+     * * Calling $resume() on a scope that has a suspended ancestor will not cause the scope to be included in future digests until all its ancestors have been resumed.
+     * * Resolved promises, e.g. from explicit $q deferreds and $http calls, trigger $apply() against the $rootScope and so will still trigger a global digest even if the promise was initiated by a component that lives on a suspended scope.
+     */
+    $suspend(): void;
+
+    /**
+     * 
+     * @param name Event name to listen on.
+     * @param listener Function to call when the event is emitted.
+     */
+    $on(name: string, listener: Function): Function;
+
+    /**
+     * Dispatches an event name upwards through the scope hierarchy notifying the registered $rootScope.Scope listeners.
+     * 
+     * The event life cycle starts at the scope on which $emit was called. All listeners listening for name event on this scope get notified.
+     * Afterwards, the event traverses upwards toward the root scope and calls all registered listeners along the way. The event will stop propagating if one of the listeners cancels it.
+     * 
+     * Any exception emitted from the listeners will be passed onto the $exceptionHandler service.
+     * @param name Event name to emit.
+     * @param args Optional one or more arguments which will be passed onto the event listeners.
+     * @returns Event Object
+     */
+    $emit(name: string, args?: object): object
+
+    /**
+     * Dispatches an event name downwards to all child scopes (and their children) notifying the registered $rootScope.Scope listeners.
+     * 
+     * The event life cycle starts at the scope on which $broadcast was called. 
+     * All listeners listening for name event on this scope get notified. Afterwards, the event propagates to all direct and indirect scopes of the current scope and calls all registered listeners along the way. 
+     * The event cannot be canceled.
+     * 
+     * Any exception emitted from the listeners will be passed onto the $exceptionHandler service.
+     * @param name Event name to broadcast.
+     * @param args Optional one or more arguments which will be passed onto the event listeners.
+     */
+    $broadcast(name: string, args: object): object
+}
+
+
 declare var gs: GlideSystem;
 declare class GlideSystem
 {
