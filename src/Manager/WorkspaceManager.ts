@@ -1,6 +1,7 @@
 import * as fileSystem from 'fs';
 import * as vscode from 'vscode';
 import { ISysMetadata, Instance, ScriptInclude, ISysScriptInclude, ISpWidget, Widget, Theme, ISpTheme, StyleSheet } from '../ServiceNow/all';
+//import { RecordOptions } from './Options';
 
 export class WorkspaceManager
 {
@@ -179,6 +180,9 @@ export class WorkspaceManager
             switch (record.sys_class_name)
             {
                 case "sys_script_include":
+
+                    //let o = new RecordOptions(record, instance, this._context);
+
                     this.CreateFolder(recordPath);
                     recordName = (<ISysScriptInclude>record).name;
                     MetaDir = `${recordPath}${this._delimiter}${recordName}`;
@@ -352,6 +356,18 @@ export class WorkspaceManager
         return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.html`;
     }
 
+    private GetPathWorkspace(): vscode.WorkspaceFolder | undefined
+    {
+        if (this.HasWorkspace)
+        {
+            if (vscode.workspace.workspaceFolders !== undefined)
+            {
+                let workspaceRoot = vscode.workspace.workspaceFolders[0];
+                return workspaceRoot;
+            }
+        }
+    }
+
     //read text files
     private ReadTextFile(path: string, encoding: string = "utf8"): string | undefined
     {
@@ -366,17 +382,7 @@ export class WorkspaceManager
         }
     }
 
-    private GetPathWorkspace(): vscode.WorkspaceFolder | undefined
-    {
-        if (this.HasWorkspace)
-        {
-            if (vscode.workspace.workspaceFolders !== undefined)
-            {
-                let workspaceRoot = vscode.workspace.workspaceFolders[0];
-                return workspaceRoot;
-            }
-        }
-    }
+
 
     private HasWorkspace(): boolean
     {
