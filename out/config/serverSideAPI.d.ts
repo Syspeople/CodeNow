@@ -579,6 +579,90 @@ declare class GlideSPScriptable
     mapUrlToSPUrl(url: string): string;
 }
 
+declare class GlideSysAttachment
+{
+    /**
+     * Creates a new instance of the GlideSysAttachment Class
+     */
+    constructor() { }
+
+    /**
+     * Copies attachments from the source record to the target record.
+     * @param sourceTable Name of the table with the attachments to be copied.
+     * @param sourceID The source table's sysID.
+     * @param targetTable Name of the table to have the attachments added.
+     * @param targetID The target table's sysID.
+     */
+    copy(sourceTable: string, sourceID: string, targetTable: string, targetID: string): Array<string>;
+
+    /**
+     * Deletes the specified attachment.
+     * @param attachmentID 	The attachment's sysID.
+     */
+    deleteAttachment(attachmentID: string): void;
+
+    /**
+     * Returns the attachment content as a string.
+     * @param sysAttachment The attachment record.
+     * @returns The attachment contents as a string. Returns up to 5 MB of data.
+     */
+    getContent(sysAttachment: GlideRecord): string;
+
+    /**
+     * Returns the attachment content as a string with base64 encoding.
+     * @param sysAttachment The attachment record.
+     * @returns The attachment contents as a string with base64 encoding. Returns up to 5 MB of data.
+     */
+    getContentBase64(sysAttachment: GlideRecord): string;
+
+    /**
+     * Returns a GlideScriptableInputStream object given the sysID of an attachment.
+     * @param sysID The attachment sysID.
+     */
+    getContentStream(sysID: string): GlideScriptableInputStream;
+
+    /**
+     * Inserts an attachment for the specified record.
+     * @param record The record to which the attachment is to be attached.
+     * @param fileName The attachment's file name.
+     * @param contentType The attachment's content type.
+     * @param content The attachment content.
+     * @returns The attachment's sysID. Returns null if the attachment was not added.
+     */
+    write(record: GlideRecord, fileName: string, contentType: string, content: string): string;
+
+    /**
+     * Inserts an attachment for the specified record.
+     * @param record The record to which the attachment is to be attached.
+     * @param fileName The attachment's file name.
+     * @param contentType The attachment's content type.
+     * @param content The attachment content encoded in base64
+     * @returns The attachment's sysID. 
+     */
+    writeBase64(record: GlideRecord, fileName: string, contentType: string, content_base64Encoded: string): string;
+
+    /**
+     * 
+     * @param gr The record to which the attachment is to be attached.
+     * @param fileName The attachment's file name.
+     * @param contentType The attachment's content type.
+     * @param inputStream The attachment content as a GlideScriptableInputStream
+     * @returns The attachment's sysID. 
+     */
+    writeContentStream(gr: GlideRecord, fileName: string, contentType: string, inputStream: GlideScriptableInputStream): string;
+
+
+}
+
+declare class GlideScriptableInputStream
+{
+    /**
+     * no constructor
+     * not documented
+     */
+    constructor() { }
+}
+
 declare var $scope: Scope;
 
 declare class Scope
