@@ -584,7 +584,7 @@ declare class GlideSysAttachment
     /**
      * Creates a new instance of the GlideSysAttachment Class
      */
-    constructor() { }
+    constructor();
 
     /**
      * Copies attachments from the source record to the target record.
@@ -660,7 +660,7 @@ declare class GlideScriptableInputStream
      * no constructor
      * not documented
      */
-    constructor() { }
+    constructor();
 }
 
 declare var $scope: Scope;
