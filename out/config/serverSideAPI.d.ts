@@ -663,8 +663,51 @@ declare class GlideScriptableInputStream
     constructor();
 }
 
-declare var $scope: Scope;
+declare var $http: http;
+/**
+ * angualar $https Directive.
+ */
+declare class http
+{
+    /**
+     *  available via angular DI as $http. 
+     */
+    constructor();
 
+    /**
+     * Shortcut method to perform GET request
+     * @param url url
+     * @param config options
+     */
+    get(url: string, config?: object): Promise<object>;
+
+    delete(url: string, config?: object): Promise<object>;
+
+    head(url: string, config?: object): Promise<object>;
+
+    /**
+     * Shortcut method to perform JSONP request.
+     * 
+     * **Note** that, since JSONP requests are sensitive because the response is given full access to the browser, the url must be declared, via $sce as a trusted resource URL. You can trust a URL by adding it to the whitelist via $sceDelegateProvider.resourceUrlWhitelist or by explicitly trusting the URL via $sce.trustAsResourceUrl(url).
+     * 
+     * You should avoid generating the URL for the JSONP request from user provided data. Provide additional query parameters via params property of the config parameter, rather than modifying the URL itself.
+     * 
+     * JSONP requests must specify a callback to be used in the response from the server. This callback is passed as a query parameter in the request. You must specify the name of this parameter by setting the jsonpCallbackParam property on the request config object.
+     * @param url
+     * @param config options
+     */
+    jsonp(url: string, config?: object): Promise<object>;
+
+    post(url: string, config?: object): Promise<object>;
+
+    put(url: string, config?: object): Promise<object>;
+
+    patch(url: string, config?: object): Promise<object>;
+
+}
+
+
+declare var $scope: Scope;
 declare class Scope
 {
     /**
