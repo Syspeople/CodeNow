@@ -6,7 +6,7 @@ import * as vscode from 'vscode';
 import { URL } from 'url';
 import * as ServiceNow from './ServiceNow/all';
 import * as Managers from './Manager/all';
-import { StatusBarManager, NotifationState } from './Manager/all';
+import { StatusBarManager, NotifationState, StateKeys } from './Manager/all';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -166,11 +166,11 @@ export function activate(context: vscode.ExtensionContext)
 
                         if (set)
                         {
-                            set.then(() =>
+                            set.then((us) =>
                             {
-                                wsm.SetUpdateSet(item);
-                                nm.SetNotificationUpdateSet(item);
-                                let msg = `UpdateSet Changed: ${item.name}`;
+                                wsm.SetUpdateSet(us);
+                                nm.SetNotificationUpdateSet(us);
+                                let msg = `UpdateSet Changed: ${us.name}`;
                                 console.log(msg);
                                 vscode.window.showInformationMessage(msg);
                             }).catch((er) =>
@@ -431,4 +431,8 @@ export function activate(context: vscode.ExtensionContext)
 // this method is called when your extension is deactivated
 export function deactivate(context: vscode.ExtensionContext)
 {
+    //clear cached records.
+    context.workspaceState.update(StateKeys.scriptIncludes.toString(), {});
+    context.workspaceState.update(StateKeys.theme.toString(), {});
+    context.workspaceState.update(StateKeys.widget.toString(), {});
 }

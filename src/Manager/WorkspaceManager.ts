@@ -452,8 +452,8 @@ export class WorkspaceManager
     private WriteFile(path: string, value: string): void
     {
         try
-        {
-            fileSystem.writeFile(path, value, 'utf8', (err) => { console.error(err.message); });
+        {//message is null
+            fileSystem.writeFile(path, value, 'utf8', (err) => { if (err) { console.error(err); } });
         }
         catch (e)
         {
