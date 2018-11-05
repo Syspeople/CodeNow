@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { StateKeys, memCache } from "./all";
+import { StateKeys, MemCache } from "./all";
 import { ScriptInclude, Widget, UpdateSet, StyleSheet, ISysUiScript, Theme } from "../ServiceNow/all";
 
 //get update and manage workpace state.
@@ -8,10 +8,10 @@ export class WorkspaceStateManager
     constructor(context: vscode.ExtensionContext)
     {
         this._context = context;
-        this._memCache = new memCache();
+        this._memCache = new MemCache();
     }
 
-    private _memCache: memCache;
+    private _memCache: MemCache;
     private _context: vscode.ExtensionContext;
 
     /**

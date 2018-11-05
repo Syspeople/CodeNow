@@ -1,7 +1,9 @@
 import * as fileSystem from 'fs';
 import * as vscode from 'vscode';
-import { ISysMetadata, Instance, ScriptInclude, ISysScriptInclude, ISpWidget, Widget, Theme, ISpTheme, StyleSheet } from '../ServiceNow/all';
-//import { RecordOptions } from './Options';
+import { ISysMetadata, Instance, ScriptInclude, ISysScriptInclude, ISpWidget, Widget, Theme, ISpTheme, StyleSheet, ISpCss } from '../ServiceNow/all';
+import { Options } from './all';
+import { KeyValuePair } from './KeyValuePair';
+import { Uri } from 'vscode';
 
 export class WorkspaceManager
 {
@@ -170,8 +172,9 @@ export class WorkspaceManager
      */
     public AddRecord(record: ISysMetadata, instance: Instance)
     {
-        let instancePath = this.GetPathInstance(instance);
-        if (instancePath)
+        let options = this.getOptions(record, instance);
+
+        if (options)
         {
             let recordPath = this.GetPathRecord(record, instance);
             let MetaDir: string;
@@ -180,16 +183,13 @@ export class WorkspaceManager
             switch (record.sys_class_name)
             {
                 case "sys_script_include":
+                    // this.CreateFolder(recordPath);
+                    // recordName = (<ISysScriptInclude>record).name;
+                    // MetaDir = `${recordPath}${this._delimiter}${recordName}`;
+                    // this.CreateFolder(MetaDir);
 
-                    //let o = new RecordOptions(record, instance, this._context);
-
-                    this.CreateFolder(recordPath);
-                    recordName = (<ISysScriptInclude>record).name;
-                    MetaDir = `${recordPath}${this._delimiter}${recordName}`;
-                    this.CreateFolder(MetaDir);
-
-                    this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.options.json`, this.GetOptionsPretty(record));
-                    this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.server_script.js`, (<ISysScriptInclude>record).script);
+                    // this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.options.json`, this.GetOptionsPretty(record));
+                    // this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.server_script.js`, (<ISysScriptInclude>record).script);
                     break;
 
                 case "sp_widget":
@@ -207,7 +207,7 @@ export class WorkspaceManager
 
                 case "sp_theme":
                     this.CreateFolder(recordPath);
-                    recordName = (<ScriptInclude>record).name;
+                    recordName = (<Theme>record).name;
                     MetaDir = `${recordPath}${this._delimiter}${recordName}`;
                     this.CreateFolder(MetaDir);
 
@@ -222,6 +222,47 @@ export class WorkspaceManager
 
                     this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.options.json`, this.GetOptionsPretty(record));
                     this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.scss`, (<StyleSheet>record).css);
+                    break;
+                default:
+                    console.warn(`AddRecord: Record ${record.sys_class_name} not recognized`);
+                    break;
+            }
+        }
+    }
+
+    private getOptions(record: ISysMetadata, instance: Instance): Options | undefined
+    {
+        var instancePath = this.GetPathInstance(instance);
+        if (instancePath)
+        {
+            let extServerScript = "server_script.js";
+
+            var recordName: string;
+            switch (record.sys_class_name)
+            {
+                case "sys_script_include":
+                    recordName = (<ISysScriptInclude>record).name;
+
+                    var f = new Array<KeyValuePair>();
+                    f.push(new KeyValuePair(extServerScript, `${instancePath}${this._delimiter}${recordName}.${extServerScript}`));
+
+                    return new Options(record, f, Uri.parse(instancePath));
+                case "sp_widget":
+                    recordName = (<ISpWidget>record).name;
+                    this.CreateFile(`${instancePath}${this._delimiter}${recordName}.client_script.js`, (<ISpWidget>record).client_script);
+                    this.CreateFile(`${instancePath}${this._delimiter}${recordName}.server_script.js`, (<ISpWidget>record).script);
+                    this.CreateFile(`${instancePath}${this._delimiter}${recordName}.scss`, (<ISpWidget>record).css);
+                    this.CreateFile(`${instancePath}${this._delimiter}${recordName}.html`, (<ISpWidget>record).template);
+                    break;
+
+                case "sp_theme":
+                    recordName = (<ISpTheme>record).name;
+                    this.CreateFile(`${instancePath}${this._delimiter}${recordName}.scss`, (<ISpTheme>record).css_variables);
+                    break;
+                case "sp_css":
+                    recordName = (<ISpCss>record).name;
+
+                    this.CreateFile(`${instancePath}${this._delimiter}${recordName}.scss`, (<StyleSheet>record).css);
                     break;
                 default:
                     console.warn(`AddRecord: Record ${record.sys_class_name} not recognized`);

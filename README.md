@@ -49,6 +49,11 @@ Currently there is intellisense for the following API's.
 * GlideSystem (gs)
 * GlideSPScriptable ($sp)
 
+### Angular API
+* $scope
+* $http
+* $rootScope
+
 ### Client API's
 
 
