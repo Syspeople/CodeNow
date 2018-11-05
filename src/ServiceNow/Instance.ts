@@ -128,10 +128,10 @@ export class Instance
                         let e = this.SetUpdateSet(UpdateSet);
                         if (e)
                         {
-                            e.then(() =>
+                            e.then((us) =>
                             {
                                 //@ts-ignore updateSet already nullchecked
-                                nm.SetNotificationUpdateSet(UpdateSet);
+                                nm.SetNotificationUpdateSet(us);
                                 resolve();
                             }).catch((er) =>
                             {
@@ -153,7 +153,7 @@ export class Instance
                         let e = this.SetUpdateSet(defaultUs);
                         if (e)
                         {
-                            e.then(() =>
+                            e.then((us) =>
                             {
                                 //@ts-ignore updateSet already nullchecked
                                 nm.SetNotificationUpdateSet(defaultUs);
@@ -670,7 +670,7 @@ export class Instance
      * 
      * Sets the update to the one provided.
      */
-    public SetUpdateSet(updateSet: UpdateSet): Promise<void> | undefined
+    public SetUpdateSet(updateSet: UpdateSet): Promise<UpdateSet> | undefined
     {
         if (this.ApiProxy)
         {

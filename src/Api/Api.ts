@@ -1,5 +1,5 @@
 import * as Axios from "axios";
-import { Instance, ISysMetadata, ISysScriptInclude, ISpWidget, ISysProperty, SysProperty, ISpTheme, ISysUserSession, ISysUpdateSet, ISpCss } from "../ServiceNow/all";
+import { Instance, ISysMetadata, ISysScriptInclude, ISpWidget, ISysProperty, SysProperty, ISpTheme, ISysUserSession, ISysUpdateSet, ISpCss, UpdateSet } from "../ServiceNow/all";
 import { IServiceNowResponse, ICookie } from "./all";
 import * as qs from "querystring";
 import { ISysUiScript } from "../ServiceNow/ISysUiScript";
@@ -204,7 +204,7 @@ export class Api
      * 
      * @param sysId sys id of the updateset
      */
-    public SetUpdateSet(us: ISysUpdateSet): Promise<void>
+    public SetUpdateSet(us: ISysUpdateSet): Promise<UpdateSet>
     {
         return new Promise((resolve, reject) =>
         {
@@ -235,7 +235,7 @@ export class Api
                         setUpdateSet.then((result) =>
                         {
                             this.ClearSessionCookies();
-                            resolve();
+                            resolve(<UpdateSet>us);
                         }).catch((err) =>
                         {
                             this.ClearSessionCookies();

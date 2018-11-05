@@ -1,19 +1,17 @@
 import * as vscode from 'vscode';
-import { StateKeys } from "./StateKeys";
-import { ScriptInclude, Widget, UpdateSet, StyleSheet } from "../ServiceNow/all";
-import { Theme } from '../ServiceNow/Theme';
-import { ISysUiScript } from '../ServiceNow/ISysUiScript';
+import { StateKeys, memCache } from "./all";
+import { ScriptInclude, Widget, UpdateSet, StyleSheet, ISysUiScript, Theme } from "../ServiceNow/all";
 
 //get update and manage workpace state.
 export class WorkspaceStateManager
 {
-
-    //todo add get and update functions.
     constructor(context: vscode.ExtensionContext)
     {
         this._context = context;
+        this._memCache = new memCache();
     }
 
+    private _memCache: memCache;
     private _context: vscode.ExtensionContext;
 
     /**
@@ -85,7 +83,8 @@ export class WorkspaceStateManager
      */
     public SetScriptIncludes(scriptIncludes: Array<ScriptInclude>): void
     {
-        this._context.workspaceState.update(StateKeys.scriptIncludes.toString(), scriptIncludes);
+        // this._context.workspaceState.update(StateKeys.scriptIncludes.toString(), scriptIncludes);
+        this._memCache.Set(StateKeys.scriptIncludes.toString(), scriptIncludes);
     }
 
     /**
@@ -93,7 +92,8 @@ export class WorkspaceStateManager
      */
     public GetScriptIncludes(): Array<ScriptInclude> | undefined
     {
-        return this._context.workspaceState.get(StateKeys.scriptIncludes.toString());
+        // return this._context.workspaceState.get(StateKeys.scriptIncludes.toString());
+        return this._memCache.Get<Array<ScriptInclude>>((StateKeys.scriptIncludes.toString()));
     }
 
     /**
@@ -101,7 +101,8 @@ export class WorkspaceStateManager
      */
     public SetWidgets(Widgets: Array<Widget>): void
     {
-        this._context.workspaceState.update(StateKeys.widget.toString(), Widgets);
+        // this._context.workspaceState.update(StateKeys.widget.toString(), Widgets);
+        this._memCache.Set(StateKeys.widget.toString(), Widgets);
     }
 
     /**
@@ -109,17 +110,17 @@ export class WorkspaceStateManager
      */
     public GetWidgets(): Array<Widget> | undefined
     {
-        return this._context.workspaceState.get(StateKeys.widget.toString());
+        return this._memCache.Get<Array<Widget>>((StateKeys.widget.toString()));
     }
 
-    public SetThemes(themes: Theme[]): void
+    public SetThemes(themes: Array<Theme>): void
     {
-        this._context.workspaceState.update(StateKeys.theme.toString(), themes);
+        this._memCache.Set(StateKeys.theme.toString(), themes);
     }
 
     public GetThemes(): Array<Theme> | undefined
     {
-        return this._context.workspaceState.get(StateKeys.theme.toString());
+        return this._memCache.Get<Array<Theme>>((StateKeys.theme.toString()));
     }
 
     public SetUpdateSet(us: UpdateSet): void
@@ -134,21 +135,21 @@ export class WorkspaceStateManager
 
     public SetStyleSheet(css: Array<StyleSheet>): void
     {
-        this._context.workspaceState.update(StateKeys.StyleSheets.toString(), css);
+        this._memCache.Set(StateKeys.StyleSheets.toString(), css);
     }
 
     public GetStyleSheet(): Array<StyleSheet> | undefined
     {
-        return this._context.workspaceState.get(StateKeys.StyleSheets.toString());
+        return this._memCache.Get<Array<StyleSheet>>((StateKeys.StyleSheets.toString()));
     }
 
     public SetUiScript(us: ISysUiScript): void
     {
-        this._context.workspaceState.update(StateKeys.UiScripts.toString(), us);
+        this._memCache.Set(StateKeys.UiScripts.toString(), us);
     }
 
-    public GetUiScript(): ISysUiScript | undefined
+    public GetUiScript(): Array<ISysUiScript> | undefined
     {
-        return this._context.workspaceState.get(StateKeys.UiScripts.toString());
+        return this._memCache.Get<Array<ISysUiScript>>((StateKeys.UiScripts.toString()));
     }
 }
