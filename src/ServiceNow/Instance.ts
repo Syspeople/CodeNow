@@ -1,8 +1,7 @@
 import { URL } from "url";
-import * as vscode from 'vscode';
 import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet } from "./all";
 import { Api } from "../Api/all";
-import { WorkspaceStateManager, StatusBarManager, NotifationState } from "../Manager/all";
+import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import opn = require('opn');
 
 export class Instance
@@ -92,13 +91,11 @@ export class Instance
 
             p.then(() =>
             {
-                this.TestConnection(nm);
-                nm.SetNotificationState(NotifationState.Connected);
+                this.Cache();
+                //this.TestConnection(nm);
                 resolve();
             }).catch((error) =>
             {
-                nm.SetNotificationState(NotifationState.NotConnected);
-                console.error(error);
                 reject(error);
             });
         });
@@ -135,7 +132,7 @@ export class Instance
                                 resolve();
                             }).catch((er) =>
                             {
-                                console.log(er);
+                                console.error(er);
                                 reject(er);
                             });
                         }
@@ -168,7 +165,7 @@ export class Instance
                 }
             }).catch((er) =>
             {
-                console.log(er);
+                console.error(er);
                 reject(er);
             });
         });
@@ -397,45 +394,45 @@ export class Instance
         this.Cache();
     }
 
-    /**
-     * TestConnection
-     */
-    private TestConnection(nm: StatusBarManager): void
-    {
-        this._hasRequiredRole = false;
-        this._isPasswordValid = false;
-        if (this.ApiProxy && this.UserName)
-        {
-            let promise = this.ApiProxy.GetUser(this.UserName);
-            if (promise)
-            {
-                promise.then((res) =>
-                {
-                    if (res.data.result.length === 1)
-                    {
-                        //@ts-ignore
-                        let i = this.ApiProxy.GetSystemProperties();
-                        vscode.window.showInformationMessage("Connected");
-                        this._isPasswordValid = true;
-                        if (i)
-                        {
-                            i.then((res) =>
-                            {
-                                this.Cache();
-                            });
-                        }
-                    }
-                    else
-                    {
-                        throw new Error("Connection failed");
-                    }
-                }).catch((res) =>
-                {
-                    vscode.window.showErrorMessage(res.message);
-                });
-            }
-        }
-    }
+    // /**
+    //  * TestConnection
+    //  */
+    // private TestConnection(nm: StatusBarManager): void
+    // {
+    //     this._hasRequiredRole = false;
+    //     this._isPasswordValid = false;
+    //     if (this.ApiProxy && this.UserName)
+    //     {
+    //         let promise = this.ApiProxy.GetUser(this.UserName);
+    //         if (promise)
+    //         {
+    //             promise.then((res) =>
+    //             {
+    //                 if (res.data.result.length === 1)
+    //                 {
+    //                     //@ts-ignore
+    //                     let i = this.ApiProxy.GetSystemProperties();
+    //                     vscode.window.showInformationMessage("Connected");
+    //                     this._isPasswordValid = true;
+    //                     if (i)
+    //                     {
+    //                         i.then((res) =>
+    //                         {
+    //                             this.Cache();
+    //                         }).catch((err) => { console.log(err); });
+    //                     }
+    //                 }
+    //                 else
+    //                 {
+    //                     throw new Error("Connection failed");
+    //                 }
+    //             }).catch((res) =>
+    //             {
+    //                 vscode.window.showErrorMessage(res.message);
+    //             });
+    //         }
+    //     }
+    // }
 
     private GetStyleSheetsUpstream(): Promise<Array<StyleSheet>>
     {
@@ -660,8 +657,6 @@ export class Instance
             {
                 console.error(er);
             });
-
-
         }
     }
 

@@ -104,33 +104,6 @@ export class Api
                 }
                 return r;
             });
-
-            this._HttpClient.interceptors.response.use((v) =>
-            {
-                //console.warn("###");
-                if (v.data.result)
-                {
-                    if (v.data.result instanceof Array)
-                    {
-                        let arr = new Array<any>();
-                        //@ts-ignore
-                        v.data.result.forEach(element =>
-                        {
-                            element = this.fixDateOnRecord(element);
-                            arr.push(element);
-                        });
-                        v.data.result = arr;
-                    }
-                    else
-                    {
-                        if (v.data.result)
-                        {
-                            v.data.result = this.fixDateOnRecord(v.data.result);
-                        }
-                    }
-                }
-                return v;
-            });
         }
     }
 
@@ -292,100 +265,6 @@ export class Api
     public set HttpClient(v: Axios.AxiosInstance | undefined)
     {
         this._HttpClient = v;
-    }
-
-
-    // @ts-ignore
-    private fixDateOnRecord(record)
-    {
-        if (record.sys_updated_on)
-        {
-            let date = record.sys_updated_on as string;
-
-            record.sys_updated_on = this.getDateFromServiceNowTime(date);
-        }
-        if (record.sys_created_on)
-        {
-            let date = record.sys_created_on as string;
-
-            record.sys_created_on = this.getDateFromServiceNowTime(date);
-        }
-
-        return record;
-    }
-
-    private getDateFromServiceNowTime(date: string): Date
-    {
-        let dt = date.split(' ');
-
-        let d = dt[0];
-        let t = dt[1];
-
-        //new Date(year,month,day,hour,minute,sec)
-        let DateFormat = this.GetDateFormat;
-        let TimeFormat = this.GetTimeFormat;
-
-        let f = new Date();
-
-        //if display value is used
-        if (DateFormat && TimeFormat)
-        {
-            f = this.GetDateFromFormat(d, DateFormat, t, TimeFormat);
-        }
-
-        //if system default is used.
-        let dtNow = new Date(Date.now());
-
-        if ((isNaN(f.getTime()) || f.getUTCFullYear() < (dtNow.getUTCFullYear() - 100) || f.getFullYear() > (dtNow.getUTCFullYear() + 100)) && TimeFormat)
-        {
-            f = this.GetDateFromFormat(d, "yyyy-MM-dd", t, TimeFormat);
-        }
-
-        return f;
-    }
-
-    private GetDateFromFormat(date: String, dateFormat: string, time: string, timeFormat: string): Date
-    {
-        let year: number;
-        let month: number;
-        let day: number;
-        let hour: number;
-        let minute: number;
-        let sec: number;
-
-        let indexYearFirst = dateFormat.indexOf("y");
-        let indexYearLast = dateFormat.lastIndexOf("y") + 1;
-
-        let indexMonthFirst = dateFormat.indexOf("M");
-        let indexMonthLast = dateFormat.lastIndexOf("M") + 1;
-
-        let indexDayFirst = dateFormat.indexOf("d");
-        let indexDaylast = dateFormat.lastIndexOf("d") + 1;
-
-        let indexHourFirst = timeFormat.indexOf("h");
-        let indexHourlast = timeFormat.lastIndexOf("h") + 1;
-
-        if (indexHourFirst === -1)
-        {
-            indexHourFirst = timeFormat.indexOf("H");
-            indexHourlast = timeFormat.lastIndexOf("H") + 1;
-        }
-
-        let indeMinuteFirst = timeFormat.indexOf("m");
-        let indeMinutelast = timeFormat.lastIndexOf("m") + 1;
-
-        let indexSecondFirst = timeFormat.indexOf("s");
-        let indexSecondlast = timeFormat.lastIndexOf("s") + 1;
-
-        year = Number(date.substring(indexYearFirst, indexYearLast));
-        month = Number(date.substring(indexMonthFirst, indexMonthLast));
-        day = Number(date.substring(indexDayFirst, indexDaylast));
-
-        hour = Number(time.substring(indexHourFirst, indexHourlast));
-        minute = Number(time.substring(indeMinuteFirst, indeMinutelast));
-        sec = Number(time.substring(indexSecondFirst, indexSecondlast));
-
-        return new Date(Date.UTC(year, month - 1, day, hour, minute, sec));
     }
 
     /**
