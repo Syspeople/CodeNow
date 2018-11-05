@@ -32,27 +32,33 @@ export class StatusBarManager
     /**
      * SetNotificationState
      */
-    public SetNotificationState(state: NotifationState)
+    public SetNotificationState(state: NotifationState): Promise<void>
     {
-        switch (state)
+        return new Promise((resolve, reject) =>
         {
-            case NotifationState.NotConnected:
-                this.state.text = `$(stop)`;
-                this.state.tooltip = "Not Connected to ServiceNow";
-                this.state.command = "snsb.connect";
-                break;
-            case NotifationState.Downloading:
-                this.state.text = `$(cloud-download)`;
-                this.state.tooltip = "Caching Ressources";
-                break;
-            case NotifationState.Connected:
-                this.state.text = `$(globe)`;
-                this.state.tooltip = "Connected to ServiceNow";
-                break;
-            default:
-                break;
-        }
-        this.state.show();
+            switch (state)
+            {
+                case NotifationState.NotConnected:
+                    this.state.text = `$(stop)`;
+                    this.state.tooltip = "Not Connected to ServiceNow";
+                    this.state.command = "snsb.connect";
+                    break;
+                case NotifationState.Downloading:
+                    this.state.text = `$(cloud-download)`;
+                    this.state.tooltip = "Caching Ressources";
+                    break;
+                case NotifationState.Connected:
+                    this.state.text = `$(globe)`;
+                    this.state.tooltip = "Connected to ServiceNow";
+                    window.showInformationMessage("Connected");
+                    break;
+                default:
+                    reject("failed to set state");
+                    break;
+            }
+            this.state.show();
+            resolve();
+        });
     }
 }
 

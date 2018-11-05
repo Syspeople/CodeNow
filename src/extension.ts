@@ -6,7 +6,7 @@ import * as vscode from 'vscode';
 import { URL } from 'url';
 import * as ServiceNow from './ServiceNow/all';
 import * as Managers from './Manager/all';
-import { StatusBarManager, NotifationState, StateKeys } from './Manager/all';
+import { StatusBarManager, NotifationState } from './Manager/all';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -52,11 +52,11 @@ export function activate(context: vscode.ExtensionContext)
                         p.then(() =>
                         {
                             wm.AddInstanceFolder(instance);
+                            nm.SetNotificationState(NotifationState.Connected);
                         }).catch((er) =>
                         {
-                            wsm.ClearState();
-                            console.error(er);
-                            throw er;
+                            nm.SetNotificationState(NotifationState.NotConnected);
+                            vscode.window.showErrorMessage(er.message);
                         });
                     }
                 }
@@ -90,39 +90,31 @@ export function activate(context: vscode.ExtensionContext)
                             {
                                 if (res !== undefined)
                                 {
-                                    try
-                                    {
-                                        let usr = wsm.GetUserName();
-                                        let url = wsm.GetUrl();
-                                        let pw = res;
+                                    let usr = wsm.GetUserName();
+                                    let url = wsm.GetUrl();
+                                    let pw = res;
 
-                                        if (url && usr)
-                                        {
-                                            let p = instance.Initialize(new URL(url), usr, pw, wsm, nm);
-                                            nm.SetNotificationState(NotifationState.Downloading);
-                                            p.then(() =>
-                                            {
-                                                wm.AddInstanceFolder(instance);
-                                                nm.SetNotificationState(NotifationState.Connected);
-                                            }).catch((er) =>
-                                            {
-                                                console.error(er);
-                                                vscode.window.showErrorMessage(er);
-                                                wsm.ClearState();
-                                            });
-                                        }
-                                    } catch (error)
+                                    if (url && usr)
                                     {
-                                        wsm.ClearState();
-                                        vscode.window.showErrorMessage("error.message");
-                                        throw error;
+                                        let p = instance.Initialize(new URL(url), usr, pw, wsm, nm);
+                                        nm.SetNotificationState(NotifationState.Downloading);
+                                        p.then(() =>
+                                        {
+                                            wm.AddInstanceFolder(instance);
+                                            nm.SetNotificationState(NotifationState.Connected);
+                                        }).catch((er) =>
+                                        {
+                                            wsm.ClearState();
+                                            nm.SetNotificationState(NotifationState.NotConnected);
+                                            vscode.window.showErrorMessage(er.message);
+                                        });
                                     }
                                 }
                             });
                         }
                     });
                 }
-            }, (res) => { vscode.window.showErrorMessage(res); });
+            });
         }
     });
 
@@ -431,8 +423,4 @@ export function activate(context: vscode.ExtensionContext)
 // this method is called when your extension is deactivated
 export function deactivate(context: vscode.ExtensionContext)
 {
-    //clear cached records.
-    context.workspaceState.update(StateKeys.scriptIncludes.toString(), {});
-    context.workspaceState.update(StateKeys.theme.toString(), {});
-    context.workspaceState.update(StateKeys.widget.toString(), {});
 }
