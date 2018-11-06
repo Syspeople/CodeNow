@@ -10,5 +10,6 @@ export enum StateKeys
     theme,
     updateSet,
     StyleSheets,
-    UiScripts
+    UiScripts,
+    metaData
 }

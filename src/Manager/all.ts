@@ -5,3 +5,4 @@ export * from './StatusBarManager';
 export * from './memCache';
 export * from './Options';
 export * from './KeyValuePair';
+export * from './FileTypes';

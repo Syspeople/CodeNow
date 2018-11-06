@@ -1,4 +1,5 @@
 import { KeyValuePair } from "./all";
+import { StateKeys } from "./StateKeys";
 
 export class MemCache
 {
@@ -7,12 +8,12 @@ export class MemCache
 
     }
 
-    private _values = new Array<KeyValuePair>();
+    private _values = new Array<KeyValuePair<StateKeys, any>>();
 
     /**
      * Get
      */
-    public Get<T>(key: string): T | undefined
+    public Get<T>(key: StateKeys): T | undefined
     {
         var exist = this.gotKey(key);
 
@@ -20,10 +21,9 @@ export class MemCache
         {
             return <T>exist.value;
         }
-        return;
     }
 
-    public Set(key: string, value: any): void
+    public Set(key: StateKeys, value: any): void
     {
         var exist = this.gotKey(key);
 
@@ -40,7 +40,7 @@ export class MemCache
         }
     }
 
-    private gotKey(key: string): KeyValuePair | undefined
+    private gotKey(key: StateKeys): KeyValuePair<StateKeys, any> | undefined
     {
         return this._values.find((item) =>
         {

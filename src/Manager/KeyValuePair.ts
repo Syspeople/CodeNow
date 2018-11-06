@@ -1,10 +1,10 @@
-export class KeyValuePair
+export class KeyValuePair<T, X>
 {
-    constructor(key: string, value: any)
+    constructor(key: T, value: X)
     {
         this.key = key;
         this.value = value;
     }
-    key: string;
-    value: any;
+    key: T;
+    value: X;
 }
