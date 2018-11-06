@@ -432,6 +432,7 @@ export class WorkspaceManager
     {
         if (this.FileExist(path))
         {
+            //this might be the reason for empty files.
             this.WriteFile(path, "");
             this.WriteFile(path, value);
         }
