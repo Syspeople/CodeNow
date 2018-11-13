@@ -183,57 +183,17 @@ export class WorkspaceManager
             let uriRecord = options.getRecordUri();
             this.CreateFolder(uriRecord.fsPath);
 
-            switch (options.sys_class_name)
+            var arrEnum = [FileTypes.clientScript, FileTypes.html, FileTypes.serverScript, FileTypes.styleSheet];
+
+            for (let index = 0; index < arrEnum.length; index++)
             {
-                case "sys_script_include":
-                    //instance folder is created upon connection. 
-
-                    //create files.
-                    let uriServerScript = options.getFileUri(FileTypes.serverScript);
-                    if (uriServerScript)
-                    {
-                        this.CreateFile(uriServerScript.fsPath, (<ISysScriptInclude>record).script);
-                    }
-
-                    break;
-
-                case "sp_widget":
-
-                    // this.CreateFolder(recordPath);
-                    // recordName = (<ISpWidget>record).name;
-                    // MetaDir = `${recordPath}${this._delimiter}${recordName}`;
-                    // this.CreateFolder(MetaDir);
-
-                    // this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.options.json`, this.GetOptionsPretty(record));
-                    // this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.client_script.js`, (<ISpWidget>record).client_script);
-                    // this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.server_script.js`, (<ISpWidget>record).script);
-                    // this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.scss`, (<ISpWidget>record).css);
-                    // this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.html`, (<ISpWidget>record).template);
-                    break;
-
-                case "sp_theme":
-                    // this.CreateFolder(recordPath);
-                    // recordName = (<Theme>record).name;
-                    // MetaDir = `${recordPath}${this._delimiter}${recordName}`;
-                    // this.CreateFolder(MetaDir);
-
-                    // this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.options.json`, this.GetOptionsPretty(record));
-                    // this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.scss`, (<ISpTheme>record).css_variables);
-                    break;
-
-                case "sp_css":
-                    // this.CreateFolder(recordPath);
-                    // recordName = (<StyleSheet>record).name;
-                    // MetaDir = `${recordPath}${this._delimiter}${recordName}`;
-                    // this.CreateFolder(MetaDir);
-
-                    // this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.options.json`, this.GetOptionsPretty(record));
-                    // this.CreateFile(`${MetaDir}${this._delimiter}${recordName}.scss`, (<StyleSheet>record).css);
-                    break;
-
-                default:
-                    console.warn(`AddRecord: Record ${record.sys_class_name} not recognized`);
-                    break;
+                const element = arrEnum[index];
+                //create files.
+                let uri = options.getFileUri(element);
+                if (uri)
+                {
+                    this.CreateFile(uri.fsPath, (<ISysScriptInclude>record).script);
+                }
             }
         }
     }
