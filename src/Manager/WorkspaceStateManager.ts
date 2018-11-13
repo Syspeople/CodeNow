@@ -84,7 +84,7 @@ export class WorkspaceStateManager
     public SetScriptIncludes(scriptIncludes: Array<ScriptInclude>): void
     {
         // this._context.workspaceState.update(StateKeys.scriptIncludes.toString(), scriptIncludes);
-        this._memCache.Set(StateKeys.scriptIncludes.toString(), scriptIncludes);
+        this._memCache.Set(StateKeys.scriptIncludes, scriptIncludes);
     }
 
     /**
@@ -93,7 +93,7 @@ export class WorkspaceStateManager
     public GetScriptIncludes(): Array<ScriptInclude> | undefined
     {
         // return this._context.workspaceState.get(StateKeys.scriptIncludes.toString());
-        return this._memCache.Get<Array<ScriptInclude>>((StateKeys.scriptIncludes.toString()));
+        return this._memCache.Get<Array<ScriptInclude>>((StateKeys.scriptIncludes));
     }
 
     /**
@@ -102,7 +102,7 @@ export class WorkspaceStateManager
     public SetWidgets(Widgets: Array<Widget>): void
     {
         // this._context.workspaceState.update(StateKeys.widget.toString(), Widgets);
-        this._memCache.Set(StateKeys.widget.toString(), Widgets);
+        this._memCache.Set(StateKeys.widget, Widgets);
     }
 
     /**
@@ -110,17 +110,17 @@ export class WorkspaceStateManager
      */
     public GetWidgets(): Array<Widget> | undefined
     {
-        return this._memCache.Get<Array<Widget>>((StateKeys.widget.toString()));
+        return this._memCache.Get<Array<Widget>>((StateKeys.widget));
     }
 
     public SetThemes(themes: Array<Theme>): void
     {
-        this._memCache.Set(StateKeys.theme.toString(), themes);
+        this._memCache.Set(StateKeys.theme, themes);
     }
 
     public GetThemes(): Array<Theme> | undefined
     {
-        return this._memCache.Get<Array<Theme>>((StateKeys.theme.toString()));
+        return this._memCache.Get<Array<Theme>>((StateKeys.theme));
     }
 
     public SetUpdateSet(us: UpdateSet): void
@@ -135,21 +135,21 @@ export class WorkspaceStateManager
 
     public SetStyleSheet(css: Array<StyleSheet>): void
     {
-        this._memCache.Set(StateKeys.StyleSheets.toString(), css);
+        this._memCache.Set(StateKeys.StyleSheets, css);
     }
 
     public GetStyleSheet(): Array<StyleSheet> | undefined
     {
-        return this._memCache.Get<Array<StyleSheet>>((StateKeys.StyleSheets.toString()));
+        return this._memCache.Get<Array<StyleSheet>>((StateKeys.StyleSheets));
     }
 
     public SetUiScript(us: ISysUiScript): void
     {
-        this._memCache.Set(StateKeys.UiScripts.toString(), us);
+        this._memCache.Set(StateKeys.UiScripts, us);
     }
 
     public GetUiScript(): Array<ISysUiScript> | undefined
     {
-        return this._memCache.Get<Array<ISysUiScript>>((StateKeys.UiScripts.toString()));
+        return this._memCache.Get<Array<ISysUiScript>>((StateKeys.UiScripts));
     }
 }

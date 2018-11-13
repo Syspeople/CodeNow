@@ -175,18 +175,18 @@ export class WorkspaceManager
 
         if (options)
         {
+            //ensure sysclass folder.
+            let uriSys = options.getSysClassUri();
+            this.CreateFolder(uriSys.fsPath);
+
+            //ensure record Folder
+            let uriRecord = options.getRecordUri();
+            this.CreateFolder(uriRecord.fsPath);
+
             switch (options.sys_class_name)
             {
                 case "sys_script_include":
                     //instance folder is created upon connection. 
-
-                    //ensure sysclass folder.
-                    let uriSys = options.getSysClassUri();
-                    this.CreateFolder(uriSys.fsPath);
-
-                    //ensure record Folder
-                    let uriRecord = options.getRecordUri();
-                    this.CreateFolder(uriRecord.fsPath);
 
                     //create files.
                     let uriServerScript = options.getFileUri(FileTypes.serverScript);
@@ -198,6 +198,7 @@ export class WorkspaceManager
                     break;
 
                 case "sp_widget":
+
                     // this.CreateFolder(recordPath);
                     // recordName = (<ISpWidget>record).name;
                     // MetaDir = `${recordPath}${this._delimiter}${recordName}`;
@@ -240,32 +241,32 @@ export class WorkspaceManager
     private createOptions(record: ISysMetadata, instance: Instance): Options | undefined
     {
         var recordName: string;
+        let f = new Array<KeyValuePair<FileTypes, Uri>>();
         switch (record.sys_class_name)
         {
             case "sys_script_include":
                 recordName = (<ISysScriptInclude>record).name;
 
-                var f = new Array<KeyValuePair<FileTypes, Uri>>();
                 f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
-
                 return new Options(record, f, instance, recordName);
             case "sp_widget":
-                // recordName = (<ISpWidget>record).name;
-                // this.CreateFile(`${instancePath}${this._delimiter}${recordName}.client_script.js`, (<ISpWidget>record).client_script);
-                // this.CreateFile(`${instancePath}${this._delimiter}${recordName}.server_script.js`, (<ISpWidget>record).script);
-                // this.CreateFile(`${instancePath}${this._delimiter}${recordName}.scss`, (<ISpWidget>record).css);
-                // this.CreateFile(`${instancePath}${this._delimiter}${recordName}.html`, (<ISpWidget>record).template);
-                break;
+                recordName = (<ISpWidget>record).name;
 
+                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
+                f.push(new KeyValuePair(FileTypes.clientScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.clientScript)}`)));
+                f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
+                f.push(new KeyValuePair(FileTypes.html, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.html)}`)));
+                return new Options(record, f, instance, recordName);
             case "sp_theme":
-                // recordName = (<ISpTheme>record).name;
-                // this.CreateFile(`${instancePath}${this._delimiter}${recordName}.scss`, (<ISpTheme>record).css_variables);
-                break;
-            case "sp_css":
-                // recordName = (<ISpCss>record).name;
+                recordName = (<ISpTheme>record).name;
 
-                // this.CreateFile(`${instancePath}${this._delimiter}${recordName}.scss`, (<StyleSheet>record).css);
-                break;
+                f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
+                return new Options(record, f, instance, recordName);
+            case "sp_css":
+                recordName = (<ISpCss>record).name;
+
+                f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
+                return new Options(record, f, instance, recordName);
             default:
                 console.warn(`AddRecord: Record ${record.sys_class_name} not recognized`);
                 break;
@@ -351,11 +352,11 @@ export class WorkspaceManager
     }
 
     /**returns the designated main path in workspace for any given record type */
-    private GetPathRecord<T extends ISysMetadata>(record: T, instance: Instance)
-    {
-        let p = this.GetPathInstance(instance);
-        return `${p}${this._delimiter}${record.sys_class_name}`;
-    }
+    // private GetPathRecord<T extends ISysMetadata>(record: T, instance: Instance)
+    // {
+    //     let p = this.GetPathInstance(instance);
+    //     return `${p}${this._delimiter}${record.sys_class_name}`;
+    // }
 
 
     private GetPathParent(Uri: vscode.Uri): string
