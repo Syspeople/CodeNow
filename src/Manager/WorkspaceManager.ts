@@ -183,6 +183,7 @@ export class WorkspaceManager
             let uriRecord = options.getRecordUri();
             this.CreateFolder(uriRecord.fsPath);
 
+            //all supported files.
             var arrEnum = [FileTypes.clientScript, FileTypes.html, FileTypes.serverScript, FileTypes.styleSheet];
 
             for (let index = 0; index < arrEnum.length; index++)
