@@ -698,11 +698,11 @@ declare class http
      */
     jsonp(url: string, config?: object): Promise<object>;
 
-    post(url: string, config?: object): Promise<object>;
+    post(url: string, data: object, config?: object): Promise<object>;
 
-    put(url: string, config?: object): Promise<object>;
+    put(url: string, data: object, config?: object): Promise<object>;
 
-    patch(url: string, config?: object): Promise<object>;
+    patch(url: string, data: object, config?: object): Promise<object>;
 
 }
 
