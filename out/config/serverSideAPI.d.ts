@@ -663,6 +663,32 @@ declare class GlideScriptableInputStream
     constructor();
 }
 
+
+declare var $q: q;
+
+declare class q
+{
+    /**
+      *  available via angular DI as $q.
+      */
+    constructor();
+
+    /**
+     * @returns The newly created promise.
+     */
+    defer(): Promise;
+
+    reject(reason: object): object;
+
+    when(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise;
+
+    resolve(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise;
+
+    all(promises: Array<Promise>): Promise;
+
+    race(promises: Array<Promise>): Promise;
+}
+
 declare var $http: http;
 /**
  * angualar $https Directive.
