@@ -855,6 +855,37 @@ declare class Scope
     $broadcast(name: string, args: object): object
 }
 
+declare class GlideAjax
+{
+    /**
+     * 
+     * @param class_name The name of the server-side class that contains the method you want to execute.
+     */
+    constructor(class_name: string): GlideAjax;
+
+    /**
+     * Specifies a parameter name and value to be passed to the server-side function associated with this GlideAjax object.
+     * 
+     * **Note** The first call to addParam should be with the parameter sysparm_name and the name of the server-side method you want to call. The server-side code does not execute until the client script calls getXML().
+     * @param parameter 
+     * @param value 
+     */
+    addParam(parameter: string, value: string): void;
+
+    /**
+     * Sends the server a request to execute the method and parameters associated with this GlideAjax object.
+     * The server processes the request asynchronously and -- when ready -- returns the results via the function specified as the callback_function.
+     * @param callback 
+     */
+    getXML(callback: Function): void;
+
+    /**
+     * Call the processor asynchronously and get the answer element of the response in XML format.
+     * @param callback 
+     */
+    getXMLAnswer(callback: Function): void
+
+}
 
 declare var gs: GlideSystem;
 declare class GlideSystem

@@ -10,7 +10,7 @@ NB: Only Basic auth is currently available.
 * Work with multiple ServicNow entities.
 * Automatically saves to your instance.
 * Automatically updates from your instance.
-* Intellisense for ServiceNow Class.
+* Intellisense for ServiceNow and angualr API's
 * Change update Set.
 
 # How to
@@ -30,7 +30,7 @@ You need to have [Node.js](https://nodejs.org/en/) installed.
 # Additional Extensions
 Extensions that go very well with this extension
 
-* [IntelliSense for CSS class names in HTML](https://marketplace.visualstudio.com/items?itemName=Zignd.html-css-class-completion) - for proper css intellisense i HTML. 
+* [IntelliSense for CSS class names in HTML](https://marketplace.visualstudio.com/items?itemName=Zignd.html-css-class-completion) - for proper css intellisense i HTML.
 
 
 ## Supported Records
@@ -43,14 +43,20 @@ Records types currently supported.
 ## Intellisense
 Currently there is intellisense for the following API's.
 
-### Server API's
+### ServerSide API's
 
 * GlideRecord
 * GlideSystem (gs)
 * GlideSPScriptable ($sp)
+* GlideAjax
 
-### Client API's
+### Angular API's
+* $http
+* $scope
+* $q
 
+### ClientSide API's
+* feel free to add them :D
 
 ## Available commands
 ### Connect to ServiceNow
@@ -61,7 +67,7 @@ if the workspace is already associated with a ServiceNow instance only the passw
 **NB: only Basic auth is supported**
 
 ### Change Update Set
-Choose an active UpdateSet and set is as your working update set. Only in progress update sets in the global scope is available. 
+Choose an active UpdateSet and set is as your working update set. Only in progress and global scoped update sets are currently available.
 
 **IMPORTANT** Update set changes do not apply to active sessions. Be sure to validate your update set in your browser if working in the web UI and in VsCode at the same time.
 
@@ -88,8 +94,6 @@ Right click a record to open it in the platform.
 
 ### Open list in platform
 Right click a record to open the associated list.
-
-
 
 ### Clear Instance
 clear workspace data. eg. cached records, urls, username.
