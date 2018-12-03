@@ -48,7 +48,6 @@ Currently there is intellisense for the following API's.
 * GlideRecord
 * GlideSystem (gs)
 * GlideSPScriptable ($sp)
-* GlideAjax
 
 ### Angular API's
 * $http
@@ -56,7 +55,7 @@ Currently there is intellisense for the following API's.
 * $q
 
 ### ClientSide API's
-* feel free to add them :D
+* GlideAjax
 
 ## Available commands
 ### Connect to ServiceNow
