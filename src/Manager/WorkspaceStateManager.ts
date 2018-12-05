@@ -1,23 +1,23 @@
-import * as vscode from 'vscode';
-import { StateKeys, MemCache } from "./all";
+import { Uri, ExtensionContext } from 'vscode';
+import { StateKeys, MemCache, MetaData } from "./all";
 import { ScriptInclude, Widget, UpdateSet, StyleSheet, ISysUiScript, Theme } from "../ServiceNow/all";
 
 //get update and manage workpace state.
 export class WorkspaceStateManager
 {
-    constructor(context: vscode.ExtensionContext)
+    constructor(context: ExtensionContext)
     {
         this._context = context;
         this._memCache = new MemCache();
     }
 
     private _memCache: MemCache;
-    private _context: vscode.ExtensionContext;
+    private _context: ExtensionContext;
 
     /**
      * ClearState, sets all stateKeys to undefined
      */
-    public ClearState()
+    public ClearState(): void
     {
         for (const key in StateKeys)
         {
@@ -27,6 +27,11 @@ export class WorkspaceStateManager
                 this._context.workspaceState.update(element.toString(), undefined);
             }
         }
+    }
+
+    getContext(): ExtensionContext
+    {
+        return this._context;
     }
 
     /**
@@ -74,6 +79,62 @@ export class WorkspaceStateManager
     public GetUserName(): string | undefined
     {
         return this._context.workspaceState.get(StateKeys.user.toString()) as string;
+    }
+
+    /**
+     * overwrite local metadata with provided array
+     */
+    public SetMetaData(metaData: Array<MetaData>): void
+    {
+        this._context.workspaceState.update(StateKeys.metaData.toString(), metaData);
+    }
+
+    /**
+    * add a single metadata instance to local storage
+    */
+    public AddMetaData(metaData: MetaData): void
+    {
+        let local: Array<MetaData> | undefined;
+        local = this.GetMetaDataAll();
+
+        if (local)
+        {
+            local.push(metaData);
+        }
+        else
+        {
+            local = new Array<MetaData>();
+            local.push(metaData);
+        }
+        this.SetMetaData(local);
+    }
+
+    /**
+     * retrieved all local record metadata.
+     */
+    public GetMetaDataAll(): Array<MetaData> | undefined
+    {
+        return this._context.workspaceState.get(StateKeys.metaData.toString()) as Array<MetaData>;
+    }
+
+    /**
+     * GetMetaData
+     */
+    public GetMetaData(uri: Uri): MetaData | undefined
+    {
+        let all = this.GetMetaDataAll();
+        let out;
+        if (all)
+        {
+            all.forEach(element =>
+            {
+                if (element.ContainsFile(uri))
+                {
+                    out = element;
+                }
+            });
+        }
+        return out;
     }
 
     /**

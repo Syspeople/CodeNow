@@ -3,7 +3,10 @@ import { KeyValuePair } from "./all";
 import { Uri, workspace } from "vscode";
 import { FileTypes } from "./FileTypes";
 
-export class Options extends Record
+/**
+ * Record meta data object. Contains Instanse metadata aswell as files references to local files. 
+ */
+export class MetaData extends Record
 {
     /**
      * Record MetaData and file references.
@@ -34,8 +37,9 @@ export class Options extends Record
 
     /**
      * Keyvaluepair fil uri. key is scripttype
+     * use getFileUri() to get full URI relatively to workspace directory. 
      */
-    private Files: Array<KeyValuePair<FileTypes, Uri>>;
+    public Files: Array<KeyValuePair<FileTypes, Uri>>;
 
     /**
      * name of the record
@@ -82,5 +86,35 @@ export class Options extends Record
     public getRecordUri(): Uri
     {
         return Uri.parse(`${this.basePath}/${this.sys_class_name}/${this.RecordName}`);
+    }
+
+    /**
+     * returns true if this metadata object contains a reference to the file provided.
+     * @param uri VsCode Uri object
+     */
+    public ContainsFile(uri: Uri): boolean
+    {
+        let out = false;
+        let fileTypes = MetaData.getFileTypes();
+
+        fileTypes.forEach(element =>
+        {
+            //get relative uri
+            var u = this.getFileUri(element);
+            if (u && u.fsPath === uri.fsPath)
+            {
+                out = true;
+            }
+        });
+
+        return out;
+    }
+
+    /**
+    * returns all suported file types in an array. 
+    */
+    public static getFileTypes()
+    {
+        return [FileTypes.clientScript, FileTypes.html, FileTypes.serverScript, FileTypes.styleSheet];
     }
 }

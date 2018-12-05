@@ -3,6 +3,6 @@ export * from './WorkspaceStateManager';
 export * from './StateKeys';
 export * from './StatusBarManager';
 export * from './memCache';
-export * from './Options';
+export * from './MetaData';
 export * from './KeyValuePair';
 export * from './FileTypes';
