@@ -1,8 +1,7 @@
 import * as fileSystem from 'fs';
-import * as vscode from 'vscode';
 import { ISysMetadata, Instance, ScriptInclude, ISysScriptInclude, ISpWidget, Widget, Theme, ISpTheme, StyleSheet, ISpCss } from '../ServiceNow/all';
 import { MetaData, KeyValuePair, WorkspaceStateManager } from './all';
-import { Uri } from 'vscode';
+import { Uri, ExtensionContext, window, WorkspaceFolder, workspace } from 'vscode';
 import { FileTypes } from './FileTypes';
 
 export class WorkspaceManager
@@ -16,7 +15,7 @@ export class WorkspaceManager
     private _wsm: WorkspaceStateManager;
     private _delimiter: string | undefined;
 
-    private SetDelimiter(context: vscode.ExtensionContext)
+    private SetDelimiter(context: ExtensionContext)
     {
         let storagePath = context.storagePath;
 
@@ -51,7 +50,7 @@ export class WorkspaceManager
     /**
      * retrieves a record from workspace
      */
-    public GetRecord(uri: vscode.Uri): ISysMetadata | undefined
+    public GetRecord(uri: Uri): ISysMetadata | undefined
     {
         try
         {
@@ -174,7 +173,7 @@ export class WorkspaceManager
     }
 
     /**update record */
-    public UpdateRecord(record: ISysMetadata, uri: vscode.Uri): void
+    public UpdateRecord(record: ISysMetadata, uri: Uri): void
     {
         switch (record.sys_class_name)
         {
@@ -311,7 +310,7 @@ export class WorkspaceManager
     /**
      * ConfigureWorkspace
      */
-    public ConfigureWorkspace(context: vscode.ExtensionContext)
+    public ConfigureWorkspace(context: ExtensionContext)
     {
         if (this.HasWorkspace)
         {
@@ -377,19 +376,19 @@ export class WorkspaceManager
     // }
 
 
-    private GetPathParent(Uri: vscode.Uri): string
+    private GetPathParent(Uri: Uri): string
     {
         let nameLength = this.GetFileName(Uri).length;
         return Uri.fsPath.substring(0, Uri.fsPath.length - nameLength - 1);
     }
 
-    private GetFileName(Uri: vscode.Uri): string
+    private GetFileName(Uri: Uri): string
     {
         let split = Uri.fsPath.split(`${this._delimiter}`);
         return split[split.length - 1];
     }
 
-    private GetPathRecordScript(uri: vscode.Uri): string
+    private GetPathRecordScript(uri: Uri): string
     {
         let parentPath = this.GetPathParent(uri);
         let recordName = this.GetFileName(uri);
@@ -397,7 +396,7 @@ export class WorkspaceManager
         return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.server_script.js`;
     }
 
-    private GetPathRecordClientScript(uri: vscode.Uri): string
+    private GetPathRecordClientScript(uri: Uri): string
     {
         let parentPath = this.GetPathParent(uri);
 
@@ -407,7 +406,7 @@ export class WorkspaceManager
     }
 
     //returns the path of hte option.json that should reside in same dir. 
-    private GetPathRecordOptions(uri: vscode.Uri): string
+    private GetPathRecordOptions(uri: Uri): string
     {
         let parentPath = this.GetPathParent(uri);
 
@@ -416,7 +415,7 @@ export class WorkspaceManager
         return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.options.json`;
     }
 
-    private GetPathRecordCss(uri: vscode.Uri): string
+    private GetPathRecordCss(uri: Uri): string
     {
         let parentPath = this.GetPathParent(uri);
 
@@ -425,7 +424,7 @@ export class WorkspaceManager
         return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.scss`;
     }
 
-    private GetPathRecordHtmlTemplate(uri: vscode.Uri): string
+    private GetPathRecordHtmlTemplate(uri: Uri): string
     {
         let parentPath = this.GetPathParent(uri);
 
@@ -434,13 +433,13 @@ export class WorkspaceManager
         return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.html`;
     }
 
-    private GetPathWorkspace(): vscode.WorkspaceFolder | undefined
+    private GetPathWorkspace(): WorkspaceFolder | undefined
     {
         if (this.HasWorkspace)
         {
-            if (vscode.workspace.workspaceFolders !== undefined)
+            if (workspace.workspaceFolders !== undefined)
             {
-                let workspaceRoot = vscode.workspace.workspaceFolders[0];
+                let workspaceRoot = workspace.workspaceFolders[0];
                 return workspaceRoot;
             }
         }
@@ -464,13 +463,13 @@ export class WorkspaceManager
 
     private HasWorkspace(): boolean
     {
-        if (vscode.workspace.name !== undefined)
+        if (workspace.name !== undefined)
         {
             return true;
         }
         else
         {
-            vscode.window.showErrorMessage("a workspace is required");
+            window.showErrorMessage("a workspace is required");
             return false;
         }
     }
@@ -486,7 +485,7 @@ export class WorkspaceManager
                     //only exceptions is parsed on callback 
                     if (res)
                     {
-                        vscode.window.showErrorMessage(res.message);
+                        window.showErrorMessage(res.message);
                     }
                 });
             }
