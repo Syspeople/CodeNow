@@ -676,17 +676,17 @@ declare class q
     /**
      * @returns The newly created promise.
      */
-    defer(): Promise;
+    defer(): Promise<object>;
 
     reject(reason: object): object;
 
-    when(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise;
+    when(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise<object>;
 
-    resolve(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise;
+    resolve(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise<object>;
 
-    all(promises: Array<Promise>): Promise;
+    all(promises: Array<Promise<object>>): Promise<object>;
 
-    race(promises: Array<Promise>): Promise;
+    race(promises: Array<Promise<object>>): Promise<object>;
 }
 
 declare var $http: http;
@@ -861,7 +861,7 @@ declare class GlideAjax
      * 
      * @param class_name The name of the server-side class that contains the method you want to execute.
      */
-    constructor(class_name: string): GlideAjax;
+    constructor(class_name: string);
 
     /**
      * Specifies a parameter name and value to be passed to the server-side function associated with this GlideAjax object.
