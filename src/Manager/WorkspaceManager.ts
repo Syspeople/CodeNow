@@ -1,20 +1,21 @@
 import * as fileSystem from 'fs';
 import * as vscode from 'vscode';
 import { ISysMetadata, Instance, ScriptInclude, ISysScriptInclude, ISpWidget, Widget, Theme, ISpTheme, StyleSheet, ISpCss } from '../ServiceNow/all';
-import { Options } from './all';
-import { KeyValuePair } from './KeyValuePair';
+import { MetaData, KeyValuePair, WorkspaceStateManager } from './all';
 import { Uri } from 'vscode';
 import { FileTypes } from './FileTypes';
 
 export class WorkspaceManager
 {
 
-    constructor(context: vscode.ExtensionContext)
+    constructor(wsm: WorkspaceStateManager)
     {
-        this.SetDelimiter(context);
+        this._wsm = wsm;
+        this.SetDelimiter(this._wsm.getContext());
     }
-
+    private _wsm: WorkspaceStateManager;
     private _delimiter: string | undefined;
+
     private SetDelimiter(context: vscode.ExtensionContext)
     {
         let storagePath = context.storagePath;
@@ -46,6 +47,7 @@ export class WorkspaceManager
             }
         }
     }
+
     /**
      * retrieves a record from workspace
      */
@@ -53,72 +55,109 @@ export class WorkspaceManager
     {
         try
         {
-            let optionsPath = this.GetPathRecordOptions(uri);
-            let content = this.ReadTextFile(optionsPath);
+            let meta = this._wsm.GetMetaData(uri);
 
-            if (content)
+            let uriServerScript: Uri | undefined;
+            let uriClientScript: Uri | undefined;
+            let uriStyleSheet: Uri | undefined;
+            let uriHtml: Uri | undefined;
+            let stringServerScript: string | undefined;
+            let stringClientScript: string | undefined;
+            let stringStyleSheet: string | undefined;
+            let stringHtml: string | undefined;
+
+            if (meta)
             {
-                let serialized = JSON.parse(content) as ISysMetadata;
+                let serialized = meta as ISysMetadata;
 
-                switch (serialized.sys_class_name)
+                switch (meta.sys_class_name)
                 {
                     case "sys_script_include":
                         let si = new ScriptInclude(<ISysScriptInclude>serialized);
 
                         //get script
-                        let siScript = this.ReadTextFile(this.GetPathRecordScript(uri));
-
-                        if (siScript)
+                        uriServerScript = meta.getFileUri(FileTypes.serverScript);
+                        if (uriServerScript)
                         {
-                            si.script = siScript;
+                            stringServerScript = this.ReadTextFile(uriServerScript.fsPath);
+
+                            if (stringServerScript)
+                            {
+                                si.script = stringServerScript;
+                            }
                         }
                         return si;
+
                     case "sp_widget":
                         let widget = new Widget(<ISpWidget>serialized);
 
+                        uriServerScript = meta.getFileUri(FileTypes.serverScript);
+                        uriClientScript = meta.getFileUri(FileTypes.clientScript);
+                        uriStyleSheet = meta.getFileUri(FileTypes.styleSheet);
+                        uriHtml = meta.getFileUri(FileTypes.html);
+
                         //get script
-                        let script = this.ReadTextFile(this.GetPathRecordScript(uri));
-                        let clientScript = this.ReadTextFile(this.GetPathRecordClientScript(uri));
-                        let css = this.ReadTextFile(this.GetPathRecordCss(uri));
-                        let html = this.ReadTextFile(this.GetPathRecordHtmlTemplate(uri));
+                        if (uriServerScript)
+                        {
+                            stringServerScript = this.ReadTextFile(uriServerScript.fsPath);
+                        }
+                        if (uriClientScript)
+                        {
+                            stringClientScript = this.ReadTextFile(uriClientScript.fsPath);
+                        }
+                        if (uriStyleSheet)
+                        {
+                            stringStyleSheet = this.ReadTextFile(uriStyleSheet.fsPath);
+                        }
+                        if (uriHtml)
+                        {
+                            stringHtml = this.ReadTextFile(uriHtml.fsPath);
+                        }
 
                         //take each individually empty can be valid.
-                        if (script)
+                        if (stringServerScript)
                         {
-                            widget.script = script;
+                            widget.script = stringServerScript;
                         }
-                        if (clientScript)
+                        if (stringClientScript)
                         {
-                            widget.client_script = clientScript;
+                            widget.client_script = stringClientScript;
                         }
-                        if (html)
+                        if (stringStyleSheet || stringStyleSheet === "")
                         {
-                            widget.template = html;
+                            widget.css = stringStyleSheet;
                         }
-                        if (css || css === "")
+                        if (stringHtml)
                         {
-                            widget.css = css;
+                            widget.template = stringHtml;
                         }
                         return widget;
+
                     case "sp_theme":
                         let t = new Theme(<ISpTheme>serialized);
+                        uriStyleSheet = meta.getFileUri(FileTypes.styleSheet);
 
-                        //get script
-                        let tCss = this.ReadTextFile(this.GetPathRecordCss(uri));
-
-                        if (tCss)
+                        if (uriStyleSheet)
                         {
-                            t.css_variables = tCss;
+                            //get script
+                            stringStyleSheet = this.ReadTextFile(this.GetPathRecordCss(uri));
+                        }
+                        if (stringStyleSheet)
+                        {
+                            t.css_variables = stringStyleSheet;
                         }
                         return t;
                     case "sp_css":
                         let styleSheet = new StyleSheet(<StyleSheet>serialized);
 
-                        let ssCss = this.ReadTextFile(this.GetPathRecordCss(uri));
-
-                        if (ssCss)
+                        uriStyleSheet = meta.getFileUri(FileTypes.styleSheet);
+                        if (uriStyleSheet)
                         {
-                            styleSheet.css = ssCss;
+                            stringStyleSheet = this.ReadTextFile(uriStyleSheet.fsPath);
+                        }
+                        if (stringStyleSheet)
+                        {
+                            styleSheet.css = stringStyleSheet;
                         }
 
                         return styleSheet;
@@ -184,7 +223,7 @@ export class WorkspaceManager
             this.CreateFolder(uriRecord.fsPath);
 
             //all supported files.
-            var arrEnum = [FileTypes.clientScript, FileTypes.html, FileTypes.serverScript, FileTypes.styleSheet];
+            var arrEnum = MetaData.getFileTypes();
 
             for (let index = 0; index < arrEnum.length; index++)
             {
@@ -199,17 +238,25 @@ export class WorkspaceManager
         }
     }
 
-    private createOptions(record: ISysMetadata, instance: Instance): Options | undefined
+    /**
+     * Creates a metadata object for local reference from a record. 
+     * @param record 
+     * @param instance 
+     */
+    private createOptions(record: ISysMetadata, instance: Instance): MetaData | undefined
     {
         var recordName: string;
         let f = new Array<KeyValuePair<FileTypes, Uri>>();
+        let meta: MetaData | undefined;
+
         switch (record.sys_class_name)
         {
             case "sys_script_include":
                 recordName = (<ISysScriptInclude>record).name;
 
                 f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
-                return new Options(record, f, instance, recordName);
+                meta = new MetaData(record, f, instance, recordName);
+                break;
             case "sp_widget":
                 recordName = (<ISpWidget>record).name;
 
@@ -217,21 +264,31 @@ export class WorkspaceManager
                 f.push(new KeyValuePair(FileTypes.clientScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.clientScript)}`)));
                 f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
                 f.push(new KeyValuePair(FileTypes.html, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.html)}`)));
-                return new Options(record, f, instance, recordName);
+                meta = new MetaData(record, f, instance, recordName);
+                break;
             case "sp_theme":
                 recordName = (<ISpTheme>record).name;
 
                 f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
-                return new Options(record, f, instance, recordName);
+                meta = new MetaData(record, f, instance, recordName);
+                break;
             case "sp_css":
                 recordName = (<ISpCss>record).name;
 
                 f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
-                return new Options(record, f, instance, recordName);
+                meta = new MetaData(record, f, instance, recordName);
+                break;
             default:
-                console.warn(`AddRecord: Record ${record.sys_class_name} not recognized`);
+                console.warn(`CreateOptions: Record ${record.sys_class_name} not recognized`);
                 break;
         }
+
+        if (meta)
+        {
+            this._wsm.AddMetaData(meta);
+            return meta;
+        }
+
     }
 
     private getFileTypeExtension(type: FileTypes): string

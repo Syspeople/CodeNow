@@ -14,8 +14,8 @@ export function activate(context: vscode.ExtensionContext)
 {
     console.info("SNSB Activated");
 
-    const wm = new Managers.WorkspaceManager(context);
     const wsm = new Managers.WorkspaceStateManager(context);
+    const wm = new Managers.WorkspaceManager(wsm);
     const nm = new StatusBarManager();
     let config: vscode.WorkspaceConfiguration;
 
