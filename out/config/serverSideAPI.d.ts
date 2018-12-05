@@ -663,6 +663,32 @@ declare class GlideScriptableInputStream
     constructor();
 }
 
+
+declare var $q: q;
+
+declare class q
+{
+    /**
+      *  available via angular DI as $q.
+      */
+    constructor();
+
+    /**
+     * @returns The newly created promise.
+     */
+    defer(): Promise;
+
+    reject(reason: object): object;
+
+    when(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise;
+
+    resolve(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise;
+
+    all(promises: Array<Promise>): Promise;
+
+    race(promises: Array<Promise>): Promise;
+}
+
 declare var $http: http;
 /**
  * angualar $https Directive.
@@ -698,11 +724,11 @@ declare class http
      */
     jsonp(url: string, config?: object): Promise<object>;
 
-    post(url: string, config?: object): Promise<object>;
+    post(url: string, data: object, config?: object): Promise<object>;
 
-    put(url: string, config?: object): Promise<object>;
+    put(url: string, data: object, config?: object): Promise<object>;
 
-    patch(url: string, config?: object): Promise<object>;
+    patch(url: string, data: object, config?: object): Promise<object>;
 
 }
 
@@ -829,6 +855,37 @@ declare class Scope
     $broadcast(name: string, args: object): object
 }
 
+declare class GlideAjax
+{
+    /**
+     * 
+     * @param class_name The name of the server-side class that contains the method you want to execute.
+     */
+    constructor(class_name: string): GlideAjax;
+
+    /**
+     * Specifies a parameter name and value to be passed to the server-side function associated with this GlideAjax object.
+     * 
+     * **Note** The first call to addParam should be with the parameter sysparm_name and the name of the server-side method you want to call. The server-side code does not execute until the client script calls getXML().
+     * @param parameter 
+     * @param value 
+     */
+    addParam(parameter: string, value: string): void;
+
+    /**
+     * Sends the server a request to execute the method and parameters associated with this GlideAjax object.
+     * The server processes the request asynchronously and -- when ready -- returns the results via the function specified as the callback_function.
+     * @param callback 
+     */
+    getXML(callback: Function): void;
+
+    /**
+     * Call the processor asynchronously and get the answer element of the response in XML format.
+     * @param callback 
+     */
+    getXMLAnswer(callback: Function): void
+
+}
 
 declare var gs: GlideSystem;
 declare class GlideSystem
