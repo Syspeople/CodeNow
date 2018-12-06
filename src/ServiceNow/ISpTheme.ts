@@ -1,6 +1,7 @@
 import { ISysMetadata, IRelation } from "./all";
+import { IWorkspaceConvertable } from "../Manager/all";
 
-export interface ISpTheme extends ISysMetadata
+export interface ISpTheme extends ISysMetadata, IWorkspaceConvertable
 {
     css_variables: string;
     name: string;

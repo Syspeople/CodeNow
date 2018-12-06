@@ -1,6 +1,7 @@
 import { ISysMetadata } from "./all";
+import { IWorkspaceConvertable } from "../Manager/all";
 
-export interface ISpWidget extends ISysMetadata
+export interface ISpWidget extends ISysMetadata, IWorkspaceConvertable
 {
     template: string;
     css: string;

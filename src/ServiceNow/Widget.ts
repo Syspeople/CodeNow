@@ -1,5 +1,6 @@
 import { QuickPickItem } from 'vscode';
 import { Record, ISpWidget } from "./all";
+import { FileTypes } from '../Manager/all';
 
 export class Widget extends Record implements ISpWidget, QuickPickItem
 {
@@ -28,16 +29,6 @@ export class Widget extends Record implements ISpWidget, QuickPickItem
         this.controller_as = w.controller_as;
     }
 
-    public get label(): string
-    {
-        return this.name;
-    }
-
-    public get detail(): string | undefined
-    {
-        return;
-    }
-
     template: string;
     css: string;
     internal: boolean;
@@ -57,6 +48,55 @@ export class Widget extends Record implements ISpWidget, QuickPickItem
     data_table: string;
     name: string;
     controller_as: string;
+
+    public get label(): string
+    {
+        return this.name;
+    }
+
+    public get detail(): string | undefined
+    {
+        return;
+    }
+
+    SetAttribute(content: string, filetype: FileTypes): void
+    {
+        switch (filetype)
+        {
+            case FileTypes.styleSheet:
+                this.css = content;
+                break;
+            case FileTypes.clientScript:
+                this.client_script = content;
+                break;
+            case FileTypes.serverScript:
+                this.script = content;
+                break;
+            case FileTypes.html:
+                this.template = content;
+                break;
+            default:
+                break;
+        }
+    }
+
+    GetAttribute(filetype: FileTypes): string | undefined
+    {
+        switch (filetype)
+        {
+            case FileTypes.styleSheet:
+                return this.css;
+            case FileTypes.clientScript:
+                return this.client_script;
+            case FileTypes.serverScript:
+                return this.script;
+            case FileTypes.html:
+                return this.template;
+            default:
+                break;
+        }
+    }
+
 
     /**
         * toJSON

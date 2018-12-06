@@ -1,6 +1,7 @@
 import { ISysMetadata } from "./all";
+import { IWorkspaceConvertable } from "../Manager/all";
 
-export interface ISysUiScript extends ISysMetadata
+export interface ISysUiScript extends ISysMetadata, IWorkspaceConvertable
 {
     active: boolean;
     description: string;

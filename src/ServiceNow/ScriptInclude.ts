@@ -1,8 +1,10 @@
 import { QuickPickItem } from 'vscode';
 import { Record, ISysScriptInclude } from "./all";
+import { FileTypes } from '../Manager/all';
 
 export class ScriptInclude extends Record implements ISysScriptInclude, QuickPickItem
 {
+
     constructor(si: ISysScriptInclude)
     {
         super(si);
@@ -89,6 +91,29 @@ export class ScriptInclude extends Record implements ISysScriptInclude, QuickPic
     public set name(v: string)
     {
         this._name = v;
+    }
+
+    SetAttribute(content: string, filetype: FileTypes): void
+    {
+        switch (filetype)
+        {
+            case FileTypes.serverScript:
+                this.script = content;
+                break;
+            default:
+                break;
+        }
+    }
+
+    GetAttribute(filetype: FileTypes): string | undefined
+    {
+        switch (filetype)
+        {
+            case FileTypes.serverScript:
+                return this.script;
+            default:
+                break;
+        }
     }
 
     /**

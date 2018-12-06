@@ -1,9 +1,9 @@
 import { Record, ISpTheme, Relation } from './all';
 import { QuickPickItem } from 'vscode';
+import { FileTypes } from '../Manager/all';
 
 export class Theme extends Record implements ISpTheme, QuickPickItem
 {
-
     constructor(t: ISpTheme)
     {
         super(t);
@@ -36,6 +36,28 @@ export class Theme extends Record implements ISpTheme, QuickPickItem
     public get detail(): string | undefined
     {
         return "";
+    }
+
+    SetAttribute(content: string, filetype: FileTypes): void
+    {
+        switch (filetype)
+        {
+            case FileTypes.styleSheet:
+                this.css_variables = content;
+                break;
+            default:
+                break;
+        }
+    }
+    GetAttribute(filetype: FileTypes): string | undefined
+    {
+        switch (filetype)
+        {
+            case FileTypes.styleSheet:
+                return this.css_variables;
+            default:
+                break;
+        }
     }
 
     public toJSON()

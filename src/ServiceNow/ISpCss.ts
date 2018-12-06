@@ -1,5 +1,6 @@
 import { ISysMetadata } from "./all";
-export interface ISpCss extends ISysMetadata
+import { IWorkspaceConvertable } from "../Manager/all";
+export interface ISpCss extends ISysMetadata, IWorkspaceConvertable
 {
     name: string;
     css: string;

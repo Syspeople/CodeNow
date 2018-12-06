@@ -1,9 +1,9 @@
 import { Record, ISpCss } from "./all";
 import { QuickPickItem } from "vscode";
+import { FileTypes } from "../Manager/all";
 
 export class StyleSheet extends Record implements ISpCss, QuickPickItem
 {
-
     constructor(css: ISpCss)
     {
         super(css);
@@ -27,6 +27,28 @@ export class StyleSheet extends Record implements ISpCss, QuickPickItem
 
     name: string;
     css: string;
+
+    SetAttribute(content: string, filetype: FileTypes): void
+    {
+        switch (filetype)
+        {
+            case FileTypes.styleSheet:
+                this.css = content;
+                break;
+            default:
+                break;
+        }
+    }
+    GetAttribute(filetype: FileTypes): string | undefined
+    {
+        switch (filetype)
+        {
+            case FileTypes.styleSheet:
+                return this.css;
+            default:
+                break;
+        }
+    }
 
     /**
     * toJSON
