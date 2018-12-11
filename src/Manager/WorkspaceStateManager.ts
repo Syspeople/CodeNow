@@ -114,7 +114,8 @@ export class WorkspaceStateManager
      */
     public GetMetaDataAll(): Array<MetaData> | undefined
     {
-        return this._context.workspaceState.get(StateKeys.metaData.toString()) as Array<MetaData>;
+        let md = this._context.workspaceState.get(StateKeys.metaData.toString());
+        return <Array<MetaData>>md;
     }
 
     /**
@@ -123,10 +124,11 @@ export class WorkspaceStateManager
     public GetMetaData(uri: Uri): MetaData | undefined
     {
         let all = this.GetMetaDataAll();
-        let out;
+        let out: MetaData | undefined;
         if (all)
         {
-            all.forEach(element =>
+            let t = all as Array<MetaData>;
+            t.forEach(element =>
             {
                 if (element.ContainsFile(uri))
                 {

@@ -1,6 +1,7 @@
 import { QuickPickItem } from 'vscode';
 import { Record, ISpWidget } from "./all";
 import { FileTypes } from '../Manager/all';
+import { stringify } from 'querystring';
 
 export class Widget extends Record implements ISpWidget, QuickPickItem
 {

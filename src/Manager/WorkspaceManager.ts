@@ -1,8 +1,8 @@
 import * as fileSystem from 'fs';
 import { ISysMetadata, Instance, ScriptInclude, ISysScriptInclude, ISpWidget, Widget, Theme, ISpTheme, StyleSheet, ISpCss } from '../ServiceNow/all';
-import { MetaData, KeyValuePair, WorkspaceStateManager } from './all';
+import { MetaData, KeyValuePair, WorkspaceStateManager, FileTypes } from './all';
 import { Uri, ExtensionContext, window, WorkspaceFolder, workspace } from 'vscode';
-import { FileTypes } from './FileTypes';
+import { ISysMetadataIWorkspaceConvertable } from '../MixIns/all';
 
 export class WorkspaceManager
 {
@@ -50,7 +50,7 @@ export class WorkspaceManager
     /**
      * retrieves a record from workspace
      */
-    public GetRecord(uri: Uri): ISysMetadata | undefined
+    public GetRecord(uri: Uri): ISysMetadataIWorkspaceConvertable | undefined
     {
         try
         {
@@ -175,6 +175,8 @@ export class WorkspaceManager
     /**update record */
     public UpdateRecord(record: ISysMetadata, uri: Uri): void
     {
+        let meta = this._wsm.GetMetaData(uri);
+
         switch (record.sys_class_name)
         {
             case "sys_script_include":
@@ -207,7 +209,7 @@ export class WorkspaceManager
     /**
      * AddRecord a new record. 
      */
-    public AddRecord(record: ISysMetadata, instance: Instance)
+    public AddRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T, instance: Instance)
     {
         let options = this.createOptions(record, instance);
 
@@ -222,7 +224,7 @@ export class WorkspaceManager
             this.CreateFolder(uriRecord.fsPath);
 
             //all supported files.
-            var arrEnum = MetaData.getFileTypes();
+            let arrEnum = MetaData.getFileTypes();
 
             for (let index = 0; index < arrEnum.length; index++)
             {
@@ -231,7 +233,11 @@ export class WorkspaceManager
                 let uri = options.getFileUri(element);
                 if (uri)
                 {
-                    this.CreateFile(uri.fsPath, (<ISysScriptInclude>record).script);
+                    let content = record.GetAttribute(element);
+                    if (content || content === "")
+                    {
+                        this.CreateFile(uri.fsPath, content);
+                    }
                 }
             }
         }
