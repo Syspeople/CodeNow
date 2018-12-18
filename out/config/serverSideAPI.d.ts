@@ -676,17 +676,17 @@ declare class q
     /**
      * @returns The newly created promise.
      */
-    defer(): Promise;
+    defer(): Promise<T>;
 
     reject(reason: object): object;
 
-    when(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise;
+    when(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise<T>;
 
-    resolve(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise;
+    resolve(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise<T>;
 
-    all(promises: Array<Promise>): Promise;
+    all(promises: Array<Promise>): Promise<T>;
 
-    race(promises: Array<Promise>): Promise;
+    race(promises: Array<Promise>): Promise<T>;
 }
 
 declare var $http: http;
