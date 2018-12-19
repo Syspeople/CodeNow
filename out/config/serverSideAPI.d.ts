@@ -650,8 +650,6 @@ declare class GlideSysAttachment
      * @returns The attachment's sysID. 
      */
     writeContentStream(gr: GlideRecord, fileName: string, contentType: string, inputStream: GlideScriptableInputStream): string;
-
-
 }
 
 declare class GlideScriptableInputStream
@@ -663,9 +661,94 @@ declare class GlideScriptableInputStream
     constructor();
 }
 
+//client angular
+declare var spModal: SpModal;
 
+declare class SpModal
+{
+    /**
+     * available via angular di as spModal
+     */
+    constructor()
+
+    /**
+     * Displays an alert.
+     * @param message Message to show
+     */
+    alert(message: string): Promise<T>;
+
+    /**
+     * Displays a confirmation message.
+     * @param message message to show
+     */
+    confirm(message: string): Promise<T>;
+
+    /**
+     * Opens a modal window using the specified options.
+     * @param options 
+     */
+    open(options: spModalOptions): Promise<T>;
+
+    /**
+     * Displays a prompt for user input.
+     * @param message message to show.
+     * @param defaultValue optional default value.
+     */
+    prompt(message: string, defaultValue?: string): Promise<T>;
+}
+//client angular
+/**
+ * spModal options object
+ */
+declare class spModalOptions
+{
+    /**
+     *  a string that can be HTML that goes in the header. The default is empty.
+     */
+    title: string;
+    /** 
+     * a string that can be HTML that goes in the header. The default is empty.
+     */
+    message: string;
+
+    /**
+     * an array that contains the buttons to show on the dialog. The default is Cancel and OK.
+     */
+    buttons: Array<string>;
+
+    /**
+     * a Boolean. When true shows an input field on the dialog. The default is false.
+     */
+    input: boolean;
+
+    /**
+     * a string containing the value of the input field. The default is empty.
+     */
+    value: string;
+
+    /**
+     * a string that identifies the widget ID or sys_id to embed in the dialog. The default is empty.
+     */
+    widget: string;
+
+    /**
+     * an object to send the embedded widget as input. The default is null.
+     */
+    widgetInput: object;
+
+    /**
+     * a client-side object to share data with the embedded widget client script.
+     */
+    shared: object;
+
+    /**
+     *  a string indicating the size of the window. Can be 'sm' or 'lg'. The default is empty.
+     */
+    size: string;
+}
+
+//client angular
 declare var $q: q;
-
 declare class q
 {
     /**
@@ -688,7 +771,7 @@ declare class q
 
     race(promises: Array<Promise>): Promise<T>;
 }
-
+//client angular
 declare var $http: http;
 /**
  * angualar $https Directive.
@@ -732,7 +815,7 @@ declare class http
 
 }
 
-
+//client angular
 declare var $scope: Scope;
 declare class Scope
 {
@@ -855,6 +938,7 @@ declare class Scope
     $broadcast(name: string, args: object): object
 }
 
+//client api
 declare class GlideAjax
 {
     /**

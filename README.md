@@ -53,6 +53,7 @@ Currently there is intellisense for the following API's.
 * $http
 * $scope
 * $q
+* spModal
 
 ### ClientSide API's
 * GlideAjax
