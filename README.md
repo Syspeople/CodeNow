@@ -17,7 +17,7 @@ NB: Only Basic auth is currently available.
 Add screenshots and stuff. 
 
 # Try it
-the only way to currently try the extension is to compile from the source.
+The only way to currently try the extension is to compile from the source.
 
 You need to have [Node.js](https://nodejs.org/en/) installed.
 
@@ -44,7 +44,6 @@ Records types currently supported.
 Currently there is intellisense for the following API's.
 
 ### ServerSide API's
-
 * GlideRecord
 * GlideSystem (gs)
 * GlideSPScriptable ($sp)
@@ -58,15 +57,49 @@ Currently there is intellisense for the following API's.
 ### ClientSide API's
 * GlideAjax
 
-## Available commands
-### Connect to ServiceNow
+## Manually Specify Types
+Occassionally it is required to manually specify a type in order for Vs Code to properly identify class and provide intellisense.
+
+### Angular DI classes
+use jsdoc notation to specify a type to make it available in scope.
+```javascript
+/**
+ * @param {Scope} $scope 
+ * @param {http} $http 
+ */
+function ($scope, $http)
+{
+    var c = this;
+}
+```
+
+### Custom Objects created in code.
+Use JsDoc notation to autocomplete on custom object mappings declared and used in code. 
+```javascript
+/**
+ * @type {spModalOptions}
+ */
+var opt = {
+    widget: "widget-form", widgetInput: {}
+};
+
+spModal.open(opt).then(function (res)
+{
+    console.log("modal end");
+});
+```
+
+
+# Commands
+## Connect to ServiceNow
 prompts for url, username and password.
 
 if the workspace is already associated with a ServiceNow instance only the password is required.
 
 **NB: only Basic auth is supported**
 
-### Change Update Set
+
+## Change Update Set
 Choose an active UpdateSet and set is as your working update set. Only in progress and global scoped update sets are currently available.
 
 **IMPORTANT** Update set changes do not apply to active sessions. Be sure to validate your update set in your browser if working in the web UI and in VsCode at the same time.
@@ -74,44 +107,64 @@ Choose an active UpdateSet and set is as your working update set. Only in progre
 The extension will automatically use the previuosly selected update set. if it has been closed, default i selected. 
 
 
-### Add Script Include To Workspace
+## Add Script Include To Workspace
 Imports a script include into the workspace for edit.
 
 Read only and restricted script includes is not available.
 
-### Add Widget to Workspace
+
+## Add Widget to Workspace
 imports a widget into the the workspace.
 
 Read only and restricted widgets is not available.
 
-### Add Theme to Workspace
+
+## Add Theme to Workspace
 imports a theme into the workspace
 
 Read only and restricted themes is not available.
 
-### Open Record in platform
+
+## Open Record in platform
 Right click a record to open it in the platform. 
 
-### Open list in platform
+
+## Open list in platform
 Right click a record to open the associated list.
 
-### Clear Instance
+
+## Save
+Right click a record to force save the version currently in VsCode.
+
+**This will force the local to be saved on instance**
+
+
+## Update
+Right click a record to force download the latest version into VsCode.
+
+**This will overwrite the local file**
+
+
+## Clear Instance
 clear workspace data. eg. cached records, urls, username.
 
 make sure to reconnect to service and refresh records or reload vscode.
 
-### Refresh Records
+
+## Refresh Records
 Reloads caches records from you instance.
 
 if you missing a script in the list when trying to load one use this command to retreive all from instance.
 
-## Options
-### uploadOnSave
-Enable or disable automatic upload on save. 
+
+# Options
+## uploadOnSave
+Enable or disable automatic upload on save. If a newer version exists on the instance the save is aborted.
 
 default: true
 
-### addOnOpen
-Enable or disable automatic import on document open if newer exists.
+
+## addOnOpen
+Enable or disable automatic import on document open. Only applied if higher version exists on instance.
 
 default: true
