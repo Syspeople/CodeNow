@@ -945,7 +945,7 @@ declare class GlideAjax
      * 
      * @param class_name The name of the server-side class that contains the method you want to execute.
      */
-    constructor(class_name: string): GlideAjax;
+    constructor(class_name: string);
 
     /**
      * Specifies a parameter name and value to be passed to the server-side function associated with this GlideAjax object.
