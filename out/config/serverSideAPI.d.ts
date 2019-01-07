@@ -345,7 +345,8 @@ declare class GlideElementDescriptor
 
 declare class GlideQueryCondition
 {
-    /**This class has no constructor.
+    /**
+     * This class has no constructor.
      * A GlideQueryCondition object is returned by the following methods:
      * * addActiveQuery()
      * * addInactiveQuery()
@@ -891,7 +892,7 @@ declare class spModalOptions
     shared: object;
 
     /**
-     *  a string indicating the size of the window. Can be 'sm' or 'lg'. The default is empty.
+     * a string indicating the size of the window. Can be 'sm' or 'lg'. The default is empty.
      */
     size: string;
 }
@@ -910,16 +911,50 @@ declare class q
      */
     defer(): Promise<T>;
 
+    /**
+     * Creates a promise that is resolved as rejected with the specified reason. This api should be used to forward rejection in a chain of promises. 
+     * 
+     * If you are dealing with the last promise in a promise chain, you don't need to worry about it.
+     * 
+     * 
+     * When comparing deferreds/promises to the familiar behavior of try/catch/throw, think of reject as the throw keyword in JavaScript. 
+     * This also means that if you "catch" an error via a promise error callback and you want to forward the error to the promise derived from the current promise, you have to "rethrow" the error by returning a rejection constructed via reject.
+     * 
+     * @param reason Constant, message, exception or an object representing the rejection reason.
+     */
     reject(reason: object): object;
 
+    /**
+     * Wraps an object that might be a value or a (3rd party) then-able promise into a $q promise. This is useful when you are dealing with an object that might or might not be a promise, or if the promise comes from a source that can't be trusted.
+     * @param value Value or a promise
+     * @param successCallback callback
+     * @param errorCallback callback
+     * @param progressCallback callback
+     */
     when(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise<T>;
 
+    /**
+     * Alias of when to maintain naming consistency with ES6.
+     * @param value Value or a promise
+     * @param successCallback callback
+     * @param errorCallback callback
+     * @param progressCallback callback 
+     */
     resolve(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise<T>;
 
+    /**
+     * Combines multiple promises into a single promise that is resolved when all of the input promises are resolved.
+     * @param promises An array or hash of promises.
+     */
     all(promises: Array<Promise>): Promise<T>;
 
+    /**
+     * Returns a promise that resolves or rejects as soon as one of those promises resolves or rejects, with the value or reason from that promise.
+     * @param promises An array or hash of promises.
+     */
     race(promises: Array<Promise>): Promise<T>;
 }
+
 //client angular
 declare var $http: http;
 /**
