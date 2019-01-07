@@ -54,6 +54,13 @@ Currently there is intellisense for the following API's.
 * $q
 * spModal
 
+### Additional
+to avoid collision between Class names and global variables classes in the declaration is always named using CamelCase.
+
+eg.: 
+* $q is Q
+* $http is Http
+
 ### ClientSide API's
 * GlideAjax
 
@@ -65,7 +72,7 @@ use jsdoc notation to specify a type to make it available in scope.
 ```javascript
 /**
  * @param {Scope} $scope 
- * @param {http} $http 
+ * @param {Http} $http 
  */
 function ($scope, $http)
 {
@@ -77,7 +84,7 @@ function ($scope, $http)
 Use JsDoc notation to autocomplete on custom object mappings declared and used in code. 
 ```javascript
 /**
- * @type {spModalOptions}
+ * @type {SpModalOptions}
  */
 var opt = {
     widget: "widget-form", widgetInput: {}
