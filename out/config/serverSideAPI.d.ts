@@ -1,3 +1,4 @@
+import { Url } from "url";
 
 declare class GlideRecord
 {
@@ -953,6 +954,165 @@ declare class Q
      * @param promises An array or hash of promises.
      */
     race(promises: Array<Promise>): Promise<T>;
+}
+
+//client angular
+declare class Controller
+{
+    /**
+     * available in client script by default. add @type for intellisense
+     */
+    constructor();
+    server: Server;
+}
+
+//client angular
+declare class Server
+{
+    /**
+     * available via the controlle class
+     */
+    constructor();
+
+    /**
+     * Calls the server and sends custom input.
+     * @param Object Custom input object
+     */
+    get(Object?: object): Promise<T>;
+
+    /**
+     * Calls the server and posts this.data to the server script. Returns Promise.
+     */
+    update(): Promise<T>;
+
+    /**
+     * Calls the server and automatically replaces the current options and data from the server response. Returns Promise.
+     */
+    refresh(): Promise<T>;
+}
+
+//Client Angular
+declare var $location: Location;
+
+declare class Location
+{
+    /**
+     * availabe via Angualr DI
+     */
+    constructor();
+
+    /**
+     * This method is getter only.
+     * Return full URL representation with all segments encoded according to rules specified in RFC 3986.
+     * 
+     *  ```javascript
+      var absUrl = $location.absUrl();
+      // => "http://example.com/#/some/path?foo=bar&baz=xoxo"
+      ```
+     */
+    absUrl(): string;
+
+    /**
+     * This method is getter / setter.
+     * Return URL (e.g. /path?a=b#hash) when called without any parameter.
+     * Change path, search and hash, when called with parameter and return $location.
+     * 
+     *  ```javascript
+     var url = $location.url();
+     // => "/some/path?foo=bar&baz=xoxo"
+     ```
+     * @param url New URL without base prefix
+     */
+    url(url?: string): string;
+
+    /**
+     * This method is getter only.
+     * Return protocol of current URL.
+     * 
+     * ```javascript
+      var protocol = $location.protocol();
+      // => "http"
+     * ```
+     */
+    protocol(): string;
+
+    /**
+     * This method is getter only.
+     * Return host of current URL.
+     * **Note:** compared to the non-AngularJS version location.host which returns hostname:port, this returns the hostname portion only.
+     * 
+     * ```javascript
+      host = $location.host();
+      // => "example.com"
+      ```
+     */
+    host(): string;
+
+    /**
+     * This method is getter only.
+     * Return port of current URL.
+     * 
+     * ```javascript
+      var port = $location.port(); 
+      // => 80
+      ```
+     */
+    port(): number;
+
+    /**
+     * This method is getter / setter.
+     * Return path of current URL when called without any parameter.
+     * Change path when called with parameter and return $location.
+     * **Note:** Path should always begin with forward slash (/), this method will add the forward slash if it is missing.
+     * ```javascript
+        var path = $location.path();
+        // => "/some/path"
+        ```
+     * 
+     * @param path New path
+     */
+    path(path?: string | number): string | object;
+
+    /**
+     * This method is getter / setter.
+     * Return search part (as object) of current URL when called without any parameter.
+     * Change search part when called with parameter and return $location.
+     * 
+     * ```javascript
+      var searchObject = $location.search();
+      // => {foo: 'bar', baz: 'xoxo'}
+
+      $location.search('foo', 'yipee');
+      // $location.search() => {foo: 'yipee', baz: 'xoxo'}
+    ```
+     * 
+     * @param search New search params - string or hash object. When called with a single argument the method acts as a setter, setting the search component of $location to the specified value. If the argument is a hash object containing an array of values, these values will be encoded as duplicate search parameters in the URL.
+     * @param paramValue If search is a string or number, then paramValue will override only a single search property. If paramValue is an array, it will override the property of the search component of $location specified via the first argument. If paramValue is null, the property specified via the first argument will be deleted. If paramValue is true, the property specified via the first argument will be added with no value nor trailing equal sign.
+     * @returns If called with no arguments returns the parsed search object. If called with one or more arguments returns $location object itself.
+     */
+    search(search: string | Array<string> | object, paramValue?: string | Number | Array<string> | boolean): object;
+
+    /**
+     * This method is getter / setter.
+     * Returns the hash fragment when called without any parameters.
+     * Changes the hash fragment when called with a parameter and returns $location.
+     * @param hash New hash fragment
+     */
+    hash(hash?: string | number): string;
+
+    /**
+     * If called, all changes to $location during the current $digest will replace the current history record, instead of adding a new one.
+     */
+    replace(): void;
+
+    /**
+     * This method is getter / setter.
+     * Return the history state object when called without any parameter.
+     * Change the history state object when called with one parameter and return $location. The state object is later passed to pushState or replaceState.
+     * **NOTE:** This method is supported only in HTML5 mode and only in browsers supporting the HTML5 History API (i.e. methods pushState and replaceState). If you need to support older browsers (like IE9 or Android < 4.0), don't use this method.
+     * @param state State object for pushState or replaceState
+     */
+    state(state?: object): object;
 }
 
 //client angular
