@@ -837,7 +837,7 @@ declare class SpModal
      * Opens a modal window using the specified options.
      * @param options 
      */
-    open(options: spModalOptions): Promise<T>;
+    open(options: SpModalOptions): Promise<T>;
 
     /**
      * Displays a prompt for user input.
@@ -850,7 +850,7 @@ declare class SpModal
 /**
  * spModal options object
  */
-declare class spModalOptions
+declare class SpModalOptions
 {
     /**
      *  a string that can be HTML that goes in the header. The default is empty.
@@ -898,8 +898,8 @@ declare class spModalOptions
 }
 
 //client angular
-declare var $q: q;
-declare class q
+declare var $q: Q;
+declare class Q
 {
     /**
       *  available via angular DI as $q.
@@ -956,11 +956,11 @@ declare class q
 }
 
 //client angular
-declare var $http: http;
+declare var $http: Http;
 /**
  * angualar $https Directive.
  */
-declare class http
+declare class Http
 {
     /**
      *  available via angular DI as $http. 
