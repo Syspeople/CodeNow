@@ -24,7 +24,7 @@ You need to have [Node.js](https://nodejs.org/en/) installed.
 1. Clone and open repository
 2. rebuild module dependencies using command "npm install" (make sure you are located in the workspace root)
 3. start debugger
-4. when debugging open a workspace
+4. when debugging open a workspace (a folder)
 5. invoke command: Connect to ServiceNow
 
 # Additional Extensions
