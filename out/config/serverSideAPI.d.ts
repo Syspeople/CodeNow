@@ -1,5 +1,3 @@
-import { Url } from "url";
-
 declare class GlideRecord
 {
     /**
@@ -849,7 +847,7 @@ declare class SpModal
 }
 //client angular
 /**
- * spModal options object
+ * spModal options object, available options for using spModal.
  */
 declare class SpModalOptions
 {
@@ -899,8 +897,8 @@ declare class SpModalOptions
 }
 
 //client angular
-declare var $q: Q;
-declare class Q
+declare var $q: $Q;
+declare class $Q
 {
     /**
       *  available via angular DI as $q.
@@ -960,7 +958,7 @@ declare class Q
 declare class Controller
 {
     /**
-     * available in client script by default. add @type for intellisense
+     * available in widget client script as this. add @type for intellisense
      */
     constructor();
     server: Server;
@@ -992,9 +990,9 @@ declare class Server
 }
 
 //Client Angular
-declare var $location: Location;
+declare var $location: $Location;
 
-declare class Location
+declare class $Location
 {
     /**
      * availabe via Angualr DI
@@ -1116,11 +1114,11 @@ declare class Location
 }
 
 //client angular
-declare var $http: Http;
+declare var $http: $Http;
 /**
  * angualar $https Directive.
  */
-declare class Http
+declare class $Http
 {
     /**
      *  available via angular DI as $http. 
@@ -1160,8 +1158,8 @@ declare class Http
 }
 
 //client angular
-declare var $scope: Scope;
-declare class Scope
+declare var $scope: $Scope;
+declare class $Scope
 {
     /**
      *Does not have an constructor. available via global variable: $scope
