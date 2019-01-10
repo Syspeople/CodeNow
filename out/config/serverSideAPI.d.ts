@@ -1175,7 +1175,7 @@ declare class $Scope
      * @param isolate If true, then the scope does not prototypically inherit from the parent scope. The scope is isolated, as it can not see parent scope properties. When creating widgets, it is useful for the widget to not accidentally read parent state.
      * @param parent The Scope that will be the $parent of the newly created scope. Defaults to this scope if not provided. This is used when creating a transclude scope to correctly place it in the scope hierarchy while maintaining the correct prototypical inheritance.
      */
-    $new(isolate: boolean, parent: Scope): Scope;
+    $new(isolate: boolean, parent: $Scope): $Scope;
 
     /**
      * Registers a listener callback to be executed whenever the watchExpression changes.
