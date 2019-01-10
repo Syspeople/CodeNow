@@ -130,6 +130,7 @@ export class WorkspaceStateManager
             let t = all as Array<MetaData>;
             t.forEach(element =>
             {
+                //add a wayt to copy the class form local storage. 
                 if (element.ContainsFile(uri))
                 {
                     out = element;

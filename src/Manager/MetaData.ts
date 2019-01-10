@@ -44,16 +44,16 @@ export class MetaData extends Record
     /**
      * name of the record
      */
-    RecordName: string;
+    public RecordName: string;
     /**
      * record base path.
      */
-    basePath: Uri;
+    public basePath: Uri;
 
     /**
      * name of the instance 
      */
-    instanceName: string;
+    public instanceName: string;
 
     /**
      * getFileUri
