@@ -159,6 +159,12 @@ declare class GlideRecord
     getValue(name: string): string;
 
     /**
+     * Returns the display value for the field provided.
+     * @param name field name
+     */
+    getDisplayValue(name: string): string;
+
+    /**
      * Determines if there are any more records in the GlideRecord object. 
      */
     hasNext(): boolean;
