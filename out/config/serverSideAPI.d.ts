@@ -317,35 +317,67 @@ declare class GlideElementDescriptor
      * Use the GlideElement getED() method to obtain a GlideElementDescriptor object.
      */
     constructor();
-    /**Returns the encryption type used for attachments on the element's table. 
-     * This method is for use with the Edge Encryption plugin. */
-    getAttachmentEncryptionType(): string;
-    /**Returns the element's encryption type.
-     * This method is for use with the Edge Encryption plugin. */
-    getEncryptionType(): string;
-    /**Returns the element's internal data type. */
-    getInternalType(): string;
-    /**Returns the element's label.*/
-    getLabel(): string;
-    /**Returns the element's length. */
-    getLength(): number;
-    /**Returns the element's name. */
-    getName(): string;
-    /**Returns the element's plural label. */
-    getPlural(): String
-    /**Returns true if an encrypted attachment has been added to the table.
-     * This method is for use with the Edge Encryption plugin. */
-    hasAttachmentsEncrypted(): Boolean;
-    /**Returns true if the element is an automatically generated or system field.
-     * Automatically generated and system fields cannot be encrypted. This method is for use with the Edge Encryption plugin. */
-    isAutoOrSysID(): boolean;
-    /**Returns true if an element is encrypted.
-     * This method is for use with the Edge Encryption plugin. */
-    isEdgeEncrypted(): boolean;
-    /**Returns true if the element is a virtual element.
-     * A virtual element is a calculated field as set by the dictionary definition of the field. Virtual fields cannot be encrypted. */
-    isVirtual(): boolean;
 
+    /**
+     * Returns the encryption type used for attachments on the element's table. 
+     * This method is for use with the Edge Encryption plugin. 
+     */
+    getAttachmentEncryptionType(): string;
+
+    /**
+     * Returns the element's encryption type.
+     * This method is for use with the Edge Encryption plugin. 
+     */
+    getEncryptionType(): string;
+
+    /**
+     * Returns the element's internal data type. 
+     */
+    getInternalType(): string;
+
+    /**
+     * Returns the element's label.
+     */
+    getLabel(): string;
+
+    /**
+     * Returns the element's length. 
+     */
+    getLength(): number;
+
+    /**
+     * Returns the element's name. 
+     */
+    getName(): string;
+
+    /**
+     * Returns the element's plural label. 
+     */
+    getPlural(): String
+
+    /**
+     * Returns true if an encrypted attachment has been added to the table.
+     * This method is for use with the Edge Encryption plugin. 
+     */
+    hasAttachmentsEncrypted(): Boolean;
+
+    /**
+     * Returns true if the element is an automatically generated or system field.
+     * Automatically generated and system fields cannot be encrypted. This method is for use with the Edge Encryption plugin. 
+     */
+    isAutoOrSysID(): boolean;
+
+    /**
+     * Returns true if an element is encrypted.
+     * This method is for use with the Edge Encryption plugin. 
+     */
+    isEdgeEncrypted(): boolean;
+
+    /**
+     * Returns true if the element is a virtual element.
+     * A virtual element is a calculated field as set by the dictionary definition of the field. Virtual fields cannot be encrypted. 
+     */
+    isVirtual(): boolean;
 }
 
 declare class GlideDateTime
