@@ -348,6 +348,100 @@ declare class GlideElementDescriptor
 
 }
 
+declare class GlideDateTime
+{
+    /**
+     * Instantiates a new GlideDateTime object with the current date and time in Greenwich Mean Time (GMT).
+     */
+    constructor();
+
+    /**
+     * Instantiates a new GlideDateTime object set to the time of the GlideDateTime object passed in the parameter.
+     * @param g The GlideDateTime object to use for setting the time of the new object.
+     */
+    constructor(g: GlideDateTime);
+
+    /**
+     * Instantiates a new GlideDateTime object from a date and time value in the UTC time zone specified with the format yyyy-MM-dd HH:mm:ss.
+     * @param value A UTC date and time using the internal format yyyy-MM-dd HH:mm:ss.
+     */
+    constructor(value: string);
+
+    /**
+     * Adds a GlideTime object to the current GlideDateTime object.
+     * @param gd The GlideTime object to add.
+     */
+    add(gd: GlideDateTime): void;
+
+    /**
+     * Adds the specified number of milliseconds to the current GlideDateTime object.
+     * @param milliseconds The number of milliseconds to add.
+     */
+    add(milliseconds: Number): void;
+
+    /**
+     * Adds a specified number of days to the current GlideDateTime object. A negative parameter subtracts days. 
+     * 
+     * The method determines the local date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts days using the local date and time values.
+     * @param days The number of days to add. Use a negative value to subtract.
+     */
+    addDaysLocalTime(days: Number): void;
+
+    /**
+     * Adds a specified number of days to the current GlideDateTime object. A negative parameter subtracts days. 
+     * 
+     * The method determines the UTC date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts days using the UTC date and time values.
+     * @param days The number of days to add. Use a negative number to subtract.
+     */
+    addDaysUTC(days: Number): void;
+
+    /**
+     * Adds a specified number of months to the current GlideDateTime object. A negative parameter subtracts months. 
+     * 
+     * The method determines the local date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts months using the local date and time values.
+     * @param months The number of months to add. use a negative value to subtract.
+     */
+    addMonthsLocalTime(months: Number): void;
+
+    /**
+     * Adds a specified number of months to the current GlideDateTime object. A negative parameter subtracts months. 
+     * 
+     * The method determines the UTC date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts months using the UTC date and time values.
+     * @param months The number of months to add. Use a negative value to subtract.
+     */
+    addMonthsUTC(months: Number): void;
+
+    /**
+     * Adds the specified number of seconds to the current GlideDateTime object.
+     * @param seconds The number of seconds to add.
+     */
+    addSeconds(seconds: Number): void;
+
+    /**
+     * Adds a specified number of weeks to the current GlideDateTime object. A negative parameter subtracts weeks. 
+     * 
+     * The method determines the local date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts weeks using the local date and time values.
+     * @param weeks The number of weeks to add. Use a negative value to subtract.
+     */
+    addWeeksLocalTime(weeks: Number): void;
+
+    /**
+     * Adds a specified number of weeks to the current GlideDateTime object. A negative parameter subtracts weeks. 
+     * 
+     * The method determines the UTC date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts weeks using the UTC date and time values.
+     * @param weeks	The number of weeks to add. Use a negative value to subtract.
+     */
+    addWeeksUTC(weeks: Number): void;
+
+    /**
+     * Adds a specified number of years to the current GlideDateTime object. A negative parameter subtracts years. 
+     * 
+     * The method determines the local date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts years using the local date and time values.
+     * @param years The number of years to add. Use a negative value to subtract.
+     */
+    addYearsLocalTime(years: Number): void;
+}
+
 declare class GlideQueryCondition
 {
     /**
