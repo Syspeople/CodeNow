@@ -106,6 +106,7 @@ export class WorkspaceStateManager
             local = new Array<MetaData>();
             local.push(metaData);
         }
+        console.log(JSON.stringify(local));
         this.SetMetaData(local);
     }
 
@@ -119,25 +120,25 @@ export class WorkspaceStateManager
     }
 
     /**
-     * GetMetaData
+     * GetMetaData from URI
      */
     public GetMetaData(uri: Uri): MetaData | undefined
     {
         let all = this.GetMetaDataAll();
-        let out: MetaData | undefined;
         if (all)
         {
-            let t = all as Array<MetaData>;
-            t.forEach(element =>
+
+            for (let j = 0; j < all.length; j++)
             {
-                //add a wayt to copy the class form local storage. 
-                if (element.ContainsFile(uri))
+                const element = all[j];
+                let md = MetaData.fromJson(element);
+                if (md.ContainsFile(uri))
                 {
-                    out = element;
+                    return md;
                 }
-            });
+            }
         }
-        return out;
+        return;
     }
 
     /**

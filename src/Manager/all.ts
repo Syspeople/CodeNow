@@ -7,3 +7,4 @@ export * from './MetaData';
 export * from './KeyValuePair';
 export * from './FileTypes';
 export * from './IWorkspaceConvertable';
+export * from './ILocalMetaData';

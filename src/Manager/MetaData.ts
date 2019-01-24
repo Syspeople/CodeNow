@@ -1,29 +1,22 @@
-import { Record, ISysMetadata, Instance } from "../ServiceNow/all";
-import { KeyValuePair } from "./all";
+import { Record, ISysMetadata } from "../ServiceNow/all";
+import { KeyValuePair, ILocalMetaData } from "./all";
 import { Uri, workspace } from "vscode";
 import { FileTypes } from "./FileTypes";
 
 /**
  * Record meta data object. Contains Instanse metadata aswell as files references to local files. 
  */
-export class MetaData extends Record
+export class MetaData extends Record implements ILocalMetaData
 {
     /**
      * Record MetaData and file references.
      */
-    constructor(r: ISysMetadata, files: Array<KeyValuePair<FileTypes, Uri>>, instance: Instance, recordName: string)
+    constructor(r: ISysMetadata, files: Array<KeyValuePair<FileTypes, Uri>>, instanceName: string, recordName: string)
     {
         super(r);
         this.Files = files;
         this.RecordName = recordName;
-        if (instance.Url)
-        {
-            this.instanceName = instance.Url.host;
-        }
-        else
-        {
-            throw new Error("Instance object do not contain a Url");
-        }
+        this.instanceName = instanceName;
 
         if (workspace.rootPath)
         {
@@ -56,7 +49,7 @@ export class MetaData extends Record
     public instanceName: string;
 
     /**
-     * getFileUri
+     * builds and returns a complete URI relative to the workspace root
      */
     public getFileUri(type: FileTypes): Uri | undefined
     {
@@ -94,20 +87,18 @@ export class MetaData extends Record
      */
     public ContainsFile(uri: Uri): boolean
     {
-        let out = false;
         let fileTypes = MetaData.getFileTypes();
 
-        fileTypes.forEach(element =>
+        for (let i = 0; i < fileTypes.length; i++)
         {
-            //get relative uri
+            const element = fileTypes[i];
             var u = this.getFileUri(element);
             if (u && u.fsPath === uri.fsPath)
             {
-                out = true;
+                return true;
             }
-        });
-
-        return out;
+        }
+        return false;
     }
 
     /**
@@ -116,6 +107,21 @@ export class MetaData extends Record
     public static getFileTypes()
     {
         return [FileTypes.clientScript, FileTypes.html, FileTypes.serverScript, FileTypes.styleSheet];
+    }
+
+    /**
+     * Returns an instantiated metadata object from a json object.
+     */
+    public static fromJson(m: ILocalMetaData): MetaData
+    {
+        var files = new Array<KeyValuePair<FileTypes, Uri>>();
+
+        m.Files.forEach(element =>
+        {
+            files.push(new KeyValuePair<FileTypes, Uri>(element.key, Uri.parse(element.value.path)));
+        });
+
+        return new MetaData(m, files, m.instanceName, m.RecordName);
     }
 
     public toJSON()

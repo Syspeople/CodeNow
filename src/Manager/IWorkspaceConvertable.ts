@@ -1,4 +1,4 @@
-import { FileTypes } from "./FileTypes";
+import { FileTypes } from "./all";
 
 /**
  * interface required to write and read records to and from workspace.
