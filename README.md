@@ -1,16 +1,26 @@
-# SNSB
-ServiceNow Scripting Bridge.
-the Vs Code Extension extension that allows you to develop against the ServiceNow platform.
+# SNSB (ServiceNow Scripting Bridge)
+The Visual Code Extension for developing on the ServiceNow platform.
 
-No ServiceNow configuration required.
+This extension aims to provide ServiceNow developers a first class development experience without depending on instance specific configuration.
 
-NB: Only Basic auth is currently available. 
+Only Basic auth is currently available. 
+
+**No ServiceNow configuration required.**
+
+
+## Which elements is added?
+We intend support all "code only" functionality in ServiceNow, these elements have first priority.
+
+Low code elements might get added. But none is planned. 
+
+No code elements will not added to the extension in a way that will allow you to configure them directly from VsCode.
+
 
 # Features
-* Work with multiple ServicNow entities.
+* Work with multiple ServicNow record.
 * Automatically saves to your instance.
 * Automatically updates from your instance.
-* Intellisense for ServiceNow and angualr API's
+* Intellisense for ServiceNow and angular API's
 * Change update Set.
 
 # How to
@@ -43,23 +53,38 @@ Records types currently supported.
 ## Intellisense
 Currently there is intellisense for the following API's.
 
+NB: Some API's are not fully documented (Publicly anyways). if you miss a method or attribute please create an issue.
+
 ### ServerSide API's
 * GlideRecord
 * GlideSystem (gs)
 * GlideSPScriptable ($sp)
+* GlideUser
+* GlideAjax
+* GlideDateTime
+* GlideElement
+* GlideElementDescriptor
+* GlideSession
+* GlideSysAttachment
+* sn_ws
+  * GlideHttpHeader
+  * RestMessageV2
+  * RestResponseV2
+  
 
-### Angular API's
+### Angular API's / ServicePortal
 * $http
 * $scope
 * $q
 * spModal
+* controller (angular controller class)
 
 ### Additional
-to avoid collision between Class names and global variables classes in the declaration is always named using CamelCase.
+To avoid collision between Class names and global variables classes in the declaration is always named using CamelCase.
 
 eg.: 
-* $q is Q
-* $http is Http
+* $q is $Q
+* $http is $Http
 
 ### ClientSide API's
 * GlideAjax
