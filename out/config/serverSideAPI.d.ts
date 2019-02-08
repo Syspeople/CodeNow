@@ -1,129 +1,279 @@
-
 declare class GlideRecord
 {
-    /**Creates an instance of the GlideRecord class for the specified table. */
+    /**
+     * Creates an instance of the GlideRecord class for the specified table. 
+     */
     constructor(tableName: string);
+
     /**
      * Adds a filter to return active records.
      */
     addActiveQuery(): GlideQueryCondition;
+
     /**
-     * Adds an encoded query to other queries that may have been set.
+    * Adds an encoded query to other queries that may have been set.
     */
     addEncodedQuery(query: string): void;
-    /**Adds a filter to return records based on a relationship in a related table. */
+
+    /**
+     * Adds a filter to return records based on a relationship in a related table.
+     */
     addJoinQuery(joinTable: string, primaryField: object, joinTableField: object): GlideQueryCondition
-    /**A filter that specifies records where the value of the field passed in the parameter is not null. */
+
+    /**
+     * A filter that specifies records where the value of the field passed in the parameter is not null.
+     */
     addNotNullQuery(fieldName: string): GlideQueryCondition;
-    /**Adds a filter to return records where the value of the specified field is null. */
+
+    /**
+     * Adds a filter to return records where the value of the specified field is null.
+     */
     addNullQuery(fieldName: string): GlideQueryCondition;
-    /**Provides the ability to build a request, which when executed, returns the rows from the specified table, that match the request. */
+
+    /**
+     * Provides the ability to build a request, which when executed, returns the rows from the specified table, that match the request.
+     */
     addQuery(fieldName: string, operator: string, value: object): GlideQueryCondition;
-    /**Provides the ability to build a request, which when executed, returns the rows from the specified table, that match the request. */
+
+    /**
+     * Provides the ability to build a request, which when executed, returns the rows from the specified table, that match the request.
+     */
     addQuery(fieldName: string, value: object): GlideQueryCondition;
-    /**Provides the ability to build a request, which when executed, returns the rows from the specified table, that match the request. */
+
+    /**
+     * Provides the ability to build a request, which when executed, returns the rows from the specified table, that match the request.
+     */
     addQuery(fieldName: string): GlideQueryCondition;
-    /**Determines if the Access Control Rules, which include the user's roles, permit inserting new records in this table. */
+
+    /**
+     * Determines if the Access Control Rules, which include the user's roles, permit inserting new records in this table.
+     */
     canCreate(): boolean;
-    /**Determines if the Access Control Rules, which include the user's roles, permit deleting records in this table. */
+
+    /**
+     * Determines if the Access Control Rules, which include the user's roles, permit deleting records in this table.
+     */
     canDelete(): boolean;
-    /**Determines if the Access Control Rules, which include the user's roles, permit reading records in this table. */
+
+    /**
+     * Determines if the Access Control Rules, which include the user's roles, permit reading records in this table. 
+     */
     canRead(): boolean;
-    /**Determines if the Access Control Rules, which include the user's roles, permit editing records in this table. */
+
+    /**
+     * Determines if the Access Control Rules, which include the user's roles, permit editing records in this table. 
+     */
     canWrite(): boolean;
-    /**Determines if the Access Control Rules, which include the user's roles, permit editing records in this table. */
+
+    /**
+     * Determines if the Access Control Rules, which include the user's roles, permit editing records in this table.
+     */
     chooseWindow(firstRow: number, lastRow: number, forceCount: boolean): void;
-    /**Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field.
-     * Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object. */
+
+    /**
+     * Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field.
+     * Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object.
+     */
     dateNumericValue(): number;
-    /**Deletes multiple records that satisfy the query condition.
-     * This method does not delete attachments. */
+
+    /**
+     * Deletes multiple records that satisfy the query condition.
+     * This method does not delete attachments.
+     */
     deleteMultiple(): void;
-    /**Deletes the current record. */
+
+    /**
+     * Deletes the current record. 
+     */
     deleteRecord(): void;
-    /**Defines a GlideRecord based on the specified expression of 'name = value'.
-     * This method is expected to be used to query for single records, so a 'next' operation on the recordset is performed by this method before returning. */
+
+    /**
+     * Defines a GlideRecord based on the specified expression of 'name = value'.
+     * This method is expected to be used to query for single records, so a 'next' operation on the recordset is performed by this method before returning.
+     */
     get(name: object, value: object): boolean;
-    /**Returns the dictionary attributes for the specified field. */
+
+    /**
+     * Returns the dictionary attributes for the specified field. 
+     */
     getAttribute(fieldName: string): boolean;
-    /**Returns the table's label. */
+
+    /**
+     * Returns the table's label.
+     */
     getClassDisplayValue(): string;
-    /**Returns the element's descriptor. */
+
+    /**
+     * Returns the element's descriptor. 
+     */
     getED(): GlideElementDescriptor;
-    /**Retrieves the GlideElement object for the specified field. */
+
+    /**
+     * Retrieves the GlideElement object for the specified field. 
+     */
     getElement(columnName: string): GlideElement;
-    /**Retrieves the query condition of the current result set as an encoded query string. */
+
+    /**
+     * Retrieves the query condition of the current result set as an encoded query string. 
+     */
     getEncodedQuery(): string;
-    /**Returns the field's label.*/
+
+    /**
+     * Returns the field's label.
+     */
     getLabel(): string;
-    /**Retrieves the last error message. If there is no last error message, null is returned. */
+
+    /**
+     * Retrieves the last error message. If there is no last error message, null is returned. 
+     */
     getLastErrorMessage(): string;
-    /**Retrieves a link to the current record. */
+
+    /**
+     * Retrieves a link to the current record.
+     */
     getLink(noStack: boolean): string;
-    /**Retrieves the class name for the current record. */
+
+    /**
+     * Retrieves the class name for the current record.
+     */
     getRecordClassName(): string;
-    /**Retrieves the number of rows in the query result. */
+
+    /**
+     * Retrieves the number of rows in the query result.
+     */
     getRowCount(): number;
-    /**Retrieves the name of the table associated with the GlideRecord. */
+
+    /**
+     * Retrieves the name of the table associated with the GlideRecord. 
+     */
     getTableName(): string;
-    /**Gets the primary key of the record, which is usually the sys_id unless otherwise specified. */
+
+    /**
+     * Gets the primary key of the record, which is usually the sys_id unless otherwise specified. 
+     */
     getUniqueValue(): string;
-    /**Retrieves the string value of an underlying element in a field. */
+
+    /**
+     * Retrieves the string value of an underlying element in a field. 
+     */
     getValue(name: string): string;
-    /**Determines if there are any more records in the GlideRecord object. */
+
+    /**
+     * Returns the display value for the field provided.
+     * @param name field name
+     */
+    getDisplayValue(name: string): string;
+
+    /**
+     * Determines if there are any more records in the GlideRecord object. 
+     */
     hasNext(): boolean;
-    /**Creates an empty record suitable for population before an insert. */
+
+    /**
+     * Creates an empty record suitable for population before an insert. 
+     */
     initialize(): void;
-    /**Inserts a new record using the field values that have been set for the current record.
+
+    /**
+     * Inserts a new record using the field values that have been set for the current record.
      */
     insert(): string
-    /**Checks to see if the current database action is to be aborted.*/
+
+    /**
+     * Checks to see if the current database action is to be aborted.
+     */
     isActionAborted(): boolean;
-    /**Checks if the current record is a new record that has not yet been inserted into the database. */
+
+    /**
+     * Checks if the current record is a new record that has not yet been inserted into the database. 
+     */
     isNewRecord(): boolean;
-    /**Determines if the table exists. */
+
+    /**
+     * Determines if the table exists.
+     */
     isValid(): boolean;
-    /**Determines if the specified field is defined in the current table. */
+
+    /**
+     * Determines if the specified field is defined in the current table. 
+     */
     isValidField(columnName: string): boolean;
-    /**Determines if current record is a valid record. */
+
+    /**
+     * Determines if current record is a valid record. 
+     */
     isValidRecord(): boolean;
-    /**Creates a new GlideRecord record, sets the default values for the fields, and assigns a unique ID to the record. */
+
+    /**
+     * Creates a new GlideRecord record, sets the default values for the fields, and assigns a unique ID to the record.
+     */
     newRecord(): boolean;
-    /**Moves to the next record in the GlideRecord object. */
+
+    /**
+     * Moves to the next record in the GlideRecord object.
+     */
     next(): boolean;
-    /**Retrieves the current operation being performed, such as insert, update, or delete. */
+
+    /**
+     * Retrieves the current operation being performed, such as insert, update, or delete. 
+     */
     operation(): string;
-    /**Specifies an orderBy column.
-     * Call this method more than once to order by multiple columns. Results are arranged in ascending order, see orderByDesc(String name) to arrange records in descending order. */
+
+    /**
+     * Specifies an orderBy column.
+     * Call this method more than once to order by multiple columns. Results are arranged in ascending order, see orderByDesc(String name) to arrange records in descending order. 
+     */
     orderBy(name: string): void;
-    /**Specifies a decending orderBy column. */
+
+    /**
+     * Specifies a decending orderBy column.
+     */
     orderByDesc(name: string): void;
-    /**Runs the query against the table based on the filters specified by addQuery, addEncodedQuery, etc.
+
+    /**
+     * Runs the query against the table based on the filters specified by addQuery, addEncodedQuery, etc.
      * If name/value pair is specified, "name=value" condition is added to the query.
      */
     query(field?: object, value?: object): void;
-    /**Sets a flag to indicate if the next database action (insert, update, delete) is to be aborted. This is often used in business rules.
+
+    /**
+     * Sets a flag to indicate if the next database action (insert, update, delete) is to be aborted. This is often used in business rules.
      * Use in an onBefore business rule to prevent the database action from being done.
      * The business rule continues to run after setAbortAction() is called. Calling setAbortAction() does not stop subsequent business rules from executing.
-     * Calling this method only prevents the database action from occurring. */
+     * Calling this method only prevents the database action from occurring. 
+     */
     setAbortAction(b: boolean): void;
-    /**Sets the duration field to a number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field.
-     * Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object. */
+
+    /**
+     * Sets the duration field to a number of milliseconds since January 1, 1970, 00:00:00 GMT for a duration field.
+     * Does not require the creation of a GlideDateTime object because the duration field is already a GlideDateTime object. 
+     */
     setDateNumericValue(milliseconds: number): void;
-    /**Sets the limit for number of records are fetched by the GlideRecord query. */
+
+    /**
+     * Sets the limit for number of records are fetched by the GlideRecord query.
+     */
     setLimit(maxNumRecords: number): void;
-    /**Sets sys_id value for the current record. */
+
+    /**
+     * Sets sys_id value for the current record. 
+     */
     setNewGuidValue(guid: string): void;
 
-    /**Sets the value of the field with the specified name to the specified value.
-     * Normally the script does a gr.category = value. However, if the element name is itself a variable then gr.setValue(elementName, value) can be used.*/
+    /**
+     * Sets the value of the field with the specified name to the specified value.
+     * Normally the script does a gr.category = value. However, if the element name is itself a variable then gr.setValue(elementName, value) can be used.
+     */
     setValue(name: string, value: object): void;
+
     /**Enables or disables the running of business rules, script engines, and audit.
      * 
      * @param enable If true (default), enables business rules. If false, disables business rules.
      */
     setWorkflow(enable: boolean): void;
-    /**Updates the GlideRecord with any changes that have been made. If the record does not already exist, it is inserted.
+
+    /**
+     * Updates the GlideRecord with any changes that have been made. If the record does not already exist, it is inserted.
      * 
      * @param reason The reason for the update. The reason is displayed in the audit record.
      * @returns Unique ID of the new or updated record. Returns null if the update fails.
@@ -141,10 +291,14 @@ declare class GlideRecord
      */
     updateMultiple(): void
 
-    /**Provides the same functionality as next(), it is intended to be used in cases where the GlideRecord has a column named next. */
+    /**
+     * Provides the same functionality as next(), it is intended to be used in cases where the GlideRecord has a column named next. 
+     */
     _next(): boolean;
 
-    /**Identical to query(). This method is intended to be used on tables where there is a column named query, which would interfere with using the query() method.*/
+    /**
+     * Identical to query(). This method is intended to be used on tables where there is a column named query, which would interfere with using the query() method.
+     */
     _query(): void;
 }
 
@@ -163,40 +317,167 @@ declare class GlideElementDescriptor
      * Use the GlideElement getED() method to obtain a GlideElementDescriptor object.
      */
     constructor();
-    /**Returns the encryption type used for attachments on the element's table. 
-     * This method is for use with the Edge Encryption plugin. */
-    getAttachmentEncryptionType(): string;
-    /**Returns the element's encryption type.
-     * This method is for use with the Edge Encryption plugin. */
-    getEncryptionType(): string;
-    /**Returns the element's internal data type. */
-    getInternalType(): string;
-    /**Returns the element's label.*/
-    getLabel(): string;
-    /**Returns the element's length. */
-    getLength(): number;
-    /**Returns the element's name. */
-    getName(): string;
-    /**Returns the element's plural label. */
-    getPlural(): String
-    /**Returns true if an encrypted attachment has been added to the table.
-     * This method is for use with the Edge Encryption plugin. */
-    hasAttachmentsEncrypted(): Boolean;
-    /**Returns true if the element is an automatically generated or system field.
-     * Automatically generated and system fields cannot be encrypted. This method is for use with the Edge Encryption plugin. */
-    isAutoOrSysID(): boolean;
-    /**Returns true if an element is encrypted.
-     * This method is for use with the Edge Encryption plugin. */
-    isEdgeEncrypted(): boolean;
-    /**Returns true if the element is a virtual element.
-     * A virtual element is a calculated field as set by the dictionary definition of the field. Virtual fields cannot be encrypted. */
-    isVirtual(): boolean;
 
+    /**
+     * Returns the encryption type used for attachments on the element's table. 
+     * This method is for use with the Edge Encryption plugin. 
+     */
+    getAttachmentEncryptionType(): string;
+
+    /**
+     * Returns the element's encryption type.
+     * This method is for use with the Edge Encryption plugin. 
+     */
+    getEncryptionType(): string;
+
+    /**
+     * Returns the element's internal data type. 
+     */
+    getInternalType(): string;
+
+    /**
+     * Returns the element's label.
+     */
+    getLabel(): string;
+
+    /**
+     * Returns the element's length. 
+     */
+    getLength(): number;
+
+    /**
+     * Returns the element's name. 
+     */
+    getName(): string;
+
+    /**
+     * Returns the element's plural label. 
+     */
+    getPlural(): String
+
+    /**
+     * Returns true if an encrypted attachment has been added to the table.
+     * This method is for use with the Edge Encryption plugin. 
+     */
+    hasAttachmentsEncrypted(): Boolean;
+
+    /**
+     * Returns true if the element is an automatically generated or system field.
+     * Automatically generated and system fields cannot be encrypted. This method is for use with the Edge Encryption plugin. 
+     */
+    isAutoOrSysID(): boolean;
+
+    /**
+     * Returns true if an element is encrypted.
+     * This method is for use with the Edge Encryption plugin. 
+     */
+    isEdgeEncrypted(): boolean;
+
+    /**
+     * Returns true if the element is a virtual element.
+     * A virtual element is a calculated field as set by the dictionary definition of the field. Virtual fields cannot be encrypted. 
+     */
+    isVirtual(): boolean;
+}
+
+declare class GlideDateTime
+{
+    /**
+     * Instantiates a new GlideDateTime object with the current date and time in Greenwich Mean Time (GMT).
+     */
+    constructor();
+
+    /**
+     * Instantiates a new GlideDateTime object set to the time of the GlideDateTime object passed in the parameter.
+     * @param g The GlideDateTime object to use for setting the time of the new object.
+     */
+    constructor(g: GlideDateTime);
+
+    /**
+     * Instantiates a new GlideDateTime object from a date and time value in the UTC time zone specified with the format yyyy-MM-dd HH:mm:ss.
+     * @param value A UTC date and time using the internal format yyyy-MM-dd HH:mm:ss.
+     */
+    constructor(value: string);
+
+    /**
+     * Adds a GlideTime object to the current GlideDateTime object.
+     * @param gd The GlideTime object to add.
+     */
+    add(gd: GlideDateTime): void;
+
+    /**
+     * Adds the specified number of milliseconds to the current GlideDateTime object.
+     * @param milliseconds The number of milliseconds to add.
+     */
+    add(milliseconds: Number): void;
+
+    /**
+     * Adds a specified number of days to the current GlideDateTime object. A negative parameter subtracts days. 
+     * 
+     * The method determines the local date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts days using the local date and time values.
+     * @param days The number of days to add. Use a negative value to subtract.
+     */
+    addDaysLocalTime(days: Number): void;
+
+    /**
+     * Adds a specified number of days to the current GlideDateTime object. A negative parameter subtracts days. 
+     * 
+     * The method determines the UTC date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts days using the UTC date and time values.
+     * @param days The number of days to add. Use a negative number to subtract.
+     */
+    addDaysUTC(days: Number): void;
+
+    /**
+     * Adds a specified number of months to the current GlideDateTime object. A negative parameter subtracts months. 
+     * 
+     * The method determines the local date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts months using the local date and time values.
+     * @param months The number of months to add. use a negative value to subtract.
+     */
+    addMonthsLocalTime(months: Number): void;
+
+    /**
+     * Adds a specified number of months to the current GlideDateTime object. A negative parameter subtracts months. 
+     * 
+     * The method determines the UTC date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts months using the UTC date and time values.
+     * @param months The number of months to add. Use a negative value to subtract.
+     */
+    addMonthsUTC(months: Number): void;
+
+    /**
+     * Adds the specified number of seconds to the current GlideDateTime object.
+     * @param seconds The number of seconds to add.
+     */
+    addSeconds(seconds: Number): void;
+
+    /**
+     * Adds a specified number of weeks to the current GlideDateTime object. A negative parameter subtracts weeks. 
+     * 
+     * The method determines the local date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts weeks using the local date and time values.
+     * @param weeks The number of weeks to add. Use a negative value to subtract.
+     */
+    addWeeksLocalTime(weeks: Number): void;
+
+    /**
+     * Adds a specified number of weeks to the current GlideDateTime object. A negative parameter subtracts weeks. 
+     * 
+     * The method determines the UTC date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts weeks using the UTC date and time values.
+     * @param weeks	The number of weeks to add. Use a negative value to subtract.
+     */
+    addWeeksUTC(weeks: Number): void;
+
+    /**
+     * Adds a specified number of years to the current GlideDateTime object. A negative parameter subtracts years. 
+     * 
+     * The method determines the local date and time equivalent to the value stored by the GlideDateTime object, then adds or subtracts years using the local date and time values.
+     * @param years The number of years to add. Use a negative value to subtract.
+     */
+    addYearsLocalTime(years: Number): void;
 }
 
 declare class GlideQueryCondition
 {
-    /**This class has no constructor.
+    /**
+     * This class has no constructor.
      * A GlideQueryCondition object is returned by the following methods:
      * * addActiveQuery()
      * * addInactiveQuery()
@@ -650,8 +931,6 @@ declare class GlideSysAttachment
      * @returns The attachment's sysID. 
      */
     writeContentStream(gr: GlideRecord, fileName: string, contentType: string, inputStream: GlideScriptableInputStream): string;
-
-
 }
 
 declare class GlideScriptableInputStream
@@ -663,10 +942,95 @@ declare class GlideScriptableInputStream
     constructor();
 }
 
+//client angular
+declare var spModal: SpModal;
 
-declare var $q: q;
+declare class SpModal
+{
+    /**
+     * available via angular di as spModal
+     */
+    constructor()
 
-declare class q
+    /**
+     * Displays an alert.
+     * @param message Message to show
+     */
+    alert(message: string): Promise<T>;
+
+    /**
+     * Displays a confirmation message.
+     * @param message message to show
+     */
+    confirm(message: string): Promise<T>;
+
+    /**
+     * Opens a modal window using the specified options.
+     * @param options 
+     */
+    open(options: SpModalOptions): Promise<T>;
+
+    /**
+     * Displays a prompt for user input.
+     * @param message message to show.
+     * @param defaultValue optional default value.
+     */
+    prompt(message: string, defaultValue?: string): Promise<T>;
+}
+//client angular
+/**
+ * spModal options object, available options for using spModal.
+ */
+declare class SpModalOptions
+{
+    /**
+     *  a string that can be HTML that goes in the header. The default is empty.
+     */
+    title: string;
+    /** 
+     * a string that can be HTML that goes in the header. The default is empty.
+     */
+    message: string;
+
+    /**
+     * an array that contains the buttons to show on the dialog. The default is Cancel and OK.
+     */
+    buttons: Array<string>;
+
+    /**
+     * a Boolean. When true shows an input field on the dialog. The default is false.
+     */
+    input: boolean;
+
+    /**
+     * a string containing the value of the input field. The default is empty.
+     */
+    value: string;
+
+    /**
+     * a string that identifies the widget ID or sys_id to embed in the dialog. The default is empty.
+     */
+    widget: string;
+
+    /**
+     * an object to send the embedded widget as input. The default is null.
+     */
+    widgetInput: object;
+
+    /**
+     * a client-side object to share data with the embedded widget client script.
+     */
+    shared: object;
+
+    /**
+     * a string indicating the size of the window. Can be 'sm' or 'lg'. The default is empty.
+     */
+    size: string;
+}
+
+//client angular
+declare var $q: $Q;
+declare class $Q
 {
     /**
       *  available via angular DI as $q.
@@ -676,24 +1040,217 @@ declare class q
     /**
      * @returns The newly created promise.
      */
-    defer(): Promise<object>;
+    defer(): Promise<T>;
 
+    /**
+     * Creates a promise that is resolved as rejected with the specified reason. This api should be used to forward rejection in a chain of promises. 
+     * 
+     * If you are dealing with the last promise in a promise chain, you don't need to worry about it.
+     * 
+     * 
+     * When comparing deferreds/promises to the familiar behavior of try/catch/throw, think of reject as the throw keyword in JavaScript. 
+     * This also means that if you "catch" an error via a promise error callback and you want to forward the error to the promise derived from the current promise, you have to "rethrow" the error by returning a rejection constructed via reject.
+     * 
+     * @param reason Constant, message, exception or an object representing the rejection reason.
+     */
     reject(reason: object): object;
 
-    when(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise<object>;
+    /**
+     * Wraps an object that might be a value or a (3rd party) then-able promise into a $q promise. This is useful when you are dealing with an object that might or might not be a promise, or if the promise comes from a source that can't be trusted.
+     * @param value Value or a promise
+     * @param successCallback callback
+     * @param errorCallback callback
+     * @param progressCallback callback
+     */
+    when(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise<T>;
 
-    resolve(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise<object>;
+    /**
+     * Alias of when to maintain naming consistency with ES6.
+     * @param value Value or a promise
+     * @param successCallback callback
+     * @param errorCallback callback
+     * @param progressCallback callback 
+     */
+    resolve(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise<T>;
 
-    all(promises: Array<Promise<object>>): Promise<object>;
+    /**
+     * Combines multiple promises into a single promise that is resolved when all of the input promises are resolved.
+     * @param promises An array or hash of promises.
+     */
+    all(promises: Array<Promise>): Promise<T>;
 
-    race(promises: Array<Promise<object>>): Promise<object>;
+    /**
+     * Returns a promise that resolves or rejects as soon as one of those promises resolves or rejects, with the value or reason from that promise.
+     * @param promises An array or hash of promises.
+     */
+    race(promises: Array<Promise>): Promise<T>;
 }
 
-declare var $http: http;
+//client angular
+declare class Controller
+{
+    /**
+     * available in widget client script as this. add @type for intellisense
+     */
+    constructor();
+    server: Server;
+}
+
+//client angular
+declare class Server
+{
+    /**
+     * available via the controlle class
+     */
+    constructor();
+
+    /**
+     * Calls the server and sends custom input.
+     * @param Object Custom input object
+     */
+    get(Object?: object): Promise<T>;
+
+    /**
+     * Calls the server and posts this.data to the server script. Returns Promise.
+     */
+    update(): Promise<T>;
+
+    /**
+     * Calls the server and automatically replaces the current options and data from the server response. Returns Promise.
+     */
+    refresh(): Promise<T>;
+}
+
+//Client Angular
+declare var $location: $Location;
+
+declare class $Location
+{
+    /**
+     * availabe via Angualr DI
+     */
+    constructor();
+
+    /**
+     * This method is getter only.
+     * Return full URL representation with all segments encoded according to rules specified in RFC 3986.
+     * 
+     *  ```javascript
+      var absUrl = $location.absUrl();
+      // => "http://example.com/#/some/path?foo=bar&baz=xoxo"
+      ```
+     */
+    absUrl(): string;
+
+    /**
+     * This method is getter / setter.
+     * Return URL (e.g. /path?a=b#hash) when called without any parameter.
+     * Change path, search and hash, when called with parameter and return $location.
+     * 
+     *  ```javascript
+     var url = $location.url();
+     // => "/some/path?foo=bar&baz=xoxo"
+     ```
+     * @param url New URL without base prefix
+     */
+    url(url?: string): string;
+
+    /**
+     * This method is getter only.
+     * Return protocol of current URL.
+     * 
+     * ```javascript
+      var protocol = $location.protocol();
+      // => "http"
+     * ```
+     */
+    protocol(): string;
+
+    /**
+     * This method is getter only.
+     * Return host of current URL.
+     * **Note:** compared to the non-AngularJS version location.host which returns hostname:port, this returns the hostname portion only.
+     * 
+     * ```javascript
+      host = $location.host();
+      // => "example.com"
+      ```
+     */
+    host(): string;
+
+    /**
+     * This method is getter only.
+     * Return port of current URL.
+     * 
+     * ```javascript
+      var port = $location.port(); 
+      // => 80
+      ```
+     */
+    port(): number;
+
+    /**
+     * This method is getter / setter.
+     * Return path of current URL when called without any parameter.
+     * Change path when called with parameter and return $location.
+     * **Note:** Path should always begin with forward slash (/), this method will add the forward slash if it is missing.
+     * ```javascript
+        var path = $location.path();
+        // => "/some/path"
+        ```
+     * 
+     * @param path New path
+     */
+    path(path?: string | number): string | object;
+
+    /**
+     * This method is getter / setter.
+     * Return search part (as object) of current URL when called without any parameter.
+     * Change search part when called with parameter and return $location.
+     * 
+     * ```javascript
+      var searchObject = $location.search();
+      // => {foo: 'bar', baz: 'xoxo'}
+
+      $location.search('foo', 'yipee');
+      // $location.search() => {foo: 'yipee', baz: 'xoxo'}
+    ```
+     * 
+     * @param search New search params - string or hash object. When called with a single argument the method acts as a setter, setting the search component of $location to the specified value. If the argument is a hash object containing an array of values, these values will be encoded as duplicate search parameters in the URL.
+     * @param paramValue If search is a string or number, then paramValue will override only a single search property. If paramValue is an array, it will override the property of the search component of $location specified via the first argument. If paramValue is null, the property specified via the first argument will be deleted. If paramValue is true, the property specified via the first argument will be added with no value nor trailing equal sign.
+     * @returns If called with no arguments returns the parsed search object. If called with one or more arguments returns $location object itself.
+     */
+    search(search: string | Array<string> | object, paramValue?: string | Number | Array<string> | boolean): object;
+
+    /**
+     * This method is getter / setter.
+     * Returns the hash fragment when called without any parameters.
+     * Changes the hash fragment when called with a parameter and returns $location.
+     * @param hash New hash fragment
+     */
+    hash(hash?: string | number): string;
+
+    /**
+     * If called, all changes to $location during the current $digest will replace the current history record, instead of adding a new one.
+     */
+    replace(): void;
+
+    /**
+     * This method is getter / setter.
+     * Return the history state object when called without any parameter.
+     * Change the history state object when called with one parameter and return $location. The state object is later passed to pushState or replaceState.
+     * **NOTE:** This method is supported only in HTML5 mode and only in browsers supporting the HTML5 History API (i.e. methods pushState and replaceState). If you need to support older browsers (like IE9 or Android < 4.0), don't use this method.
+     * @param state State object for pushState or replaceState
+     */
+    state(state?: object): object;
+}
+
+//client angular
+declare var $http: $Http;
 /**
  * angualar $https Directive.
  */
-declare class http
+declare class $Http
 {
     /**
      *  available via angular DI as $http. 
@@ -732,9 +1289,9 @@ declare class http
 
 }
 
-
-declare var $scope: Scope;
-declare class Scope
+//client angular
+declare var $scope: $Scope;
+declare class $Scope
 {
     /**
      *Does not have an constructor. available via global variable: $scope
@@ -750,7 +1307,7 @@ declare class Scope
      * @param isolate If true, then the scope does not prototypically inherit from the parent scope. The scope is isolated, as it can not see parent scope properties. When creating widgets, it is useful for the widget to not accidentally read parent state.
      * @param parent The Scope that will be the $parent of the newly created scope. Defaults to this scope if not provided. This is used when creating a transclude scope to correctly place it in the scope hierarchy while maintaining the correct prototypical inheritance.
      */
-    $new(isolate: boolean, parent: Scope): Scope;
+    $new(isolate: boolean, parent: $Scope): $Scope;
 
     /**
      * Registers a listener callback to be executed whenever the watchExpression changes.
@@ -855,6 +1412,7 @@ declare class Scope
     $broadcast(name: string, args: object): object
 }
 
+//client api
 declare class GlideAjax
 {
     /**
