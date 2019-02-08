@@ -42,6 +42,7 @@ export class StatusBarManager
                     this.state.text = `$(stop)`;
                     this.state.tooltip = "Not Connected to ServiceNow";
                     this.state.command = "snsb.connect";
+                    this.updateSet.hide();
                     break;
                 case NotifationState.Downloading:
                     this.state.text = `$(cloud-download)`;

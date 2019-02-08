@@ -378,6 +378,7 @@ export function activate(context: vscode.ExtensionContext)
 
     let rebuildCache = vscode.commands.registerCommand("snsb.rebuildCache", () =>
     {
+        nm.SetNotificationState(NotifationState.NotConnected);
         instance.RebuildCache();
     });
 
