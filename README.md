@@ -76,6 +76,7 @@ NB: Some API's are not fully documented (Publicly anyways). if you miss a method
 * $http
 * $scope
 * $q
+* $location
 * spModal
 * controller (angular controller class)
 
@@ -96,8 +97,8 @@ Occassionally it is required to manually specify a type in order for Vs Code to 
 use jsdoc notation to specify a type to make it available in scope.
 ```javascript
 /**
- * @param {Scope} $scope 
- * @param {Http} $http 
+ * @param {$Scope} $scope 
+ * @param {$Http} $http 
  */
 function ($scope, $http)
 {
