@@ -235,7 +235,7 @@ export class Instance
                         }
                     }).catch((er) =>
                     {
-                        console.error(er);
+                        reject(er);
                     });
                 }
             }
