@@ -198,6 +198,11 @@ export class Instance
         }
     }
 
+    /**
+     * saves the record to instance
+     * @param record 
+     * @returns new record object from instance. if failed undefined.
+     */
     public SaveRecord<T extends ISysMetadata>(record: T): Promise<ISysMetadataIWorkspaceConvertable> | undefined
     {
         return new Promise((resolve, reject) =>

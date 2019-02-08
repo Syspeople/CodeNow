@@ -176,6 +176,9 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    /**
+     * add include to workspace
+     */
     let getInclude = vscode.commands.registerCommand("snsb.getInclude", () =>
     {
         if (instance.IsInitialized())
@@ -202,6 +205,9 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    /**
+     * add widget to workspace
+     */
     let getWidget = vscode.commands.registerCommand("snsb.getWidget", () =>
     {
         if (instance.IsInitialized())
@@ -228,6 +234,9 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    /**
+     * add theme to workspace
+     */
     let getTheme = vscode.commands.registerCommand("snsb.getTheme", () =>
     {
         if (instance.IsInitialized())
@@ -253,6 +262,9 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    /**
+     * add style sheet to workspace
+     */
     let getStyleSheet = vscode.commands.registerCommand("snsb.getStyleSheet", () =>
     {
         if (instance.IsInitialized())
