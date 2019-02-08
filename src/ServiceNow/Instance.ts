@@ -2,6 +2,7 @@ import { URL } from "url";
 import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
+import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
 import opn = require('opn');
 
 export class Instance
@@ -197,7 +198,7 @@ export class Instance
         }
     }
 
-    public SaveRecord<T extends ISysMetadata>(record: T): Promise<ISysMetadata> | undefined
+    public SaveRecord<T extends ISysMetadata>(record: T): Promise<ISysMetadataIWorkspaceConvertable> | undefined
     {
         return new Promise((resolve, reject) =>
         {
@@ -238,7 +239,7 @@ export class Instance
     /**
     * GetRecord retrieves full record from instance
     */
-    public GetRecord(record: ISysMetadata): Promise<ISysMetadata>
+    public GetRecord(record: ISysMetadata): Promise<ISysMetadataIWorkspaceConvertable>
     {
         return new Promise((resolve, reject) =>
         {
