@@ -8,7 +8,7 @@ export class Record implements ISysMetadata
         this._sys_class_name = o.sys_class_name;
         this._sys_id = o.sys_id;
         this._sys_policy = o.sys_policy;
-        this._sys_updated_on = new Date(o.sys_updated_on);
+        this.sys_updated_on = new Date(o.sys_updated_on);
         this._sys_created_on = new Date(o.sys_created_on);
         this._sys_package = new Relation(o.sys_package);
         this._sys_scope = new Relation(o.sys_scope);
@@ -32,11 +32,7 @@ export class Record implements ISysMetadata
         return this._sys_policy;
     }
 
-    private _sys_updated_on: Date;
-    public get sys_updated_on(): Date
-    {
-        return this._sys_updated_on;
-    }
+    public sys_updated_on: Date;
 
     private _sys_created_on: Date;
     public get sys_created_on(): Date

@@ -112,36 +112,33 @@ export class WorkspaceManager
     }
 
     /**update record */
-    public UpdateRecord(record: ISysMetadata, uri: Uri): void
+    public UpdateRecord(record: ISysMetadataIWorkspaceConvertable, uri: Uri): void
     {
         let meta = this._wsm.GetMetaData(uri);
 
-        switch (record.sys_class_name)
+        if (meta)
         {
-            case "sys_script_include":
-                this.OverwriteFile(`${this.GetPathRecordOptions(uri)}`, this.GetOptionsPretty(record));
-                this.OverwriteFile(`${this.GetPathRecordScript(uri)}`, (<ISysScriptInclude>record).script);
-                console.info(`${(<ISysScriptInclude>record).name} have been saved to workspace`);
-                break;
-            case "sp_widget":
-                this.OverwriteFile(`${this.GetPathRecordOptions(uri)}`, this.GetOptionsPretty(record));
-                this.OverwriteFile(`${this.GetPathRecordScript(uri)}`, (<ISpWidget>record).script);
-                this.OverwriteFile(`${this.GetPathRecordClientScript(uri)}`, (<ISpWidget>record).client_script);
-                this.OverwriteFile(`${this.GetPathRecordCss(uri)}`, (<ISpWidget>record).css);
-                this.OverwriteFile(`${this.GetPathRecordHtmlTemplate(uri)}`, (<ISpWidget>record).template);
-                console.info(`${(<ISpWidget>record).name} have been saved to workspace`);
-                break;
-            case "sp_theme":
-                this.OverwriteFile(`${this.GetPathRecordOptions(uri)}`, this.GetOptionsPretty(record));
-                this.OverwriteFile(`${this.GetPathRecordCss(uri)}`, (<ISpTheme>record).css_variables);
-                break;
-            case "sp_css":
-                this.OverwriteFile(`${this.GetPathRecordOptions(uri)}`, this.GetOptionsPretty(record));
-                this.OverwriteFile(`${this.GetPathRecordCss(uri)}`, (<StyleSheet>record).css);
-                break;
-            default:
-                console.warn(`UpdateRecord: Record ${record.sys_class_name} not recognized`);
-                break;
+            //all supported files.
+            let arrEnum = MetaData.getFileTypes();
+
+            for (let index = 0; index < arrEnum.length; index++)
+            {
+                const element = arrEnum[index];
+                //create files.
+                let uri = meta.getFileUri(element);
+                if (uri)
+                {
+                    let content = record.GetAttribute(element);
+                    if (content || content === "")
+                    {
+                        this.WriteFile(uri.fsPath, content);
+                    }
+                }
+            }
+
+            //update updated on timestamp
+            meta.sys_updated_on = record.sys_updated_on;
+            this._wsm.updateMetadata(meta);
         }
     }
 
@@ -308,10 +305,10 @@ export class WorkspaceManager
     }
 
 
-    private GetOptionsPretty(record: ISysMetadata): string
-    {
-        return JSON.stringify(record, null, 2);
-    }
+    // private GetOptionsPretty(record: ISysMetadata): string
+    // {
+    //     return JSON.stringify(record, null, 2);
+    // }
 
     private GetPathInstance(i: Instance): string | undefined
     {
@@ -324,62 +321,62 @@ export class WorkspaceManager
         }
     }
 
-    private GetPathParent(Uri: Uri): string
-    {
-        let nameLength = this.GetFileName(Uri).length;
-        return Uri.fsPath.substring(0, Uri.fsPath.length - nameLength - 1);
-    }
+    // private GetPathParent(Uri: Uri): string
+    // {
+    //     let nameLength = this.GetFileName(Uri).length;
+    //     return Uri.fsPath.substring(0, Uri.fsPath.length - nameLength - 1);
+    // }
 
-    private GetFileName(Uri: Uri): string
-    {
-        let split = Uri.fsPath.split(`${this._delimiter}`);
-        return split[split.length - 1];
-    }
+    // private GetFileName(Uri: Uri): string
+    // {
+    //     let split = Uri.fsPath.split(`${this._delimiter}`);
+    //     return split[split.length - 1];
+    // }
 
-    private GetPathRecordScript(uri: Uri): string
-    {
-        let parentPath = this.GetPathParent(uri);
-        let recordName = this.GetFileName(uri);
+    // private GetPathRecordScript(uri: Uri): string
+    // {
+    //     let parentPath = this.GetPathParent(uri);
+    //     let recordName = this.GetFileName(uri);
 
-        return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.server_script.js`;
-    }
+    //     return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.server_script.js`;
+    // }
 
-    private GetPathRecordClientScript(uri: Uri): string
-    {
-        let parentPath = this.GetPathParent(uri);
+    // private GetPathRecordClientScript(uri: Uri): string
+    // {
+    //     let parentPath = this.GetPathParent(uri);
 
-        let recordName = this.GetFileName(uri);
+    //     let recordName = this.GetFileName(uri);
 
-        return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.client_script.js`;
-    }
+    //     return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.client_script.js`;
+    // }
 
-    //returns the path of hte option.json that should reside in same dir. 
-    private GetPathRecordOptions(uri: Uri): string
-    {
-        let parentPath = this.GetPathParent(uri);
+    // //returns the path of hte option.json that should reside in same dir. 
+    // private GetPathRecordOptions(uri: Uri): string
+    // {
+    //     let parentPath = this.GetPathParent(uri);
 
-        let recordName = this.GetFileName(uri);
+    //     let recordName = this.GetFileName(uri);
 
-        return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.options.json`;
-    }
+    //     return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.options.json`;
+    // }
 
-    private GetPathRecordCss(uri: Uri): string
-    {
-        let parentPath = this.GetPathParent(uri);
+    // private GetPathRecordCss(uri: Uri): string
+    // {
+    //     let parentPath = this.GetPathParent(uri);
 
-        let recordName = this.GetFileName(uri);
+    //     let recordName = this.GetFileName(uri);
 
-        return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.scss`;
-    }
+    //     return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.scss`;
+    // }
 
-    private GetPathRecordHtmlTemplate(uri: Uri): string
-    {
-        let parentPath = this.GetPathParent(uri);
+    // private GetPathRecordHtmlTemplate(uri: Uri): string
+    // {
+    //     let parentPath = this.GetPathParent(uri);
 
-        let recordName = this.GetFileName(uri);
+    //     let recordName = this.GetFileName(uri);
 
-        return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.html`;
-    }
+    //     return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.html`;
+    // }
 
     private GetPathWorkspace(): WorkspaceFolder | undefined
     {

@@ -5,6 +5,7 @@ import { ScriptInclude, Widget, UpdateSet, StyleSheet, ISysUiScript, Theme } fro
 //get update and manage workpace state.
 export class WorkspaceStateManager
 {
+
     constructor(context: ExtensionContext)
     {
         this._context = context;
@@ -92,22 +93,61 @@ export class WorkspaceStateManager
     /**
     * add a single metadata instance to local storage
     */
-    public AddMetaData(metaData: MetaData): void
+    public AddMetaData(metadata: MetaData): void
     {
         let local: Array<MetaData> | undefined;
         local = this.GetMetaDataAll();
 
         if (local)
         {
-            local.push(metaData);
+            //check if sys id already exist. if so reuse. 
+            let md = local.findIndex(e =>
+            {
+                return e.sys_id === metadata.sys_id;
+            });
+
+            if (md !== -1)
+            {
+                local[md] = metadata;
+            }
+            else
+            {
+                local.push(metadata);
+            }
         }
         else
         {
             local = new Array<MetaData>();
-            local.push(metaData);
+            local.push(metadata);
         }
         console.log(JSON.stringify(local));
         this.SetMetaData(local);
+    }
+
+    /**
+     * Will update an existing metadata object.
+     * @param meta Metadata object to update in local storage
+     */
+    public updateMetadata(meta: MetaData): void
+    {
+        let all = this.GetMetaDataAll();
+        if (all)
+        {
+            let md = all.findIndex(e =>
+            {
+                return e.sys_id === meta.sys_id;
+            });
+
+            if (md !== -1)
+            {
+                all[md] = meta;
+                this.SetMetaData(all);
+            }
+            else
+            {
+                throw new Error("Metadata not found in cache");
+            }
+        }
     }
 
     /**
