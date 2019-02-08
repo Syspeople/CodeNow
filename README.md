@@ -5,7 +5,6 @@ This extension aims to provide ServiceNow developers a first class development e
 
 Only Basic auth is currently available. 
 
-<<<<<<< HEAD
 **No ServiceNow configuration required.**
 
 
@@ -22,13 +21,6 @@ No code elements will not added to the extension in a way that will allow you to
 * Automatically saves to your instance.
 * Automatically updates from your instance.
 * Intellisense for ServiceNow and angular API's
-=======
-# Features
-* Work with multiple ServicNow entities.
-* Automatically saves to your instance.
-* Automatically updates from your instance.
-* Intellisense for ServiceNow Class.
->>>>>>> 8051f840cfc9de97adcdf00282231993addb1fa0
 * Change update Set.
 
 # How to
@@ -67,7 +59,6 @@ NB: Some API's are not fully documented (Publicly anyways). if you miss a method
 * GlideRecord
 * GlideSystem (gs)
 * GlideSPScriptable ($sp)
-<<<<<<< HEAD
 * GlideUser
 * GlideAjax
 * GlideDateTime
@@ -134,39 +125,22 @@ spModal.open(opt).then(function (res)
 
 # Commands
 ## Connect to ServiceNow
-=======
-
-### Client API's
-
-
-## Available commands
-### Connect to ServiceNow
->>>>>>> 8051f840cfc9de97adcdf00282231993addb1fa0
 prompts for url, username and password.
 
 if the workspace is already associated with a ServiceNow instance only the password is required.
 
 **NB: only Basic auth is supported**
 
-<<<<<<< HEAD
 
 ## Change Update Set
 Choose an active UpdateSet and set is as your working update set. Only in progress and global scoped update sets are currently available.
-=======
-### Change Update Set
-Choose an active UpdateSet and set is as your working update set. Only in progress update sets in the global scope is available. 
->>>>>>> 8051f840cfc9de97adcdf00282231993addb1fa0
 
 **IMPORTANT** Update set changes do not apply to active sessions. Be sure to validate your update set in your browser if working in the web UI and in VsCode at the same time.
 
 The extension will automatically use the previuosly selected update set. if it has been closed, default i selected. 
 
 
-<<<<<<< HEAD
 ## Add Script Include To Workspace
-=======
-### Add Script Include To Workspace
->>>>>>> 8051f840cfc9de97adcdf00282231993addb1fa0
 Imports a script include into the workspace for edit.
 
 Read only and restricted script includes is not available.
@@ -183,7 +157,6 @@ imports a theme into the workspace
 
 Read only and restricted themes is not available.
 
-<<<<<<< HEAD
 
 ## Open Record in platform
 Right click a record to open it in the platform. 
@@ -197,15 +170,6 @@ Right click a record to open the associated list.
 Right click a record to force save the version currently in VsCode.
 
 **This will force the local to be saved on instance**
-=======
-### Open Record in platform
-Right click a record to open it in the platform. 
-
-### Open list in platform
-Right click a record to open the associated list.
-
-
->>>>>>> 8051f840cfc9de97adcdf00282231993addb1fa0
 
 
 ## Update
@@ -219,12 +183,8 @@ clear workspace data. eg. cached records, urls, username.
 
 make sure to reconnect to service and refresh records or reload vscode.
 
-<<<<<<< HEAD
 
 ## Refresh Records
-=======
-### Refresh Records
->>>>>>> 8051f840cfc9de97adcdf00282231993addb1fa0
 Reloads caches records from you instance.
 
 if you missing a script in the list when trying to load one use this command to retreive all from instance.
