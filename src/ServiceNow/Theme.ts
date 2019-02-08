@@ -12,16 +12,21 @@ export class Theme extends Record implements ISpTheme, QuickPickItem
         this.name = t.name;
         this.navbar_fixed = t.navbar_fixed;
         this.footer_fixed = t.footer_fixed;
-        this.footer = t.footer;
-        this.header = new Relation(t.header);
-
+        if (t.footer)
+        {
+            this.footer = new Relation(t.footer);
+        }
+        if (t.header)
+        {
+            this.header = new Relation(t.header);
+        }
     }
     css_variables: string;
     name: string;
     navbar_fixed: Boolean;
     footer_fixed: boolean;
-    footer: string;
-    header: Relation;
+    footer: Relation | undefined;
+    header: Relation | undefined;
 
     public get label(): string
     {

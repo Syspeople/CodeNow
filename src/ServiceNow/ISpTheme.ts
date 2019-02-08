@@ -7,6 +7,6 @@ export interface ISpTheme extends ISysMetadata, IWorkspaceConvertable
     name: string;
     navbar_fixed: Boolean;
     footer_fixed: boolean;
-    footer: string;
-    header: IRelation;
+    footer: IRelation | undefined;
+    header: IRelation | undefined;
 }
