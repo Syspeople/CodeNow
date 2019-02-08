@@ -384,66 +384,80 @@ export function activate(context: vscode.ExtensionContext)
 
     var listenerOnDidSave = vscode.workspace.onDidSaveTextDocument((e) =>
     {
-        config = vscode.workspace.getConfiguration("snsb");
-        if (config.uploadOnSave)
+        if (instance.IsInitialized())
         {
-            let record = wm.GetRecord(e.uri);
-
-            if (record)
+            config = vscode.workspace.getConfiguration("snsb");
+            if (config.uploadOnSave)
             {
-                let p = instance.IsLatest(record);
+                let record = wm.GetRecord(e.uri);
 
-                p.then((res) =>
+                if (record)
                 {
-                    vscode.window.showWarningMessage(`Newer Version of record ${res.sys_id} Found on instance`);
-                }).catch((er) =>
-                {
-                    if (record)
+                    let p = instance.IsLatest(record);
+
+                    p.then((res) =>
                     {
-                        let o = instance.SaveRecord(record);
-
-                        if (o)
+                        vscode.window.showWarningMessage(`Newer Version of record ${res.sys_id} Found on instance`);
+                    }).catch((er) =>
+                    {
+                        if (record)
                         {
-                            o.then((res) =>
+                            let o = instance.SaveRecord(record);
+
+                            if (o)
                             {
-                                vscode.window.showInformationMessage(`Saved`);
-                                wm.UpdateRecord(res, e.uri);
-                            }).catch((er) =>
-                            {
-                                vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
-                            });
+                                o.then((res) =>
+                                {
+                                    vscode.window.showInformationMessage(`Saved`);
+                                    wm.UpdateRecord(res, e.uri);
+                                }).catch((er) =>
+                                {
+                                    vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
+                                });
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance - File not saved to ServiceNow");
         }
     });
 
     var listenerOnDidOpen = vscode.workspace.onDidOpenTextDocument((e) =>
     {
-        config = vscode.workspace.getConfiguration("snsb");
-        if (config.addOnOpen)
+        if (instance.IsInitialized())
         {
-            var recordLocal = wm.GetRecord(e.uri);
-            if (recordLocal)
+            config = vscode.workspace.getConfiguration("snsb");
+            if (config.addOnOpen)
             {
-                var p = instance.IsLatest(recordLocal);
+                var recordLocal = wm.GetRecord(e.uri);
+                if (recordLocal)
+                {
+                    var p = instance.IsLatest(recordLocal);
 
-                p.then((res) =>
-                {
-                    let r = instance.GetRecord(res);
-                    r.then((res) =>
+                    p.then((res) =>
                     {
-                        wm.UpdateRecord(res, e.uri);
-                    }).catch((er) =>
+                        let r = instance.GetRecord(res);
+                        r.then((res) =>
+                        {
+                            wm.UpdateRecord(res, e.uri);
+                        }).catch((er) =>
+                        {
+                            console.error(er);
+                        });
+                    }).catch((e) =>
                     {
-                        console.error(er);
+                        console.info("local Record Up to date");
                     });
-                }).catch((e) =>
-                {
-                    console.info("local Record Up to date");
-                });
+                }
             }
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance - File not updated");
         }
     });
 
