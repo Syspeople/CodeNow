@@ -1,5 +1,5 @@
 import { URL } from "url";
-import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet } from "./all";
+import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
@@ -255,6 +255,7 @@ export class Instance
                 {
                     p.then((res) =>
                     {
+                        //add new record
                         switch (res.data.result.sys_class_name)
                         {
                             case "sys_script_include":
@@ -265,6 +266,12 @@ export class Instance
                                 break;
                             case "sp_theme":
                                 resolve(new Theme(<ISpTheme>res.data.result));
+                                break;
+                            case "sp_css":
+                                resolve(new StyleSheet(<ISpCss>res.data.result));
+                                break;
+                            case "sys_ui_script":
+                                resolve(new UiScript(<ISysUiScript>res.data.result));
                                 break;
                             default:
                                 console.warn(`GetRecord: Record ${res.data.result.sys_class_name} not recognized`);
@@ -278,7 +285,8 @@ export class Instance
             }
         });
     }
-    getStyleSheets(): Promise<Array<StyleSheet>>
+
+    public getStyleSheets(): Promise<Array<StyleSheet>>
     {
         return new Promise((resolve, reject) =>
         {
@@ -339,7 +347,7 @@ export class Instance
         });
     }
 
-    /**returns all cached widgets */
+    /**returns all cached themes */
     public GetThemes(): Promise<Theme[]>
     {
         return new Promise((resolve, reject) =>
@@ -350,6 +358,26 @@ export class Instance
                 if (t)
                 {
                     resolve(t);
+                }
+            }
+            else
+            {
+                reject("No records found");
+            }
+        });
+    }
+
+    /**returns all cached ui scripts */
+    public GetUiScripts(): Promise<UiScript[]>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this._wsm)
+            {
+                let u = this._wsm.GetUiScript();
+                if (u)
+                {
+                    resolve(u);
                 }
             }
             else
@@ -399,46 +427,6 @@ export class Instance
     {
         this.Cache();
     }
-
-    // /**
-    //  * TestConnection
-    //  */
-    // private TestConnection(nm: StatusBarManager): void
-    // {
-    //     this._hasRequiredRole = false;
-    //     this._isPasswordValid = false;
-    //     if (this.ApiProxy && this.UserName)
-    //     {
-    //         let promise = this.ApiProxy.GetUser(this.UserName);
-    //         if (promise)
-    //         {
-    //             promise.then((res) =>
-    //             {
-    //                 if (res.data.result.length === 1)
-    //                 {
-    //                     //@ts-ignore
-    //                     let i = this.ApiProxy.GetSystemProperties();
-    //                     vscode.window.showInformationMessage("Connected");
-    //                     this._isPasswordValid = true;
-    //                     if (i)
-    //                     {
-    //                         i.then((res) =>
-    //                         {
-    //                             this.Cache();
-    //                         }).catch((err) => { console.log(err); });
-    //                     }
-    //                 }
-    //                 else
-    //                 {
-    //                     throw new Error("Connection failed");
-    //                 }
-    //             }).catch((res) =>
-    //             {
-    //                 vscode.window.showErrorMessage(res.message);
-    //             });
-    //         }
-    //     }
-    // }
 
     private GetStyleSheetsUpstream(): Promise<Array<StyleSheet>>
     {
@@ -573,6 +561,45 @@ export class Instance
     }
 
     /**
+     * get all ui elegible ui scripts
+     */
+    private GetUiScriptsUpStream(): Promise<Array<UiScript>>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                var include = this.ApiProxy.GetUiScripts();
+
+                if (include)
+                {
+                    let result = new Array<UiScript>();
+
+                    include.then((res) =>
+                    {
+                        if (res.data.result.length > 0)
+                        {
+                            res.data.result.forEach((element) =>
+                            {
+                                result.push(new UiScript(<ISysUiScript>element));
+                            });
+                            resolve(result);
+                        }
+                        else
+                        {
+                            reject("No elements Found");
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                        reject(er);
+                    });
+                }
+            }
+        });
+    }
+
+    /**
      * GetUpdateSets
      * 
      * Retrieves all updates sets that are in progress.
@@ -658,6 +685,18 @@ export class Instance
                 if (this._wsm)
                 {
                     this._wsm.SetStyleSheet(res);
+                }
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+
+            let uiScripts = this.GetUiScriptsUpStream();
+            uiScripts.then((res) =>
+            {
+                if (this._wsm)
+                {
+                    this._wsm.SetUiScript(res);
                 }
             }).catch((er) =>
             {

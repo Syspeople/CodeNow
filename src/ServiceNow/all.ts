@@ -18,3 +18,4 @@ export * from './UpdateSet';
 export * from './ISpCss';
 export * from './StyleSheet';
 export * from './ISysUiScript';
+export * from './UiScript';

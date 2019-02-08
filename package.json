@@ -136,6 +136,11 @@
                 "command": "snsb.getStyleSheet",
                 "title": "Add StyleSheet to Workspace",
                 "category": "snsb"
+            },
+            {
+                "command": "snsb.getUiScript",
+                "title": "Add Ui Script to Workspace",
+                "category": "snsb"
             }
         ]
     },

@@ -290,6 +290,35 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    /**
+     * add style sheet to workspace
+     */
+    let getUiScript = vscode.commands.registerCommand("snsb.getUiScript", () =>
+    {
+        if (instance.IsInitialized())
+        {
+            let themes = instance.GetUiScripts();
+            themes.then((res) =>
+            {
+                vscode.window.showQuickPick(res).then((item) =>
+                {
+                    if (item)
+                    {
+                        wm.AddRecord(item, instance);
+                    }
+                });
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance");
+        }
+    });
+
+
     let saveRecord = vscode.commands.registerCommand("snsb.saveRecord", (uri) =>
     {
         if (instance.IsInitialized())
@@ -425,6 +454,7 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(getWidget);
     context.subscriptions.push(getTheme);
     context.subscriptions.push(getStyleSheet);
+    context.subscriptions.push(getUiScript);
     context.subscriptions.push(saveRecord);
     context.subscriptions.push(updateRecord);
     context.subscriptions.push(clearWorkState);

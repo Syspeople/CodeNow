@@ -323,7 +323,7 @@ export class Api
             switch (record.sys_class_name)
             {
                 case "sys_script_include":
-                    url = `${this._SNScriptIncludeTable} /${record.sys_id}`;
+                    url = `${this._SNScriptIncludeTable}/${record.sys_id}`;
                     //@ts-ignore
                     let si = record as ISysScriptInclude;
                     return this.HttpClient.patch<IServiceNowResponse<ISysScriptInclude>>(url, {
@@ -354,6 +354,13 @@ export class Api
                     return this.HttpClient.patch<IServiceNowResponse<ISpCss>>(url, {
                         "css": styleSheet.css
                     });
+                case "sys_ui_script":
+                    url = `${this._SNSysUiScript}/${record.sys_id}`;
+                    //@ts-ignore
+                    let us = record as ISysUiScript;
+                    return this.HttpClient.patch<IServiceNowResponse<ISysUiScript>>(url, {
+                        "script": us.script
+                    });
                 default:
                     console.warn("PatchRecord: Record not Recognized");
                     break;
@@ -380,6 +387,8 @@ export class Api
                     return this.HttpClient.get<IServiceNowResponse<ISpTheme>>(`${this._SNSpThemeTable}/${sysid}`);
                 case "sp_css":
                     return this.HttpClient.get<IServiceNowResponse<ISpCss>>(`${this._SNSpStyleSheet}/${sysid}`);
+                case "sys_ui_script":
+                    return this.HttpClient.get<IServiceNowResponse<ISysUiScript>>(`${this._SNSysUiScript}/${sysid}`);
                 default:
                     console.warn(`GetRecord: Record ${record.sys_class_name} not recognized`);
                     break;
