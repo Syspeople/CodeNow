@@ -1,5 +1,5 @@
 import * as fileSystem from 'fs';
-import { ISysMetadata, Instance, ScriptInclude, ISysScriptInclude, ISpWidget, Widget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript } from '../ServiceNow/all';
+import { ISysMetadata, Instance, ScriptInclude, ISysScriptInclude, ISpWidget, Widget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, MailScript, ISysMailScript } from '../ServiceNow/all';
 import { MetaData, KeyValuePair, WorkspaceStateManager, FileTypes } from './all';
 import { Uri, ExtensionContext, window, WorkspaceFolder, workspace } from 'vscode';
 import { ISysMetadataIWorkspaceConvertable } from '../MixIns/all';
@@ -83,6 +83,10 @@ export class WorkspaceManager
                     case "sys_ui_script":
                         c = <unknown>md;
                         record = new UiScript(<ISysUiScript>c);
+                        break;
+                    case "sys_script_email":
+                        c = <unknown>md;
+                        record = new MailScript(<ISysMailScript>c);
                         break;
                     default:
                         let msg = `GetRecord: Record ${md.sys_class_name} not recognized`;
@@ -236,6 +240,12 @@ export class WorkspaceManager
                 break;
             case "sys_ui_script":
                 recordName = (<ISysUiScript>record).name;
+
+                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
+                meta = new MetaData(record, f, instanceName, recordName);
+                break;
+            case "sys_script_email":
+                recordName = (<ISysMailScript>record).name;
 
                 f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
                 meta = new MetaData(record, f, instanceName, recordName);

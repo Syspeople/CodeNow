@@ -1,0 +1,22 @@
+<div ng-if="canedit || data.isHR" class="panel b">
+    <div class="panel-heading bg-primary">
+        Notes
+    </div>
+
+    <div class="panel-body">
+      		<p>
+    <i>${Undlad personfølsomme oplysninger}</i>  
+ 	 	</p>
+        <div>
+            <sp-tinymce-editor ng-model="data.notes">
+            </sp-tinymce-editor>
+            <br>
+
+            <div class="input-group input-group-large">
+                <button type="button" ng-click="save();" class="btn btn-md btn-primary btn-textsize">
+                    ${Save}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
