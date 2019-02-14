@@ -365,7 +365,7 @@ export class Api
                     return this.HttpClient.patch<IServiceNowResponse<ISysUiScript>>(url, {
                         "script": us.script
                     });
-                case "sys_mail_script":
+                case "sys_script_email":
                     url = `${this._SNSysEmailScript}/${record.sys_id}`;
                     //@ts-ignore
                     let ms = record as ISysMailScript;

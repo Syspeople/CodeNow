@@ -66,7 +66,6 @@ if (gr2.next()) {
 }
 else{
 	template.print('"department": "",\n' + '"room": "",\n' + '"street": "",\n' + '"postcalCode": "",\n' + '"city": ""\n}\n,');
-
 }
 
 // Continue the population of data to JSON
@@ -78,7 +77,6 @@ template.print('"functionalServicedeskService": "' + clean(escape(thisu_sp_bs_se
 template.print('"functionalServicedeskCategory": "' + clean(escape(thisu_sp_bs_category)) +'",\n');
 template.print('"functionalServicedeskSubcategory": "' + clean(escape(thisu_sp_bs_subcategory)) +'",\n');
 template.print('"title": "'+clean(escape(current.short_description))+'",\n');
-//template.print('"problem": "'+escape(current.description)+'",\n');
 template.print('"problem": "'+clean(escape(current.description))+'",\n');
 template.print('"contactedServicedesk": "'+clean(current.u_bankdata_servicedesk)+'",\n');
 template.print('"lastWorking": "'+clean(current.u_when_did_it_last_work)+'",\n');
