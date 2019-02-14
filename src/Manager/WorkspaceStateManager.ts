@@ -258,9 +258,9 @@ export class WorkspaceStateManager
         return this._memCache.Get<Array<UiScript>>((StateKeys.UiScripts));
     }
 
-    public SetMailScript(us: Array<MailScript>): void
+    public SetMailScript(ms: Array<MailScript>): void
     {
-        this._memCache.Set(StateKeys.MailScripts, us);
+        this._memCache.Set(StateKeys.MailScripts, ms);
     }
 
     public GetMailScript(): Array<MailScript> | undefined

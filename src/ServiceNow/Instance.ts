@@ -229,6 +229,12 @@ export class Instance
                             case "sp_css":
                                 resolve(new StyleSheet(<ISpCss>res.data.result));
                                 break;
+                            case "sys_ui_script":
+                                resolve(new UiScript(<ISysUiScript>res.data.result));
+                                break;
+                            case "sys_script_email":
+                                resolve(new MailScript(<ISysMailScript>res.data.result));
+                                break;
                             default:
                                 console.warn(`SaveRecord: Record from ${r.sys_class_name} not recognized`);
                                 break;
