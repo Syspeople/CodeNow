@@ -204,3 +204,8 @@ default: true
 Enable or disable automatic import on document open. Only applied if higher version exists on instance.
 
 default: true
+
+### Contributors
+ [ambsoerensen](https://github.com/ambsoerensen)
+
+ [CGraabaek](https://github.com/CGraabaek)
