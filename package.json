@@ -141,6 +141,11 @@
                 "command": "snsb.getUiScript",
                 "title": "Add Ui Script to Workspace",
                 "category": "snsb"
+            },
+            {
+                "command": "snsb.getMailScript",
+                "title": "Add Mail Script to Workspace",
+                "category": "snsb"
             }
         ]
     },
