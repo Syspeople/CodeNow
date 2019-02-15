@@ -1024,7 +1024,7 @@ declare class GlideEmailOutbound
 //client angular
 
 /**
- * Angular service
+ * Angular DI service
  */
 declare var spModal: SpModal;
 
@@ -1061,6 +1061,7 @@ declare class SpModal
     prompt(message: string, defaultValue?: string): Promise<T>;
 }
 //client angular
+
 /**
  * spModal options object, available options for using spModal.
  */
@@ -1112,6 +1113,10 @@ declare class SpModalOptions
 }
 
 //client angular
+
+/**
+ * Angular DI service
+ */
 declare var $q: $Q;
 declare class $Q
 {
@@ -1205,6 +1210,9 @@ declare class Server
 }
 
 //Client Angular
+/**
+ * Angular DI service
+ */
 declare var $location: $Location;
 
 declare class $Location
@@ -1329,6 +1337,9 @@ declare class $Location
 }
 
 //client angular
+/**
+ * Angular DI service
+ */
 declare var $http: $Http;
 /**
  * angualar $https Directive.
@@ -1373,6 +1384,9 @@ declare class $Http
 }
 
 //client angular
+/**
+ * Angular DI service
+ */
 declare var $scope: $Scope;
 declare class $Scope
 {
@@ -1528,6 +1542,9 @@ declare class GlideAjax
 
 }
 
+/**
+ * Available in Server Scripts
+ */
 declare var gs: GlideSystem;
 declare class GlideSystem
 {
