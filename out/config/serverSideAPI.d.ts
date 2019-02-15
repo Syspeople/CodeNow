@@ -942,7 +942,90 @@ declare class GlideScriptableInputStream
     constructor();
 }
 
+/**
+ * Available in mail scripts
+ */
+declare var template: TemplatePrinter;
+
+declare class TemplatePrinter
+{
+    /**
+     * no Constructor. Global variable available in mail scripts.
+     */
+    constructor();
+
+    /**
+     * Prints the string to the email body.
+     * @param string
+     */
+    print(string: string): void;
+
+    /**
+     * Adds non-breaking spaces to the email body.
+     * @param spaces 
+     */
+    space(spaces: number): void;
+}
+
+/**
+ * Available in mailscripts
+ */
+declare var email: GlideEmailOutbound;
+
+declare class GlideEmailOutbound
+{
+    constructor();
+
+    /**
+     * Adds the recipient to either the cc or bcc list
+     * @param type Either cc or bcc, determines the list to which the address is added.
+     * @param address The recipient's email address.
+     */
+    addAddress(type: string, address: string): void;
+
+    /**
+     * Adds the recipient to either the cc or bcc list, but uses the display name instead of the address when showing the recipient.
+     * @param type Either cc or bcc, determines the list to which the address is added.
+     * @param address The recipient's email address.
+     * @param displayName The name to be shown instead of the email address.
+     */
+    addAddress(type: string, address: string, displayName: string): void;
+
+    /**
+     * Returns the email's subject line.
+     */
+    getSubject(): string;
+
+    /**
+     * Sets the body of the email.
+     * @param bodyText 
+     */
+    setBody(bodyText: string): void;
+
+    /**
+     * Sets the sender's address.
+     * @param address 
+     */
+    setFrom(address: string): void;
+
+    /**
+     * Sets the reply to address.
+     * @param address 
+     */
+    setReplyTo(address: string): void;
+
+    /**
+     * Sets the email's subject line.
+     * @param subject 
+     */
+    setSubject(subject: string): void;
+}
+
 //client angular
+
+/**
+ * Angular service
+ */
 declare var spModal: SpModal;
 
 declare class SpModal
