@@ -50,7 +50,7 @@ Records types currently supported.
 * Service Portal Themes.
 * Service Portal widgets.
 * StyleSheets
-* Js Includes
+* UI Scripts
 * Mail Scripts
 
 ## Intellisense
@@ -69,6 +69,8 @@ NB: Some API's are not fully documented (Publicly anyways). if you miss a method
 * GlideElementDescriptor
 * GlideSession
 * GlideSysAttachment
+* GlideEmailOutbound
+* TemplatePrinter
 * sn_ws
   * GlideHttpHeader
   * RestMessageV2
