@@ -49,6 +49,9 @@ Records types currently supported.
 * Script includes.
 * Service Portal Themes.
 * Service Portal widgets.
+* StyleSheets
+* Js Includes
+* Mail Scripts
 
 ## Intellisense
 Currently there is intellisense for the following API's.
