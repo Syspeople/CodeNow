@@ -3,6 +3,8 @@ import { Instance, ISysMetadata, ISysScriptInclude, ISpWidget, ISysProperty, Sys
 import { IServiceNowResponse, ICookie } from "./all";
 import * as qs from "querystring";
 import { ISysUiScript } from "../ServiceNow/ISysUiScript";
+import { ISpHeaderFooter } from "../ServiceNow/ISpHeaderFooter";
+
 
 export class Api
 {
@@ -20,6 +22,8 @@ export class Api
     private _SNSysUpdateSet: string = `${this._SNTableSuffix}/sys_update_set`;
     private _SNSpStyleSheet: string = `${this._SNTableSuffix}/sp_css`;
     private _SNSysUiScript: string = `${this._SNTableSuffix}/sys_ui_script`;
+    private _SNHeaderFooter: string = `${this._SNTableSuffix}/sp_header_footer`;
+
 
     private _SNXmlHttp: string = `xmlhttp.do`;
     private _Properties: Array<ISysProperty> = new Array<ISysProperty>();
@@ -361,6 +365,16 @@ export class Api
                     return this.HttpClient.patch<IServiceNowResponse<ISysUiScript>>(url, {
                         "script": us.script
                     });
+                case "sp_header_footer":
+                    url = `${this._SNHeaderFooter}/${record.sys_id}`;
+                    //@ts-ignore
+                    let hf = record as ISpHeaderFooter;
+                    return this.HttpClient.patch<IServiceNowResponse<ISpHeaderFooter>>(url, {
+                        "script": hf.script,
+                        "css": hf.css,
+                        "client_script": hf.client_script,
+                        'template': hf.template
+                    });
                 default:
                     console.warn("PatchRecord: Record not Recognized");
                     break;
@@ -389,6 +403,8 @@ export class Api
                     return this.HttpClient.get<IServiceNowResponse<ISpCss>>(`${this._SNSpStyleSheet}/${sysid}`);
                 case "sys_ui_script":
                     return this.HttpClient.get<IServiceNowResponse<ISysUiScript>>(`${this._SNSysUiScript}/${sysid}`);
+                case "sp_header_footer":
+                    return this.HttpClient.get<IServiceNowResponse<ISpHeaderFooter>>(`${this._SNHeaderFooter}/${sysid}`);
                 default:
                     console.warn(`GetRecord: Record ${record.sys_class_name} not recognized`);
                     break;
@@ -486,6 +502,20 @@ export class Api
         {
             //update sets in global and in progress
             let url = `${this._SNSysUiScript}?sys_policy=""`;
+            return this.HttpClient.get(url);
+        }
+    }
+
+    /**
+* GetHeaderAndFooters
+* 
+*/
+    public GetHeadersAndFooters(): Axios.AxiosPromise<IServiceNowResponse<Array<ISpHeaderFooter>>> | undefined
+    {
+        if (this.HttpClient)
+        {
+            //update sets in global and in progress
+            let url = `${this._SNHeaderFooter}?internal=false&sys_policy=""`;
             return this.HttpClient.get(url);
         }
     }

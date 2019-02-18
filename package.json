@@ -141,6 +141,11 @@
                 "command": "snsb.getUiScript",
                 "title": "Add Ui Script to Workspace",
                 "category": "snsb"
+            },
+            {
+                "command": "snsb.getHeadersAndFooters",
+                "title": "Add Header | Footer Widget to Workspace",
+                "category": "snsb"
             }
         ]
     },

@@ -19,3 +19,5 @@ export * from './ISpCss';
 export * from './StyleSheet';
 export * from './ISysUiScript';
 export * from './UiScript';
+export * from './ISpHeaderFooter';
+export * from './SpHeaderFooter';

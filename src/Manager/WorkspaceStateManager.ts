@@ -1,6 +1,6 @@
 import { Uri, ExtensionContext } from 'vscode';
 import { StateKeys, MemCache, MetaData } from "./all";
-import { ScriptInclude, Widget, UpdateSet, StyleSheet, Theme, UiScript } from "../ServiceNow/all";
+import { ScriptInclude, Widget, UpdateSet, StyleSheet, Theme, UiScript, SpHeaderFooter } from "../ServiceNow/all";
 
 //get update and manage workpace state.
 export class WorkspaceStateManager
@@ -256,5 +256,22 @@ export class WorkspaceStateManager
     public GetUiScript(): Array<UiScript> | undefined
     {
         return this._memCache.Get<Array<UiScript>>((StateKeys.UiScripts));
+    }
+
+    /**
+ * SetWidgets
+ */
+    public SetHeadersAndFooters(Widgets: Array<SpHeaderFooter>): void
+    {
+        // this._context.workspaceState.update(StateKeys.widget.toString(), Widgets);
+        this._memCache.Set(StateKeys.widget, Widgets);
+    }
+
+    /**
+     * GetWidgets
+     */
+    public GetHeadersAndFooters(): Array<SpHeaderFooter> | undefined
+    {
+        return this._memCache.Get<Array<SpHeaderFooter>>((StateKeys.widget));
     }
 }

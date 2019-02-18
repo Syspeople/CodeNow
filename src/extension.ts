@@ -318,6 +318,31 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    let getHeadersAndFooters = vscode.commands.registerCommand("snsb.getHeadersAndFooters", () =>
+    {
+        if (instance.IsInitialized())
+        {
+            let hf = instance.GetHeadersAndFooters();
+            hf.then((res) =>
+            {
+                vscode.window.showQuickPick(res).then((item) =>
+                {
+                    if (item)
+                    {
+                        wm.AddRecord(item, instance);
+                    }
+                });
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance");
+        }
+    });
+
 
     let saveRecord = vscode.commands.registerCommand("snsb.saveRecord", (uri) =>
     {

@@ -1,5 +1,5 @@
 import * as fileSystem from 'fs';
-import { ISysMetadata, Instance, ScriptInclude, ISysScriptInclude, ISpWidget, Widget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript } from '../ServiceNow/all';
+import { ISysMetadata, Instance, ScriptInclude, ISysScriptInclude, ISpWidget, Widget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, ISpHeaderFooter, SpHeaderFooter } from '../ServiceNow/all';
 import { MetaData, KeyValuePair, WorkspaceStateManager, FileTypes } from './all';
 import { Uri, ExtensionContext, window, WorkspaceFolder, workspace } from 'vscode';
 import { ISysMetadataIWorkspaceConvertable } from '../MixIns/all';
@@ -83,6 +83,10 @@ export class WorkspaceManager
                     case "sys_ui_script":
                         c = <unknown>md;
                         record = new UiScript(<ISysUiScript>c);
+                        break;
+                    case "sp_header_footer":
+                        c = <unknown>md;
+                        record = new SpHeaderFooter(<ISpHeaderFooter>c);
                         break;
                     default:
                         let msg = `GetRecord: Record ${md.sys_class_name} not recognized`;
@@ -238,6 +242,15 @@ export class WorkspaceManager
                 recordName = (<ISysUiScript>record).name;
 
                 f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
+                meta = new MetaData(record, f, instanceName, recordName);
+                break;
+            case "sp_header_footer":
+                recordName = (<ISpHeaderFooter>record).name;
+
+                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
+                f.push(new KeyValuePair(FileTypes.clientScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.clientScript)}`)));
+                f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
+                f.push(new KeyValuePair(FileTypes.html, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.html)}`)));
                 meta = new MetaData(record, f, instanceName, recordName);
                 break;
             default:
