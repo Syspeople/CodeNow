@@ -12,5 +12,6 @@ export enum StateKeys
     StyleSheets,
     UiScripts,
     HeadersAndFooters,
+    MailScripts,
     metaData
 }

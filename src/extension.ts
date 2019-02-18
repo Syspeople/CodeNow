@@ -291,7 +291,7 @@ export function activate(context: vscode.ExtensionContext)
     });
 
     /**
-     * add style sheet to workspace
+     * add ui script to workspace
      */
     let getUiScript = vscode.commands.registerCommand("snsb.getUiScript", () =>
     {
@@ -318,6 +318,34 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    /**
+     * add mail script to workspace
+     */
+    let getMailScript = vscode.commands.registerCommand("snsb.getMailScript", () =>
+    {
+        if (instance.IsInitialized())
+        {
+            let themes = instance.GetMailScripts();
+            themes.then((res) =>
+            {
+                vscode.window.showQuickPick(res).then((item) =>
+                {
+                    if (item)
+                    {
+                        wm.AddRecord(item, instance);
+                    }
+                });
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance");
+        }
+    });
+  
     let getHeadersAndFooters = vscode.commands.registerCommand("snsb.getHeadersAndFooters", () =>
     {
         if (instance.IsInitialized())
@@ -495,6 +523,7 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(getTheme);
     context.subscriptions.push(getStyleSheet);
     context.subscriptions.push(getUiScript);
+    context.subscriptions.push(getMailScript);
     context.subscriptions.push(saveRecord);
     context.subscriptions.push(updateRecord);
     context.subscriptions.push(clearWorkState);

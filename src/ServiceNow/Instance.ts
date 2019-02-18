@@ -1,5 +1,5 @@
 import { URL } from "url";
-import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript, SpHeaderFooter, ISpHeaderFooter } from "./all";
+import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript,MailScript, ISysMailScript ,SpHeaderFooter, ISpHeaderFooter } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
@@ -231,6 +231,11 @@ export class Instance
                                 break;
                             case "sp_header_footer":
                                 resolve(new SpHeaderFooter(<ISpHeaderFooter>res.data.result));
+                            case "sys_ui_script":
+                                resolve(new UiScript(<ISysUiScript>res.data.result));
+                                break;
+                            case "sys_script_email":
+                                resolve(new MailScript(<ISysMailScript>res.data.result));
                                 break;
                             default:
                                 console.warn(`SaveRecord: Record from ${r.sys_class_name} not recognized`);
@@ -278,6 +283,8 @@ export class Instance
                                 break;
                             case "sp_header_footer":
                                 resolve(new SpHeaderFooter(<ISpHeaderFooter>res.data.result));
+                            case "sys_script_email":
+                                resolve(new MailScript(<ISysMailScript>res.data.result));
                                 break;
                             default:
                                 console.warn(`GetRecord: Record ${res.data.result.sys_class_name} not recognized`);
@@ -406,6 +413,26 @@ export class Instance
                 if (u)
                 {
                     resolve(u);
+                }
+            }
+            else
+            {
+                reject("No records found");
+            }
+        });
+    }
+
+    /**returns all cached mail scripts */
+    public GetMailScripts(): Promise<MailScript[]>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this._wsm)
+            {
+                let m = this._wsm.GetMailScript();
+                if (m)
+                {
+                    resolve(m);
                 }
             }
             else
@@ -664,6 +691,45 @@ export class Instance
     }
 
     /**
+ * get all ui elegible ui scripts
+ */
+    private GetMailScriptsUpStream(): Promise<Array<MailScript>>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                var include = this.ApiProxy.GetEmailScripts();
+
+                if (include)
+                {
+                    let result = new Array<MailScript>();
+
+                    include.then((res) =>
+                    {
+                        if (res.data.result.length > 0)
+                        {
+                            res.data.result.forEach((element) =>
+                            {
+                                result.push(new MailScript(<ISysMailScript>element));
+                            });
+                            resolve(result);
+                        }
+                        else
+                        {
+                            reject("No elements Found");
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                        reject(er);
+                    });
+                }
+            }
+        });
+    }
+
+    /**
      * GetUpdateSets
      * 
      * Retrieves all updates sets that are in progress.
@@ -767,8 +833,19 @@ export class Instance
                 console.error(er);
             });
 
+            let mailScripts = this.GetMailScriptsUpStream();
+            mailScripts.then((res) =>
+            {
+                if (this._wsm)
+                {
+                    this._wsm.SetMailScript(res);
+                }
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+          
             let headersAndFooters = this.GetHeadersAndFootersUpStream();
-
             headersAndFooters.then((res) =>
             {
                 if (this._wsm)

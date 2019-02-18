@@ -21,3 +21,5 @@ export * from './ISysUiScript';
 export * from './UiScript';
 export * from './ISpHeaderFooter';
 export * from './SpHeaderFooter';
+export * from './ISysMailScript';
+export * from './MailScript';

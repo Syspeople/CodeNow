@@ -49,6 +49,9 @@ Records types currently supported.
 * Script includes.
 * Service Portal Themes.
 * Service Portal widgets.
+* StyleSheets
+* Js Includes
+* Mail Scripts
 
 ## Intellisense
 Currently there is intellisense for the following API's.
@@ -201,3 +204,8 @@ default: true
 Enable or disable automatic import on document open. Only applied if higher version exists on instance.
 
 default: true
+
+### Contributors
+ [ambsoerensen](https://github.com/ambsoerensen)
+
+ [CGraabaek](https://github.com/CGraabaek)
