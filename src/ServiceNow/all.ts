@@ -22,4 +22,4 @@ export * from './UiScript';
 export * from './ISysMailScript';
 export * from './MailScript';
 export * from './IScriptedRestAPIResource';
-export * from './ScriptedRestAPI';
+export * from './ScriptedRestAPIResource';
