@@ -211,3 +211,8 @@ default: true
  [ambsoerensen](https://github.com/ambsoerensen)
 
  [CGraabaek](https://github.com/CGraabaek)
+
+ #### How to contribute
+
+ [Contribution Guide]: contribution.md
+ 
