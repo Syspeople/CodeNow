@@ -146,7 +146,12 @@
                 "command": "snsb.getMailScript",
                 "title": "Add Mail Script to Workspace",
                 "category": "snsb"
-            }
+            },
+            {
+                "command": "snsb.getHeadersAndFooters",
+                "title": "Add Header | Footer Widget to Workspace",
+                "category": "snsb"
+             }
         ]
     },
     "scripts": {

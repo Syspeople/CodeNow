@@ -1,0 +1,104 @@
+<div ng-if="data.canRead" class="panel b">
+    <div class="panel-heading bg-primary">
+        <div ng-init="spSearch.targetRequests()">
+            <sp-c-link target="form" table="data.table" id="data.sys_id" />
+        </div>
+
+        {{ data.ticketTitle }}
+      
+                <button type="button" style="float: right; margin-top:-5px;" ng-click="c.openModal();" class="custom-button btn-sm btn-textsize">
+                        ${My notes}
+                    </button>
+    </div>
+
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-4 col-sm-4 col-xs-4 m-b break-word">
+                <!--<div ng-switch-default> -->
+                <label class="m-n">${Opened for}</label>
+                <div>
+                    <strong>{{ data.opened_for }}</strong>
+                  	<br>
+                    <i>{{ data.title }}</i>
+                </div>             
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-4 m-b break-word">
+              <label class="m-n">${Manager}</label>
+                <div>
+                    <strong>{{ data.manager }}</strong>
+                </div>
+            </div>
+           <div class="col-md-4 col-sm-4 col-xs-4 m-b break-word">
+            <label class="m-n">${HR Consultant}</label>
+                <div>
+                    <strong>{{ data.hr_consultant }}</strong>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+                <div class="col-md-4 col-sm-12 col-xs-4 m-b break-word" ng-repeat="field in data.fields" ng-if="field.value && (field.type != 'decimal' || field.type == 'decimal' && field.value != 0)">
+                    <label class="m-n">{{ field.label }}</label>
+                    <span ng-switch="field.type">
+                        <div ng-switch-when="glide_date_time" title="{{field.display_value}}">
+                            <sn-time-ago timestamp="::field.value" />
+                        </div>
+                        <div ng-switch-default>
+                            <strong>{{ field.display_value }}</strong>
+                        </div>
+                    </span>
+                </div>
+            </div>
+    </div>
+
+
+<script type="text/ng-template" id="myNotesTemplate">
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3> ${My notes} </h3>
+    </div>
+    <div ng-repeat="(key, e) in mc.notes">
+        <div ng-if="e.assigned_to == mc.user|| mc.isHR" class="row">
+            <div class="col-md-12 col-lg-12 col-sm-12">
+                <div class="panel-primary">
+                    <div style="margin-bottom: 10px" class="panel-heading">
+                        <h3 class="panel-title">{{e.short_description}}</h3>
+                        <span style="margin-top: -20px; font-size: 15px" class="pull-right clickable">
+                            <i class="glyphicon glyphicon-chevron-down"></i>
+                        </span>
+                    </div>
+                    <div class="panel-body panel-notes" style="display: none;">
+
+                        <div ng-bind-html="::e.notes"></div>
+                        <button class="btn btn-primary" ng-click="mc.print($index);">
+                              <span class="glyphicon glyphicon-print"></span> ${Print} 
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel-footer text-right">
+    <button class="btn btn-danger" ng-click="mc.closeModal()">${Close}</button>
+    <button class="btn btn-primary" ng-click="mc.printAll()">
+      <span class="glyphicon glyphicon-print"></span> 
+      ${Print all}
+  </button>
+</div>
+</script>
+<script>
+$(document).on('click', '.panel-heading span.clickable', function (e) {
+    var $this = $(this);
+    if (!$this.hasClass('panel-collapsed')) {
+        $this.parents('.row').find('.panel-body').slideUp();
+        $this.addClass('panel-collapsed');
+        $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+    } else {
+        $this.parents('.row').find('.panel-body').slideDown();
+        $this.removeClass('panel-collapsed');
+        $this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+    }
+})
+</script>
