@@ -1,6 +1,6 @@
 import { Uri, ExtensionContext } from 'vscode';
 import { StateKeys, MemCache, MetaData } from "./all";
-import { ScriptInclude, Widget, UpdateSet, StyleSheet, Theme, UiScript, MailScript } from "../ServiceNow/all";
+import { ScriptInclude, Widget, UpdateSet, StyleSheet, Theme, UiScript, MailScript, ScriptedRestAPIResource } from "../ServiceNow/all";
 
 //get update and manage workpace state.
 export class WorkspaceStateManager
@@ -266,5 +266,15 @@ export class WorkspaceStateManager
     public GetMailScript(): Array<MailScript> | undefined
     {
         return this._memCache.Get<Array<MailScript>>((StateKeys.MailScripts));
+    }
+
+    public SetScriptedApiResource(ms: Array<ScriptedRestAPIResource>): void
+    {
+        this._memCache.Set(StateKeys.ScriptedApiResources, ms);
+    }
+
+    public GetScriptedApiResource(): Array<ScriptedRestAPIResource> | undefined
+    {
+        return this._memCache.Get<Array<ScriptedRestAPIResource>>((StateKeys.ScriptedApiResources));
     }
 }

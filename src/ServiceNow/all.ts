@@ -21,3 +21,5 @@ export * from './ISysUiScript';
 export * from './UiScript';
 export * from './ISysMailScript';
 export * from './MailScript';
+export * from './IScriptedRestAPIResource';
+export * from './ScriptedRestAPI';
