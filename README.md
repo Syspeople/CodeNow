@@ -20,7 +20,7 @@ No code elements will not added to the extension in a way that will allow you to
 * Work with multiple ServicNow record.
 * Automatically saves to your instance.
 * Automatically updates from your instance.
-* Intellisense for ServiceNow and angular API's
+* Intellisense for ServiceNow and Angular API's
 * Change update Set.
 
 # How to
@@ -48,10 +48,12 @@ Records types currently supported.
 
 * Script includes.
 * Service Portal Themes.
-* Service Portal widgets.
+* Service Portal Widgets.
 * StyleSheets
-* Js Includes
+* JS Includes
+* UI Scripts
 * Mail Scripts
+* Service Portal Headers and Footers
 
 ## Intellisense
 Currently there is intellisense for the following API's.
