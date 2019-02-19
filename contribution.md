@@ -93,10 +93,14 @@ Add getter in **extension.ts**
 
 # Add class declarations
 Typescript declaration files and JsDoc is what drive the intellisense provided by this extenseion.
+
 It is important to understand that the declarations simply mimicks the real class available in ServiceNow.
+
 this means it is very important that class', methods, and variables is named so that they can executed in servicenow without any modifications.
 
 ## General
+Watch your casing as javascript is sensitive to that stuff.
+
 * all methods and constructors should have their input and output types declared.
 * all methods and contructors should at least have their general usage, input parameters described using JsDoc notation. for lenghty descriptions markdown is supported.
 * global variables should have the context in which they are available specified using JsDoc notation. (see detailed example)
