@@ -104,17 +104,19 @@ Watch your casing as javascript is sensitive to that stuff.
 * all methods and constructors should have their input and output types declared.
 * all methods and contructors should at least have their general usage, input parameters described using JsDoc notation. for lenghty descriptions markdown is supported.
 * global variables should have the context in which they are available specified using JsDoc notation. (see detailed example)
+* Class only available as global variables should have that described on the contructor in JsDoc notation.
 * classes, methods, and variables are named so that they can executed in servicenow without any modifications.
 
 
 ## Naming
-To avoid naming collison and compatibility there is a few naming conventions that currently apply.
+To avoid naming collisons and compatibility with VsCode there is a few naming conventions that currently apply.
 ### Angular
-Same as original class but starts with capital letter.
+Same as original class **but starts with capital letter**.
 
 Example: 
 * $q -> $Q
 * $http -> $Http
+* controller -> Controller
 
 and so forth.
 
@@ -128,11 +130,11 @@ Example:
 
 Methods names should not be modified.
 
-global variables names should not be modified. 
+global variable names should not be modified. 
 
 ### name spaces
-Some class' in ServiceNow is available.
-You can declare a name space in the declaration file aswell. the namespace should be name exactly like the one you try do mimick.
+Some class' in ServiceNow is available through namespaces
+You can declare a name space in the declaration file aswell. the namespace should be named exactly like the one you try do mimick. see detailed example for syntax.
 
 
 ## Detailed Examples
