@@ -1,5 +1,5 @@
 import * as fileSystem from 'fs';
-import { ISysMetadata, Instance, ScriptInclude, ISysScriptInclude, ISpWidget, Widget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, MailScript, ISysMailScript } from '../ServiceNow/all';
+import { ISysMetadata, Instance, ScriptInclude, ISysScriptInclude, ISpWidget, Widget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, MailScript, ISysMailScrip, ISpHeaderFooter, SpHeaderFooter } from '../ServiceNow/all';
 import { MetaData, KeyValuePair, WorkspaceStateManager, FileTypes } from './all';
 import { Uri, ExtensionContext, window, WorkspaceFolder, workspace } from 'vscode';
 import { ISysMetadataIWorkspaceConvertable } from '../MixIns/all';
@@ -84,6 +84,9 @@ export class WorkspaceManager
                         c = <unknown>md;
                         record = new UiScript(<ISysUiScript>c);
                         break;
+                    case "sp_header_footer":
+                        c = <unknown>md;
+                        record = new SpHeaderFooter(<ISpHeaderFooter>c);
                     case "sys_script_email":
                         c = <unknown>md;
                         record = new MailScript(<ISysMailScript>c);
@@ -244,6 +247,13 @@ export class WorkspaceManager
                 f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
                 meta = new MetaData(record, f, instanceName, recordName);
                 break;
+            case "sp_header_footer":
+                recordName = (<ISpHeaderFooter>record).name;
+
+                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
+                f.push(new KeyValuePair(FileTypes.clientScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.clientScript)}`)));
+                f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
+                f.push(new KeyValuePair(FileTypes.html, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.html)}`)));
             case "sys_script_email":
                 recordName = (<ISysMailScript>record).name;
 
