@@ -214,5 +214,5 @@ default: true
 
  #### How to contribute
 
- [Contribution Guide]: contribution.md
+ [Here](/contribution.md) is a contribution guide, outlining the steps to be taken to contribute to this project.
  
