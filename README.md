@@ -20,7 +20,7 @@ No code elements will not added to the extension in a way that will allow you to
 * Work with multiple ServicNow record.
 * Automatically saves to your instance.
 * Automatically updates from your instance.
-* Intellisense for ServiceNow and angular API's
+* Intellisense for ServiceNow and Angular API's
 * Change update Set.
 
 # How to
@@ -48,7 +48,12 @@ Records types currently supported.
 
 * Script includes.
 * Service Portal Themes.
-* Service Portal widgets.
+* Service Portal Widgets.
+* StyleSheets
+* JS Includes
+* UI Scripts
+* Mail Scripts
+* Service Portal Headers and Footers
 
 ## Intellisense
 Currently there is intellisense for the following API's.
@@ -66,6 +71,8 @@ NB: Some API's are not fully documented (Publicly anyways). if you miss a method
 * GlideElementDescriptor
 * GlideSession
 * GlideSysAttachment
+* GlideEmailOutbound
+* TemplatePrinter
 * sn_ws
   * GlideHttpHeader
   * RestMessageV2
@@ -201,3 +208,13 @@ default: true
 Enable or disable automatic import on document open. Only applied if higher version exists on instance.
 
 default: true
+
+### Contributors
+ [ambsoerensen](https://github.com/ambsoerensen)
+
+ [CGraabaek](https://github.com/CGraabaek)
+
+ #### How to contribute
+
+ [Here](/contribution.md) is a contribution guide, outlining the steps to be taken to contribute to this project.
+ 

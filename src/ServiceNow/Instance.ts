@@ -1,5 +1,6 @@
 import { URL } from "url";
-import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript, MailScript, ISysMailScript, IScriptedRestAPIResource, ScriptedRestAPIResource } from "./all";
+
+import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript, MailScript, ISysMailScript, SpHeaderFooter, ISpHeaderFooter, IScriptedRestAPIResource, ScriptedRestAPIResource } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
@@ -229,6 +230,9 @@ export class Instance
                             case "sp_css":
                                 resolve(new StyleSheet(<ISpCss>res.data.result));
                                 break;
+                            case "sp_header_footer":
+                                resolve(new SpHeaderFooter(<ISpHeaderFooter>res.data.result));
+                                break;
                             case "sys_ui_script":
                                 resolve(new UiScript(<ISysUiScript>res.data.result));
                                 break;
@@ -282,6 +286,8 @@ export class Instance
                             case "sys_ui_script":
                                 resolve(new UiScript(<ISysUiScript>res.data.result));
                                 break;
+                            case "sp_header_footer":
+                                resolve(new SpHeaderFooter(<ISpHeaderFooter>res.data.result));
                             case "sys_script_email":
                                 resolve(new MailScript(<ISysMailScript>res.data.result));
                                 break;
@@ -378,6 +384,28 @@ export class Instance
             }
         });
     }
+
+
+    /**returns all cached widgets */
+    public GetHeadersAndFooters(): Promise<SpHeaderFooter[]>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this._wsm)
+            {
+                let wi = this._wsm.GetHeadersAndFooters();
+                if (wi)
+                {
+                    resolve(wi);
+                }
+            }
+            else
+            {
+                reject("No records found");
+            }
+        });
+    }
+
 
     /**returns all cached ui scripts */
     public GetUiScripts(): Promise<UiScript[]>
@@ -559,6 +587,42 @@ export class Instance
                             res.data.result.forEach((element) =>
                             {
                                 result.push(new Widget(<ISpWidget>element));
+                            });
+                            resolve(result);
+                        }
+                        else
+                        {
+                            reject("No elements Found");
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                        reject(er);
+                    });
+                }
+            }
+        });
+    }
+
+    private GetHeadersAndFootersUpStream(): Promise<Array<SpHeaderFooter>>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                var include = this.ApiProxy.GetHeadersAndFooters();
+
+                if (include)
+                {
+                    let result = new Array<SpHeaderFooter>();
+
+                    include.then((res) =>
+                    {
+                        if (res.data.result.length > 0)
+                        {
+                            res.data.result.forEach((element) =>
+                            {
+                                result.push(new SpHeaderFooter(<ISpHeaderFooter>element));
                             });
                             resolve(result);
                         }
@@ -849,6 +913,18 @@ export class Instance
                 if (this._wsm)
                 {
                     this._wsm.SetScriptedApiResource(res);
+                  }
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+          
+            let headersAndFooters = this.GetHeadersAndFootersUpStream();
+            headersAndFooters.then((res) =>
+            {
+                if (this._wsm)
+                {
+                    this._wsm.SetHeadersAndFooters(res);
                 }
             }).catch((er) =>
             {
