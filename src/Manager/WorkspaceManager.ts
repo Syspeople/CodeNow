@@ -161,7 +161,7 @@ export class WorkspaceManager
     /**
      * AddRecord a new record. 
      */
-    public AddRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T, instance: Instance)
+    public AddRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T, instance: Instance): MetaData | undefined
     {
         let options = this.createMetadata(record, instance);
 
@@ -192,6 +192,7 @@ export class WorkspaceManager
                     }
                 }
             }
+            return options;
         }
     }
 
@@ -282,7 +283,10 @@ export class WorkspaceManager
             this._wsm.AddMetaData(meta);
             return meta;
         }
-
+        else
+        {
+            console.warn("Metadata undefined");
+        }
     }
 
     private getFileTypeExtension(type: FileTypes): string
