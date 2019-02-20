@@ -345,7 +345,7 @@ export function activate(context: vscode.ExtensionContext)
             vscode.window.showErrorMessage("Connect to an instance");
         }
     });
-  
+
     let getHeadersAndFooters = vscode.commands.registerCommand("snsb.getHeadersAndFooters", () =>
     {
         if (instance.IsInitialized())
@@ -553,6 +553,7 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(getUiScript);
     context.subscriptions.push(getMailScript);
     context.subscriptions.push(getScriptedApiResource);
+    context.subscriptions.push(getHeadersAndFooters);
     context.subscriptions.push(saveRecord);
     context.subscriptions.push(updateRecord);
     context.subscriptions.push(clearWorkState);
