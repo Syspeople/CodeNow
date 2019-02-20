@@ -94,7 +94,6 @@ export class Instance
             p.then(() =>
             {
                 this.Cache();
-                //this.TestConnection(nm);
                 resolve();
             }).catch((error) =>
             {
