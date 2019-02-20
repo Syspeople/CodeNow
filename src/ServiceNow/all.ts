@@ -23,3 +23,5 @@ export * from './ISpHeaderFooter';
 export * from './SpHeaderFooter';
 export * from './ISysMailScript';
 export * from './MailScript';
+export * from './IScriptedRestAPIResource';
+export * from './ScriptedRestAPIResource';

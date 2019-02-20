@@ -148,6 +148,11 @@
                 "category": "snsb"
             },
             {
+                "command": "snsb.getScriptedRestApiResource",
+                "title": "Add Scripted REST API Resource to Workspace",
+                "category": "snsb"
+            },
+            {
                 "command": "snsb.getHeadersAndFooters",
                 "title": "Add Header | Footer Widget to Workspace",
                 "category": "snsb"

@@ -1,5 +1,6 @@
 import { URL } from "url";
-import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript, MailScript, ISysMailScript, SpHeaderFooter, ISpHeaderFooter } from "./all";
+
+import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript, MailScript, ISysMailScript, SpHeaderFooter, ISpHeaderFooter, IScriptedRestAPIResource, ScriptedRestAPIResource } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
@@ -238,6 +239,9 @@ export class Instance
                             case "sys_script_email":
                                 resolve(new MailScript(<ISysMailScript>res.data.result));
                                 break;
+                            case "sys_ws_operation":
+                                resolve(new ScriptedRestAPIResource(<IScriptedRestAPIResource>res.data.result));
+                                break;
                             default:
                                 console.warn(`SaveRecord: Record from ${r.sys_class_name} not recognized`);
                                 break;
@@ -431,6 +435,26 @@ export class Instance
             if (this._wsm)
             {
                 let m = this._wsm.GetMailScript();
+                if (m)
+                {
+                    resolve(m);
+                }
+            }
+            else
+            {
+                reject("No records found");
+            }
+        });
+    }
+
+    /**returns all cached mail scripts */
+    public GetSriptedApiResources(): Promise<ScriptedRestAPIResource[]>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this._wsm)
+            {
+                let m = this._wsm.GetScriptedApiResource();
                 if (m)
                 {
                     resolve(m);
@@ -692,7 +716,7 @@ export class Instance
     }
 
     /**
- * get all ui elegible ui scripts
+ * get all ui elegible mail scripts
  */
     private GetMailScriptsUpStream(): Promise<Array<MailScript>>
     {
@@ -713,6 +737,43 @@ export class Instance
                             res.data.result.forEach((element) =>
                             {
                                 result.push(new MailScript(<ISysMailScript>element));
+                            });
+                            resolve(result);
+                        }
+                        else
+                        {
+                            reject("No elements Found");
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                        reject(er);
+                    });
+                }
+            }
+        });
+    }
+
+    // Get Scripted API Resources
+    private GetScriptedApiResourcesUpStream(): Promise<Array<ScriptedRestAPIResource>>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                var include = this.ApiProxy.GetScriptedApiResources();
+
+                if (include)
+                {
+                    let result = new Array<ScriptedRestAPIResource>();
+
+                    include.then((res) =>
+                    {
+                        if (res.data.result.length > 0)
+                        {
+                            res.data.result.forEach((element) =>
+                            {
+                                result.push(new ScriptedRestAPIResource(<IScriptedRestAPIResource>element));
                             });
                             resolve(result);
                         }
@@ -846,6 +907,18 @@ export class Instance
                 console.error(er);
             });
 
+            let scriptedApiResources = this.GetScriptedApiResourcesUpStream();
+            scriptedApiResources.then((res) =>
+            {
+                if (this._wsm)
+                {
+                    this._wsm.SetScriptedApiResource(res);
+                  }
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+          
             let headersAndFooters = this.GetHeadersAndFootersUpStream();
             headersAndFooters.then((res) =>
             {
