@@ -1,5 +1,5 @@
 import * as fileSystem from 'fs';
-import { ISysMetadata, Instance, ScriptInclude, ISysScriptInclude, ISpWidget, Widget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, MailScript, ISysMailScrip, ISpHeaderFooter, SpHeaderFooter } from '../ServiceNow/all';
+import { ISysMetadata, Instance, ScriptInclude, ISysScriptInclude, ISpWidget, Widget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, MailScript, ISysMailScript, ISpHeaderFooter, SpHeaderFooter } from '../ServiceNow/all';
 import { MetaData, KeyValuePair, WorkspaceStateManager, FileTypes } from './all';
 import { Uri, ExtensionContext, window, WorkspaceFolder, workspace } from 'vscode';
 import { ISysMetadataIWorkspaceConvertable } from '../MixIns/all';
@@ -87,6 +87,7 @@ export class WorkspaceManager
                     case "sp_header_footer":
                         c = <unknown>md;
                         record = new SpHeaderFooter(<ISpHeaderFooter>c);
+                        break;
                     case "sys_script_email":
                         c = <unknown>md;
                         record = new MailScript(<ISysMailScript>c);
@@ -254,6 +255,7 @@ export class WorkspaceManager
                 f.push(new KeyValuePair(FileTypes.clientScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.clientScript)}`)));
                 f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
                 f.push(new KeyValuePair(FileTypes.html, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.html)}`)));
+                break;
             case "sys_script_email":
                 recordName = (<ISysMailScript>record).name;
 
