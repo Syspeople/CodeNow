@@ -1,5 +1,5 @@
 import { URL } from "url";
-import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript,MailScript, ISysMailScript ,SpHeaderFooter, ISpHeaderFooter } from "./all";
+import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript, MailScript, ISysMailScript, SpHeaderFooter, ISpHeaderFooter } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
@@ -231,6 +231,7 @@ export class Instance
                                 break;
                             case "sp_header_footer":
                                 resolve(new SpHeaderFooter(<ISpHeaderFooter>res.data.result));
+                                break;
                             case "sys_ui_script":
                                 resolve(new UiScript(<ISysUiScript>res.data.result));
                                 break;
@@ -844,7 +845,7 @@ export class Instance
             {
                 console.error(er);
             });
-          
+
             let headersAndFooters = this.GetHeadersAndFootersUpStream();
             headersAndFooters.then((res) =>
             {

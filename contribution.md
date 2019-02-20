@@ -1,7 +1,19 @@
 # SNSB Contribution Guide
 This guide will provide an overview of the steps needed to make a contribution to the extension.
 
+## Table of Contents
+
+1. [Add new record](#Add-new-record)
+1. [Add class declarations](#Add-class-declarations)
+    1. [General](#General)
+    1. [Naming](#Naming)
+    1. [Detailed Examples](#Detailed-Examples)
+    
+
 # Add new record
+**[Back to top](#table-of-contents)**
+
+
 ## Step 1
 Add Record Interface to the *ServiceNow* folder.
 
@@ -92,6 +104,8 @@ Add command to **package.json.**
 Add getter in **extension.ts**
 
 # Add class declarations
+**[Back to top](#table-of-contents)**
+
 Typescript declaration files and JsDoc is what drive the intellisense provided by this extenseion.
 
 It is important to understand that the declarations simply mimicks the real class available in ServiceNow.
