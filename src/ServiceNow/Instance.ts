@@ -288,6 +288,7 @@ export class Instance
                                 break;
                             case "sp_header_footer":
                                 resolve(new SpHeaderFooter(<ISpHeaderFooter>res.data.result));
+                                break;
                             case "sys_script_email":
                                 resolve(new MailScript(<ISysMailScript>res.data.result));
                                 break;
@@ -913,12 +914,12 @@ export class Instance
                 if (this._wsm)
                 {
                     this._wsm.SetScriptedApiResource(res);
-                  }
+                }
             }).catch((er) =>
             {
                 console.error(er);
             });
-          
+
             let headersAndFooters = this.GetHeadersAndFootersUpStream();
             headersAndFooters.then((res) =>
             {
