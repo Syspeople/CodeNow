@@ -472,6 +472,189 @@ declare class GlideDateTime
      * @param years The number of years to add. Use a negative value to subtract.
      */
     addYearsLocalTime(years: Number): void;
+
+    /**
+     * Adds a specified number of years to the current GlideDateTime object. A negative parameter subtracts years. The date and time value stored by GlideDateTime object is interpreted as being in the UTC time zone.
+     * @param years The number of years to add. Use a negative value to subtract.
+     */
+    addYearsUTC(years: Number): void;
+
+    /**
+     * Determines if the GlideDateTime object occurs after the specified GlideDateTime.
+     * @param gdt The time to check against.
+     */
+    after(gdt: GlideDateTime): boolean
+
+    /**
+     * Determines if the GlideDateTime object occurs before the specified GlideDateTime.
+     * @param gdt The time to check against.
+     */
+    before(gdt: GlideDateTime): boolean
+
+    /**
+     * Compares two date and time objects to determine whether they are equivalent or one occurs before or after the other.
+     * @param gdt
+     * @returns 0 = Dates are equal, 1 = date is after input date, -1 = date is before input date
+     */
+    compareTo(gdt: GlideDateTime): Number
+
+    /**
+     * Compares a datetime with an existing value for equality.
+     * @param dateTime 	GlideDateTime object or String to compare
+     */
+    equals(dateTime: GlideDateTime | string): boolean;
+
+    /**
+     * Gets the date stored by the GlideDateTime object, expressed in the standard format, yyyy-MM-dd, and the system time zone, UTC by default.
+     * @returns The date in the system time zone.
+     */
+    getDate(): GlideDateTime;
+
+    /**
+     * Gets the day of the month stored by the GlideDateTime object, expressed in the current user's time zone.
+     * @returns from 1 to 31.
+     */
+    getDayOfMonthLocalTime(): Number;
+
+    /**
+     * Gets the day of the month stored by the GlideDateTime object, expressed in the UTC time zone.
+     */
+    getDayOfMonthUTC(): Number;
+
+    /**
+     * Gets the day of the week stored by the GlideDateTime object, expressed in the user's time zone.
+     */
+    getDayOfWeekLocalTime(): Number;
+
+    /**
+     * Gets the day of the week stored by the GlideDateTime object, expressed in the UTC time zone.
+     */
+    getDayOfWeekUTC(): Number;
+
+    /**
+     * Gets the number of days in the month stored by the GlideDateTime object, expressed in the current user's time zone.
+     */
+    getDaysInMonthLocalTime(): Number
+
+    /**
+     * Gets the number of days in the month stored by the GlideDateTime object, expressed in the UTC time zone.
+     */
+    getDaysInMonthUTC(): Number;
+
+    /**
+     * Gets the date and time value in the current user's display format and time zone.
+     */
+    getDisplayValue(): String;
+
+    /**
+     * Gets the display value in the internal format (yyyy-MM-dd HH:mm:ss).
+     */
+    getDisplayValueInternal(): String
+
+    /**
+     * Gets the amount of time that daylight saving time is offset.
+     */
+    getDSTOffset(): Number;
+
+    /**
+     * Gets the current error message.
+     */
+    getErrorMsg(): String;
+
+    /**
+     * Returns the object's time in the local time zone and in the internal format.
+     */
+    getInternalFormattedLocalTime(): String;
+
+    /**
+     * Gets the date stored by the GlideDateTime object, expressed in the standard format, yyyy-MM-dd, and the current user's time zone.
+     */
+    getLocalDate(): GlideDate;
+
+    /**
+     * Returns a GlideTime object that represents the time portion of the GlideDateTime object in the user's time zone.
+     */
+    getLocalTime(): GlideTime;
+
+    /**
+     * Gets the month stored by the GlideDateTime object, expressed in the current user's time zone.
+     */
+    getMonthLocalTime(): Number;
+
+    /**
+     * Gets the month stored by the GlideDateTime object, expressed in the UTC time zone.
+     */
+    getMonthUTC(): Number;
+
+    /**
+     * Gets the number of milliseconds since January 1, 1970, 00:00:00 GMT.
+     */
+    getNumericValue(): Number;
+
+    /**
+     * Returns a GlideTime object that represents the time portion of the GlideDateTime object.
+     */
+    getTime(): GlideTime;
+
+    /**
+     * Gets the time zone offset in milliseconds.
+     */
+    getTZOffset(): Number;
+
+    /**
+     * Returns the object's time in the local time zone and in the user's format.
+     */
+    getUserFormattedLocalTime(): String;
+
+    /**
+     * Gets the date and time value stored by the GlideDateTime object in the internal format, yyyy-MM-dd HH:mm:ss, and the system time zone, UTC by default. 
+     */
+    getValue(): String;
+
+    /**
+     * Gets the number of the week stored by the GlideDateTime object, expressed in the current user's time zone. 
+     * All weeks begin on Sunday. The first week of the year is the week that contains at least one day of the new year. 
+     * The week beginning Sunday 2015-12-27 is considered the first week of 2016 as that week contains January 1 and 2.
+     */
+    getWeekOfYearLocalTime(): Number;
+
+    /**
+     * Gets the number of the week stored by the GlideDateTime object, expressed in the UTC time zone. 
+     * All weeks begin on Sunday. The first week of the year is the week that contains at least one day of the new year. 
+     * The week beginning Sunday 2015-12-27 is considered the first week of 2016 as that week contains January 1 and 2.
+     */
+    getWeekOfYearUTC(): Number;
+
+    /**
+     * Gets the year stored by the GlideDateTime object, expressed in the current user's time zone.
+     */
+    getYearLocalTime(): Number;
+
+    /**
+     * Gets the year stored by the GlideDateTime object, expressed in the UTC time zone.
+     */
+    getYearUTC(): Number;
+
+    /**
+     * Determines if an object's date is set.
+     */
+    hasDate(): Boolean;
+}
+
+declare class GlideDate
+{
+    /**
+     * Not fully documented yet.
+     */
+    constructor();
+}
+
+declare class GlideTime
+{
+    /**
+     * Not fully documented yet.
+     */
+    constructor();
 }
 
 declare class GlideQueryCondition
