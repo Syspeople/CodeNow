@@ -174,6 +174,49 @@ export class Instance
     }
 
     /**
+     * Verifies current update set. Ensures update set is still in progress before saving.
+     */
+    public UpdateSetIsValid(): Promise<Boolean>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            let p = this.GetUpdateSets();
+
+            p.then((us) =>
+            {
+                let set: UpdateSet | undefined;
+                if (this._wsm)
+                {
+                    //only gets in progress update set.
+                    set = this._wsm.GetUpdateSet();
+                }
+
+                let index: number = -1;
+                if (set)
+                {
+                    index = us.findIndex((element) =>
+                    {
+                        //@ts-ignore variable set already null checked
+                        return element.sys_id === set.sys_id;
+                    });
+                }
+
+                if (index !== -1)
+                {
+                    resolve(true);
+                }
+                else
+                {
+                    reject(false);
+                }
+            }).catch((r) =>
+            {
+                reject(r);
+            });
+        });
+    }
+
+    /**
      * OpenInPlatform Opens a record in hte default browser
      */
     public OpenInPlatformRecord(record: ISysMetadata): void
