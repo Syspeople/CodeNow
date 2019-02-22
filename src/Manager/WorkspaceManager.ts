@@ -351,8 +351,6 @@ export class WorkspaceManager
         }
     }
 
-
-
     private GetPathInstance(i: Instance): string | undefined
     {
         let workspaceRoot = this.GetPathWorkspace();
@@ -363,8 +361,6 @@ export class WorkspaceManager
             return path;
         }
     }
-
-
 
     private GetPathWorkspace(): WorkspaceFolder | undefined
     {
@@ -484,71 +480,4 @@ export class WorkspaceManager
             return false;
         }
     }
-
-    /*
-    CLEAN UP AT SOME TIME
-    */
-
-    // private GetOptionsPretty(record: ISysMetadata): string
-    // {
-    //     return JSON.stringify(record, null, 2);
-    // }
-
-
-    // private GetPathParent(Uri: Uri): string
-    // {
-    //     let nameLength = this.GetFileName(Uri).length;
-    //     return Uri.fsPath.substring(0, Uri.fsPath.length - nameLength - 1);
-    // }
-
-    // private GetFileName(Uri: Uri): string
-    // {
-    //     let split = Uri.fsPath.split(`${this._delimiter}`);
-    //     return split[split.length - 1];
-    // }
-
-    // private GetPathRecordScript(uri: Uri): string
-    // {
-    //     let parentPath = this.GetPathParent(uri);
-    //     let recordName = this.GetFileName(uri);
-
-    //     return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.server_script.js`;
-    // }
-
-    // private GetPathRecordClientScript(uri: Uri): string
-    // {
-    //     let parentPath = this.GetPathParent(uri);
-
-    //     let recordName = this.GetFileName(uri);
-
-    //     return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.client_script.js`;
-    // }
-
-    // //returns the path of hte option.json that should reside in same dir. 
-    // private GetPathRecordOptions(uri: Uri): string
-    // {
-    //     let parentPath = this.GetPathParent(uri);
-
-    //     let recordName = this.GetFileName(uri);
-
-    //     return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.options.json`;
-    // }
-
-    // private GetPathRecordCss(uri: Uri): string
-    // {
-    //     let parentPath = this.GetPathParent(uri);
-
-    //     let recordName = this.GetFileName(uri);
-
-    //     return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.scss`;
-    // }
-
-    // private GetPathRecordHtmlTemplate(uri: Uri): string
-    // {
-    //     let parentPath = this.GetPathParent(uri);
-
-    //     let recordName = this.GetFileName(uri);
-
-    //     return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.html`;
-    // }
 }
