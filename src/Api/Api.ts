@@ -376,7 +376,7 @@ export class Api
                         "css": hf.css,
                         "client_script": hf.client_script,
                         'template': hf.template
-                     });
+                    });
                 case "sys_script_email":
                     url = `${this._SNSysEmailScript}/${record.sys_id}`;
                     //@ts-ignore
@@ -526,10 +526,10 @@ export class Api
         }
     }
 
-      /**
-* GetHeaderAndFooters
-* 
-*/
+    /**
+    * GetHeaderAndFooters
+    * 
+    */
     public GetHeadersAndFooters(): Axios.AxiosPromise<IServiceNowResponse<Array<ISpHeaderFooter>>> | undefined
     {
         if (this.HttpClient)
@@ -539,8 +539,8 @@ export class Api
             return this.HttpClient.get(url);
         }
     }
-  
-  
+
+
     /**
     * GetEmailScripts
     * 
@@ -556,9 +556,9 @@ export class Api
     }
 
     /**
-   * GetEmailScripts
-   * 
-   */
+    * GetEmailScripts
+    * 
+    */
     public GetScriptedApiResources(): Axios.AxiosPromise<IServiceNowResponse<Array<IScriptedRestAPIResource>>> | undefined
     {
         if (this.HttpClient)
