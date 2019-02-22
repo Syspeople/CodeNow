@@ -260,6 +260,7 @@ export class WorkspaceManager
                 f.push(new KeyValuePair(FileTypes.clientScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.clientScript)}`)));
                 f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
                 f.push(new KeyValuePair(FileTypes.html, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.html)}`)));
+                meta = new MetaData(record, f, instanceName, recordName);
                 break;
             case "sys_script_email":
                 recordName = (<ISysMailScript>record).name;
