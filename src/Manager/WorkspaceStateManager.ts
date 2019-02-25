@@ -120,7 +120,6 @@ export class WorkspaceStateManager
             local = new Array<MetaData>();
             local.push(metadata);
         }
-        console.log(JSON.stringify(local));
         this.SetMetaData(local);
     }
 
