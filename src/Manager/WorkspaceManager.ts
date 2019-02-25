@@ -120,6 +120,10 @@ export class WorkspaceManager
                 }
                 return record;
             }
+            else
+            {
+                console.warn("Unable to find metadataa in local storage for " + uri.fsPath);
+            }
         }
         catch (e)
         {
