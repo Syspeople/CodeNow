@@ -30,7 +30,6 @@ Add screenshots and stuff.
 You need to have [Node.js](https://nodejs.org/en/) installed either way. make sure the path variable is up to date (reboot).
 
 ## Vscode Debugger
-
 1. Clone and open repository
 2. rebuild module dependencies using command "npm install" (make sure you are located in the workspace root)
 3. start debugger
@@ -38,8 +37,7 @@ You need to have [Node.js](https://nodejs.org/en/) installed either way. make su
 5. invoke command: Connect to ServiceNow
 
 ## Package and install
-
-1. Clone the repository
+1. Clone the repository. Remember do have the branch you want checked out and synced.
 2. Install Visual Studio Code Extensions: **npm install -g vsce** 
 3. Open you terminal an cd to root dir of your repository.
 4. package extension: **vsce package**
