@@ -639,6 +639,135 @@ declare class GlideDateTime
      * Determines if an object's date is set.
      */
     hasDate(): Boolean;
+
+    /**
+     * Determines if an object's time uses a daylight saving offset.
+     */
+    isDST(): Boolean;
+
+    /**
+     * Determines if a value is a valid date and time.
+     */
+    isValid(): Boolean;
+
+    /**
+     * Determines if the GlideDateTime object occurs on or after the specified GlideDateTime.
+     * @param gdt The time to check against.
+     * @returns Returns true if the GlideDateTime object's time is on or after the time specified by the parameter.
+     */
+    onOrAfter(gdt: GlideDateTime): Boolean;
+
+    /**
+     * Determines if the GlideDateTime object occurs on or before the specified GlideDateTime.
+     * @param gdt The time to check against.
+     * @returns Returns true if the GlideDateTime object's time is on or before the time specified by the parameter.
+     */
+    onOrBefore(gdt: GlideDateTime): Boolean;
+
+    /**
+     * Sets the day of the month to a specified value in the current user's time zone.
+     * @param day The day of month to change to, from 1 to 31. If this value is greater than the maximum number of days in the month, the value is set to the last day of the month.
+     */
+    setDayOfMonthLocalTime(day: Number): void;
+
+    /**
+     * Sets the day of the month to a specified value in the UTC time zone.
+     * @param day The day of month to change to, from 1 to 31. If this value is greater than the maximum number of days in the month, the value is set to the last day of the month.
+     */
+    setDayOfMonthUTC(day: Number): void;
+
+    /**
+     * Sets a date and time value using the current user's display format and time zone.
+     * @param asDisplayed The date and time in the current user's display format and time zone. The parameter must be formatted using the current user's preferred display format, such as MM-dd-yyyy HH:mm:ss. To assign the current date and time to a variable in a workflow script, use variable.setDisplayValue(gs.nowDateTime);.
+     */
+
+    setDisplayValue(asDisplayed: string): void;
+
+    /**
+     * Sets a date and time value using the current user's time zone and the specified date and time format. This method throws a runtime exception if the date and time format used in the value parameter does not match the format parameter. You can retrieve the error message by calling getErrorMsg() on the GlideDateTime object after the exception is caught.
+     * @param value The date and time in the current user's time zone.
+     * @param format The date and time format to use to parse the value parameter.
+     */
+    setDisplayValue(value: string, format: string): void;
+
+    /**
+     * Sets a date and time value using the internal format (yyyy-MM-dd HH:mm:ss) and the current user's time zone.
+     * @param value The date and time in internal format.
+     */
+    setDisplayValueInternal(value: string): void;
+
+    /**
+     * Sets the date and time of the current object using an existing GlideDateTime object. This method is equivalent to instantiating a new object with a GlideDateTime parameter.
+     * @param g The object to use for setting the datetime value.
+     */
+    setGlideDateTime(g: GlideDateTime): void;
+
+    /**
+     * Sets the month stored by the GlideDateTime object to the specified value using the current user's time zone.
+     * @param month The month to change to.
+     */
+    setMonthLocalTime(month: Number): void;
+
+    /**
+     * Sets the month stored by the GlideDateTime object to the specified value using the UTC time zone.
+     * @param month The month to change to.
+     */
+    setMonthUTC(month: Number): void;
+
+    /**
+     * Sets the date and time of the GlideDateTime object.
+     * @param o The date and time to use. This parameter may be one of several types:
+    A string in the UTC time zone and the internal format of yyyy-MM-dd HH:mm:ss. Sets the value of the object to the specified date and time. Using the method this way is equivalent to instantiating a new GlideDateTime object using the GlideDateTime(String value) constructor. If the date and time format used does not match the internal format, the method attempts to set the date and time using other available formats. Resolving the date and time this way can lead to inaccurate data due to ambiguity in the day and month values. When using a non-standard date and time format, use etValueUTC(String dt, String format) instead.
+    A GlideDateTime object. Sets the value of the object to the date and time stored by the GlideDateTime passed in the parameter. Using the method this way is equivalent to instantiating a new GlideDateTime object using the GlideDateTime(GlideDateTime g) constructor.
+    A JavaScript Number. Sets the value of the object using the Number value as milliseconds past January 1, 1970 00:00:00 GMT.
+     */
+    setValue(o: string): void;
+
+    /**
+     * Sets a date and time value using the UTC time zone and the specified date and time format. This method throws a runtime exception if the date and time format used in the dt parameter does not match the format parameter. You can retrieve the error message by calling getErrorMsg() on the GlideDateTime object after the exception is caught.
+     * @param dt The date and time to use.
+     * @param format The date and time format to use.
+     */
+    setValueUTC(dt: string, format: string): void;
+
+    /**
+     * Sets the year stored by the GlideDateTime object to the specified value using the current user's time zone.
+     * @param year The year to change to.
+     */
+    setYearLocalTime(year: Number): void;
+
+    /**
+     * Sets the year stored by the GlideDateTime object to the specified value using the UTC time zone
+     * @param year The year to change to.
+     */
+    setYearUTC(year: Number): void;
+
+    /**
+     * Subtracts a specified amount of time from the current GlideDateTime object.
+     * @param time The time value to subtract.
+     */
+    subtract(time: GlideTime): void;
+
+    /**
+     * Subtracts the specified number of milliseconds from the GlideDateTime object.
+     * @param milliseconds The number of milliseconds to subtract.
+     */
+    subtract(milliseconds: Number): void;
+
+    /**
+     * Gets the duration difference between two GlideDateTime values.
+     * @param start The start value.
+     * @param end The end value.
+     * @returns The duration between the two values.
+     */
+    subtract(start: GlideDateTime, end: GlideDateTime): GlideDuration;
+
+    /**
+     * Gets the date and time value stored by the GlideDateTime object in the internal format, yyyy-MM-dd HH:mm:ss, and the system time zone, UTC by default. This method is equivalent to getValue().
+     */
+    toString(): void;
+
+
 }
 
 declare class GlideDate
@@ -656,6 +785,15 @@ declare class GlideTime
      */
     constructor();
 }
+
+declare class GlideDuration
+{
+    /**
+     * Not fully documented yet.
+     */
+    constructor();
+}
+
 
 declare class GlideQueryCondition
 {
