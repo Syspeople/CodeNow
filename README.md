@@ -27,15 +27,22 @@ No code elements will not added to the extension in a way that will allow you to
 Add screenshots and stuff. 
 
 # Try it
-The only way to currently try the extension is to compile from the source.
+You need to have [Node.js](https://nodejs.org/en/) installed either way. make sure the path variable is up to date (reboot).
 
-You need to have [Node.js](https://nodejs.org/en/) installed.
-
+## Vscode Debugger
 1. Clone and open repository
 2. rebuild module dependencies using command "npm install" (make sure you are located in the workspace root)
 3. start debugger
 4. when debugging open a workspace (a folder)
 5. invoke command: Connect to ServiceNow
+
+## Package and install
+1. Clone the repository. Remember do have the branch you want checked out and synced.
+2. Install Visual Studio Code Extensions: **npm install -g vsce** 
+3. Open a terminal and cd to root dir of your repository.
+4. package extension: **vsce package**
+5. Open Vscode and use command: install from vsix
+6. navigate to packaged vsix from step 4 and open it. 
 
 # Additional Extensions
 Extensions that go very well with this extension
