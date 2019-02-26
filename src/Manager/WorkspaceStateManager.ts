@@ -1,6 +1,6 @@
 import { Uri, ExtensionContext } from 'vscode';
 import { StateKeys, MemCache, MetaData } from "./all";
-import { ScriptInclude, Widget, UpdateSet, StyleSheet, Theme, UiScript } from "../ServiceNow/all";
+import { ScriptInclude, Widget, UpdateSet, StyleSheet, Theme, UiScript, MailScript, SpHeaderFooter, ScriptedRestAPIResource } from "../ServiceNow/all";
 
 //get update and manage workpace state.
 export class WorkspaceStateManager
@@ -120,7 +120,6 @@ export class WorkspaceStateManager
             local = new Array<MetaData>();
             local.push(metadata);
         }
-        console.log(JSON.stringify(local));
         this.SetMetaData(local);
     }
 
@@ -256,5 +255,35 @@ export class WorkspaceStateManager
     public GetUiScript(): Array<UiScript> | undefined
     {
         return this._memCache.Get<Array<UiScript>>((StateKeys.UiScripts));
+    }
+
+    public SetMailScript(ms: Array<MailScript>): void
+    {
+        this._memCache.Set(StateKeys.MailScripts, ms);
+    }
+
+    public GetMailScript(): Array<MailScript> | undefined
+    {
+        return this._memCache.Get<Array<MailScript>>((StateKeys.MailScripts));
+    }
+
+    public SetScriptedApiResource(sr: Array<ScriptedRestAPIResource>): void
+    {
+        this._memCache.Set(StateKeys.ScriptedApiResources, sr);
+    }
+
+    public GetScriptedApiResource(): Array<ScriptedRestAPIResource> | undefined
+    {
+        return this._memCache.Get<Array<ScriptedRestAPIResource>>((StateKeys.ScriptedApiResources));
+    }
+
+    public SetHeadersAndFooters(HeadersAndFooters: Array<SpHeaderFooter>): void
+    {
+        this._memCache.Set(StateKeys.HeadersAndFooters, HeadersAndFooters);
+    }
+
+    public GetHeadersAndFooters(): Array<SpHeaderFooter> | undefined
+    {
+        return this._memCache.Get<Array<SpHeaderFooter>>((StateKeys.HeadersAndFooters));
     }
 }

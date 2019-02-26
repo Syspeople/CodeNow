@@ -291,7 +291,7 @@ export function activate(context: vscode.ExtensionContext)
     });
 
     /**
-     * add style sheet to workspace
+     * add ui script to workspace
      */
     let getUiScript = vscode.commands.registerCommand("snsb.getUiScript", () =>
     {
@@ -318,28 +318,120 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    /**
+     * add mail script to workspace
+     */
+    let getMailScript = vscode.commands.registerCommand("snsb.getMailScript", () =>
+    {
+        if (instance.IsInitialized())
+        {
+            let themes = instance.GetMailScripts();
+            themes.then((res) =>
+            {
+                vscode.window.showQuickPick(res).then((item) =>
+                {
+                    if (item)
+                    {
+                        wm.AddRecord(item, instance);
+                    }
+                });
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance");
+        }
+    });
+
+    /**
+     * add header an footer widgets to workspace
+     */
+    let getHeadersAndFooters = vscode.commands.registerCommand("snsb.getHeadersAndFooters", () =>
+    {
+        if (instance.IsInitialized())
+        {
+            let hf = instance.GetHeadersAndFooters();
+            hf.then((res) =>
+            {
+                vscode.window.showQuickPick(res).then((item) =>
+                {
+                    if (item)
+                    {
+                        wm.AddRecord(item, instance);
+                    }
+                });
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance");
+        }
+    });
+
+    /**
+     * add scripted API to workspace
+     */
+    let getScriptedApiResource = vscode.commands.registerCommand("snsb.getScriptedRestApiResource", () =>
+    {
+        if (instance.IsInitialized())
+        {
+            let themes = instance.GetSriptedApiResources();
+            themes.then((res) =>
+            {
+                vscode.window.showQuickPick(res).then((item) =>
+                {
+                    if (item)
+                    {
+                        wm.AddRecord(item, instance);
+                    }
+                });
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance");
+        }
+    });
+
 
     let saveRecord = vscode.commands.registerCommand("snsb.saveRecord", (uri) =>
     {
         if (instance.IsInitialized())
         {
-            let record = wm.GetRecord(uri);
+            let p = instance.UpdateSetIsValid();
 
-            if (record)
+            p.then((res) =>
             {
-                let o = instance.SaveRecord(record);
-                if (o)
+                let record = wm.GetRecord(uri);
+
+                if (record)
                 {
-                    o.then((res) =>
+                    let o = instance.SaveRecord(record);
+                    if (o)
                     {
-                        vscode.window.showInformationMessage(`Saved`);
-                        wm.UpdateRecord(res, uri);
-                    }).catch((er) =>
-                    {
-                        vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
-                    });
+                        o.then((res) =>
+                        {
+                            vscode.window.showInformationMessage(`Saved`);
+                            wm.UpdateRecord(res, uri);
+                        }).catch((er) =>
+                        {
+                            vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
+                        });
+                    }
                 }
-            }
+            }).catch((err) =>
+            {
+                vscode.window.showErrorMessage("Update set no longer in progress. Changes not saves to instance.");
+            });
         }
         else
         {
@@ -386,39 +478,47 @@ export function activate(context: vscode.ExtensionContext)
     {
         if (instance.IsInitialized())
         {
-            config = vscode.workspace.getConfiguration("snsb");
-            if (config.uploadOnSave)
+            let p = instance.UpdateSetIsValid();
+
+            p.then((res) =>
             {
-                let record = wm.GetRecord(e.uri);
-
-                if (record)
+                config = vscode.workspace.getConfiguration("snsb");
+                if (config.uploadOnSave)
                 {
-                    let p = instance.IsLatest(record);
+                    let record = wm.GetRecord(e.uri);
 
-                    p.then((res) =>
+                    if (record)
                     {
-                        vscode.window.showWarningMessage(`Newer Version of record ${res.sys_id} Found on instance`);
-                    }).catch((er) =>
-                    {
-                        if (record)
+                        let p = instance.IsLatest(record);
+
+                        p.then((res) =>
                         {
-                            let o = instance.SaveRecord(record);
-
-                            if (o)
+                            vscode.window.showWarningMessage(`Newer Version of record ${res.sys_id} Found on instance`);
+                        }).catch((er) =>
+                        {
+                            if (record)
                             {
-                                o.then((res) =>
+                                let o = instance.SaveRecord(record);
+
+                                if (o)
                                 {
-                                    vscode.window.showInformationMessage(`Saved`);
-                                    wm.UpdateRecord(res, e.uri);
-                                }).catch((er) =>
-                                {
-                                    vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
-                                });
+                                    o.then((res) =>
+                                    {
+                                        vscode.window.showInformationMessage(`Saved`);
+                                        wm.UpdateRecord(res, e.uri);
+                                    }).catch((er) =>
+                                    {
+                                        vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
+                                    });
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
-            }
+            }).catch((err) =>
+            {
+                vscode.window.showErrorMessage("Update set no longer in progress. Changes not saves to instance.");
+            });
         }
         else
         {
@@ -470,6 +570,9 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(getTheme);
     context.subscriptions.push(getStyleSheet);
     context.subscriptions.push(getUiScript);
+    context.subscriptions.push(getMailScript);
+    context.subscriptions.push(getScriptedApiResource);
+    context.subscriptions.push(getHeadersAndFooters);
     context.subscriptions.push(saveRecord);
     context.subscriptions.push(updateRecord);
     context.subscriptions.push(clearWorkState);

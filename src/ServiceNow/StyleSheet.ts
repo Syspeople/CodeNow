@@ -12,21 +12,19 @@ export class StyleSheet extends Record implements ISpCss, QuickPickItem
         this.css = css.css;
     }
 
+    detail?: string | undefined = undefined;
+    name: string;
+    css: string;
+
     public get label(): string
     {
         return this.name;
     }
 
-
     public get description(): string
     {
         return "";
     }
-
-    detail?: string | undefined = undefined;
-
-    name: string;
-    css: string;
 
     SetAttribute(content: string, filetype: FileTypes): void
     {
@@ -50,22 +48,4 @@ export class StyleSheet extends Record implements ISpCss, QuickPickItem
         }
     }
 
-    /**
-    * toJSON
-    */
-    public toJSON()
-    {
-        let b = super.toJSON();
-        return {
-            sys_class_name: b.sys_class_name,
-            sys_id: b.sys_id,
-            sys_policy: b.sys_policy,
-            sys_updated_on: b.sys_updated_on,
-            sys_created_on: b.sys_created_on,
-            sys_package: b.sys_package,
-            sys_scope: b.sys_scope,
-            name: this.name,
-            css: this.css
-        };
-    }
 }

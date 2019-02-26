@@ -2,8 +2,12 @@
     "name": "snsb",
     "displayName": "ServiceNow Script Bridge",
     "description": "Work with ServiceNow Ressource straight from Vs Code.",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "publisher": "ambs",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Syspeople/snsb"
+    },
     "engines": {
         "vscode": "^1.21.0"
     },
@@ -140,6 +144,21 @@
             {
                 "command": "snsb.getUiScript",
                 "title": "Add Ui Script to Workspace",
+                "category": "snsb"
+            },
+            {
+                "command": "snsb.getMailScript",
+                "title": "Add Mail Script to Workspace",
+                "category": "snsb"
+            },
+            {
+                "command": "snsb.getScriptedRestApiResource",
+                "title": "Add Scripted REST API Resource to Workspace",
+                "category": "snsb"
+            },
+            {
+                "command": "snsb.getHeadersAndFooters",
+                "title": "Add Header | Footer Widget to Workspace",
                 "category": "snsb"
             }
         ]
