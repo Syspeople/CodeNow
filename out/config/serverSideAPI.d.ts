@@ -403,7 +403,7 @@ declare class GlideDateTime
      * Adds a GlideTime object to the current GlideDateTime object.
      * @param gd The GlideTime object to add.
      */
-    add(gd: GlideDateTime): void;
+    add(gd: GlideTime): void;
 
     /**
      * Adds the specified number of milliseconds to the current GlideDateTime object.
