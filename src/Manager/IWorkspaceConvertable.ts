@@ -1,9 +1,10 @@
 import { FileTypes } from "./all";
+import { QuickPickItem } from "vscode";
 
 /**
  * interface required to write and read records to and from workspace.
  */
-export interface IWorkspaceConvertable
+export interface IWorkspaceConvertable extends QuickPickItem
 {
     /**
      * Set value on object based on filetype. 

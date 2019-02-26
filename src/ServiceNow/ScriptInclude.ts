@@ -1,8 +1,7 @@
-import { QuickPickItem } from 'vscode';
 import { Record, ISysScriptInclude } from "./all";
 import { FileTypes } from '../Manager/all';
 
-export class ScriptInclude extends Record implements ISysScriptInclude, QuickPickItem
+export class ScriptInclude extends Record implements ISysScriptInclude
 {
 
     constructor(si: ISysScriptInclude)

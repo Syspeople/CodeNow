@@ -1,8 +1,7 @@
 import { Record, ISpCss } from "./all";
-import { QuickPickItem } from "vscode";
 import { FileTypes } from "../Manager/all";
 
-export class StyleSheet extends Record implements ISpCss, QuickPickItem
+export class StyleSheet extends Record implements ISpCss
 {
     constructor(css: ISpCss)
     {
