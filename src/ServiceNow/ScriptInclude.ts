@@ -57,4 +57,9 @@ export class ScriptInclude extends Record implements ISysScriptInclude, QuickPic
                 break;
         }
     }
+
+    GetPatchable(): Object
+    {
+        return { script: this.script };
+    }
 }

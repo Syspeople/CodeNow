@@ -47,5 +47,10 @@ export class StyleSheet extends Record implements ISpCss, QuickPickItem
                 break;
         }
     }
-
+    GetPatchable(): Object
+    {
+        return {
+            css: this.css
+        };
+    }
 }

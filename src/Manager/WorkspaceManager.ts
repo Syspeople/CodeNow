@@ -1,5 +1,5 @@
 import * as fileSystem from 'fs';
-import { ISysMetadata, Instance, ScriptInclude, ISysScriptInclude, ISpWidget, Widget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, MailScript, ISysMailScript, ISpHeaderFooter, SpHeaderFooter, ScriptedRestAPIResource, IScriptedRestAPIResource } from '../ServiceNow/all';
+import { ISysMetadata, Instance, ISysScriptInclude, ISpWidget, ISpTheme, ISpCss, ISysUiScript, ISysMailScript, ISpHeaderFooter, IScriptedRestAPIResource, Converter } from '../ServiceNow/all';
 import { MetaData, KeyValuePair, WorkspaceStateManager, FileTypes } from './all';
 import { Uri, ExtensionContext, window, WorkspaceFolder, workspace } from 'vscode';
 import { ISysMetadataIWorkspaceConvertable } from '../MixIns/all';
@@ -58,67 +58,28 @@ export class WorkspaceManager
 
             if (md)
             {
-                let record: ISysMetadataIWorkspaceConvertable | undefined;
-                let c: unknown;
-
-                //add new records here
-                switch (md.sys_class_name)
-                {
-                    case "sys_script_include":
-                        c = <unknown>md;
-                        record = new ScriptInclude(<ISysScriptInclude>c);
-                        break;
-                    case "sp_widget":
-                        c = <unknown>md;
-                        record = new Widget(<ISpWidget>c);
-                        break;
-                    case "sp_theme":
-                        c = <unknown>md;
-                        record = new Theme(<ISpTheme>c);
-                        break;
-                    case "sp_css":
-                        c = <unknown>md;
-                        record = new StyleSheet(<ISpCss>c);
-                        break;
-                    case "sys_ui_script":
-                        c = <unknown>md;
-                        record = new UiScript(<ISysUiScript>c);
-                        break;
-                    case "sp_header_footer":
-                        c = <unknown>md;
-                        record = new SpHeaderFooter(<ISpHeaderFooter>c);
-                        break;
-                    case "sys_script_email":
-                        c = <unknown>md;
-                        record = new MailScript(<ISysMailScript>c);
-                        break;
-                    case "sys_ws_operation":
-                        c = <unknown>md;
-                        record = new ScriptedRestAPIResource(<IScriptedRestAPIResource>c);
-                        break;
-                    default:
-                        let msg = `GetRecord: Record ${md.sys_class_name} not recognized`;
-                        console.warn(msg);
-                        break;
-                }
+                let record = Converter.CastSysMetaData(md);
 
                 //read files into object
                 let arrEnum = MetaData.getFileTypes();
 
-                for (let index = 0; index < arrEnum.length; index++)
+                if (record)
                 {
-                    const element = arrEnum[index];
-                    let uri = md.getFileUri(element);
-                    if (uri && record)
+                    for (let index = 0; index < arrEnum.length; index++)
                     {
-                        let content = this.ReadTextFile(uri.fsPath);
-                        if (content)
+                        const element = arrEnum[index];
+                        let uri = md.getFileUri(element);
+                        if (uri && record)
                         {
-                            record.SetAttribute(content, element);
+                            let content = this.ReadTextFile(uri.fsPath);
+                            if (content)
+                            {
+                                record.SetAttribute(content, element);
+                            }
                         }
                     }
+                    return record;
                 }
-                return record;
             }
             else
             {

@@ -1,9 +1,10 @@
 import { FileTypes } from "./all";
+import { IPatchable } from "../Api/all";
 
 /**
  * interface required to write and read records to and from workspace.
  */
-export interface IWorkspaceConvertable
+export interface IWorkspaceConvertable extends IPatchable
 {
     /**
      * Set value on object based on filetype. 

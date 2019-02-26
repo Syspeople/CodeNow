@@ -47,4 +47,9 @@ export class UiScript extends Record implements ISysUiScript, QuickPickItem
             return this.script;
         }
     }
+
+    GetPatchable(): Object
+    {
+        return { script: this.script };
+    }
 }

@@ -1,6 +1,6 @@
 import { URL } from "url";
 
-import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript, MailScript, ISysMailScript, SpHeaderFooter, ISpHeaderFooter, IScriptedRestAPIResource, ScriptedRestAPIResource } from "./all";
+import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript, MailScript, ISysMailScript, SpHeaderFooter, ISpHeaderFooter, IScriptedRestAPIResource, ScriptedRestAPIResource, Converter } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
@@ -246,7 +246,7 @@ export class Instance
      * @param record 
      * @returns new record object from instance. if failed undefined.
      */
-    public SaveRecord<T extends ISysMetadata>(record: T): Promise<ISysMetadataIWorkspaceConvertable> | undefined
+    public SaveRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Promise<ISysMetadataIWorkspaceConvertable> | undefined
     {
         return new Promise((resolve, reject) =>
         {
@@ -257,37 +257,7 @@ export class Instance
                 {
                     p.then((res) =>
                     {
-                        let r = new Record(res.data.result);
-                        switch (r.sys_class_name)
-                        {
-                            case "sys_script_include":
-                                resolve(new ScriptInclude(<ISysScriptInclude>res.data.result));
-                                break;
-                            case "sp_widget":
-                                resolve(new Widget(<ISpWidget>res.data.result));
-                                break;
-                            case "sp_theme":
-                                resolve(new Theme(<ISpTheme>res.data.result));
-                                break;
-                            case "sp_css":
-                                resolve(new StyleSheet(<ISpCss>res.data.result));
-                                break;
-                            case "sp_header_footer":
-                                resolve(new SpHeaderFooter(<ISpHeaderFooter>res.data.result));
-                                break;
-                            case "sys_ui_script":
-                                resolve(new UiScript(<ISysUiScript>res.data.result));
-                                break;
-                            case "sys_script_email":
-                                resolve(new MailScript(<ISysMailScript>res.data.result));
-                                break;
-                            case "sys_ws_operation":
-                                resolve(new ScriptedRestAPIResource(<IScriptedRestAPIResource>res.data.result));
-                                break;
-                            default:
-                                console.warn(`SaveRecord: Record from ${r.sys_class_name} not recognized`);
-                                break;
-                        }
+                        resolve(Converter.CastSysMetaData(res.data.result));
                     }).catch((er) =>
                     {
                         reject(er);
@@ -296,6 +266,7 @@ export class Instance
             }
         });
     }
+
     /**
     * GetRecord retrieves full record from instance
     */
@@ -310,37 +281,11 @@ export class Instance
                 {
                     p.then((res) =>
                     {
-                        //add new record
-                        switch (res.data.result.sys_class_name)
-                        {
-                            case "sys_script_include":
-                                resolve(new ScriptInclude(<ISysScriptInclude>res.data.result));
-                                break;
-                            case "sp_widget":
-                                resolve(new Widget(<ISpWidget>res.data.result));
-                                break;
-                            case "sp_theme":
-                                resolve(new Theme(<ISpTheme>res.data.result));
-                                break;
-                            case "sp_css":
-                                resolve(new StyleSheet(<ISpCss>res.data.result));
-                                break;
-                            case "sys_ui_script":
-                                resolve(new UiScript(<ISysUiScript>res.data.result));
-                                break;
-                            case "sp_header_footer":
-                                resolve(new SpHeaderFooter(<ISpHeaderFooter>res.data.result));
-                                break;
-                            case "sys_script_email":
-                                resolve(new MailScript(<ISysMailScript>res.data.result));
-                                break;
-                            default:
-                                console.warn(`GetRecord: Record ${res.data.result.sys_class_name} not recognized`);
-                                break;
-                        }
+                        resolve(Converter.CastSysMetaData(res.data.result));
                     }).catch((er) =>
                     {
                         console.error(er);
+                        reject(er);
                     });
                 }
             }
