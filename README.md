@@ -39,7 +39,7 @@ You need to have [Node.js](https://nodejs.org/en/) installed either way. make su
 ## Package and install
 1. Clone the repository. Remember do have the branch you want checked out and synced.
 2. Install Visual Studio Code Extensions: **npm install -g vsce** 
-3. Open you terminal an cd to root dir of your repository.
+3. Open a terminal and cd to root dir of your repository.
 4. package extension: **vsce package**
 5. Open Vscode and use command: install from vsix
 6. navigate to packaged vsix from step 4 and open it. 
