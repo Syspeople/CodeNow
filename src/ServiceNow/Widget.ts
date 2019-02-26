@@ -96,4 +96,42 @@ export class Widget extends Record implements ISpWidget, QuickPickItem
                 break;
         }
     }
+
+
+    /**
+        * toJSON
+        */
+    public toJSON()
+    {
+        let b = super.toJSON();
+        return {
+            sys_class_name: b.sys_class_name,
+            sys_id: b.sys_id,
+            sys_policy: b.sys_policy,
+            sys_updated_on: b.sys_updated_on,
+            sys_created_on: b.sys_created_on,
+            sys_package: b.sys_package,
+            sys_scope: b.sys_scope,
+            template: this.template,
+            css: this.css,
+            internal: this.internal,
+            roles: this.roles,
+            link: this.link,
+            description: this.description,
+            docs: this.docs,
+            public: this.public,
+            client_script: this.client_script,
+            id: this.id,
+            field_list: this.field_list,
+            demo_data: this.demo_data,
+            option_schema: this.option_schema,
+            script: this.script,
+            has_preview: this.has_preview,
+            servicenow: this.servicenow,
+            data_table: this.data_table,
+            name: this.name,
+            controller_as: this.controller_as
+        };
+    }
+
 }
