@@ -407,23 +407,31 @@ export function activate(context: vscode.ExtensionContext)
     {
         if (instance.IsInitialized())
         {
-            let record = wm.GetRecord(uri);
+            let p = instance.UpdateSetIsValid();
 
-            if (record)
+            p.then((res) =>
             {
-                let o = instance.SaveRecord(record);
-                if (o)
+                let record = wm.GetRecord(uri);
+
+                if (record)
                 {
-                    o.then((res) =>
+                    let o = instance.SaveRecord(record);
+                    if (o)
                     {
-                        vscode.window.showInformationMessage(`Saved`);
-                        wm.UpdateRecord(res, uri);
-                    }).catch((er) =>
-                    {
-                        vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
-                    });
+                        o.then((res) =>
+                        {
+                            vscode.window.showInformationMessage(`Saved`);
+                            wm.UpdateRecord(res, uri);
+                        }).catch((er) =>
+                        {
+                            vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
+                        });
+                    }
                 }
-            }
+            }).catch((err) =>
+            {
+                vscode.window.showErrorMessage("Update set no longer in progress. Changes not saves to instance.");
+            });
         }
         else
         {
@@ -470,39 +478,47 @@ export function activate(context: vscode.ExtensionContext)
     {
         if (instance.IsInitialized())
         {
-            config = vscode.workspace.getConfiguration("snsb");
-            if (config.uploadOnSave)
+            let p = instance.UpdateSetIsValid();
+
+            p.then((res) =>
             {
-                let record = wm.GetRecord(e.uri);
-
-                if (record)
+                config = vscode.workspace.getConfiguration("snsb");
+                if (config.uploadOnSave)
                 {
-                    let p = instance.IsLatest(record);
+                    let record = wm.GetRecord(e.uri);
 
-                    p.then((res) =>
+                    if (record)
                     {
-                        vscode.window.showWarningMessage(`Newer Version of record ${res.sys_id} Found on instance`);
-                    }).catch((er) =>
-                    {
-                        if (record)
+                        let p = instance.IsLatest(record);
+
+                        p.then((res) =>
                         {
-                            let o = instance.SaveRecord(record);
-
-                            if (o)
+                            vscode.window.showWarningMessage(`Newer Version of record ${res.sys_id} Found on instance`);
+                        }).catch((er) =>
+                        {
+                            if (record)
                             {
-                                o.then((res) =>
+                                let o = instance.SaveRecord(record);
+
+                                if (o)
                                 {
-                                    vscode.window.showInformationMessage(`Saved`);
-                                    wm.UpdateRecord(res, e.uri);
-                                }).catch((er) =>
-                                {
-                                    vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
-                                });
+                                    o.then((res) =>
+                                    {
+                                        vscode.window.showInformationMessage(`Saved`);
+                                        wm.UpdateRecord(res, e.uri);
+                                    }).catch((er) =>
+                                    {
+                                        vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
+                                    });
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
-            }
+            }).catch((err) =>
+            {
+                vscode.window.showErrorMessage("Update set no longer in progress. Changes not saves to instance.");
+            });
         }
         else
         {
