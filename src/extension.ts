@@ -346,6 +346,9 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    /**
+     * add header an footer widgets to workspace
+     */
     let getHeadersAndFooters = vscode.commands.registerCommand("snsb.getHeadersAndFooters", () =>
     {
         if (instance.IsInitialized())
@@ -372,8 +375,8 @@ export function activate(context: vscode.ExtensionContext)
     });
 
     /**
- * add mail script to workspace
- */
+     * add scripted API to workspace
+     */
     let getScriptedApiResource = vscode.commands.registerCommand("snsb.getScriptedRestApiResource", () =>
     {
         if (instance.IsInitialized())
