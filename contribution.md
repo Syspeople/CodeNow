@@ -35,6 +35,9 @@ export * from './MailScript';
 ```
 
 ## Step 5
+Add casting to actual class implementation in **Converter.ts** *ServiceNow* folder. 
+
+## Step 6
 Add the class(record) to the **Api.ts** file in the *Api* folder.
 
 Create private variable: 
@@ -43,11 +46,6 @@ Create private variable:
 private _SNSysEmailScript: string = `${this._SNTableSuffix}/sys_script_email`;
 ```
 
-The following functions need the class: 
-
-- GetRecord
-- Patch record
-
 And the add function to return all records:
 
 ```typescript
@@ -55,24 +53,23 @@ And the add function to return all records:
     {
         if (this.HttpClient)
         {
-            //update sets in global and in progress
+            //add a comment if there is advanced queries.
             let url = `${this._SNSysEmailScript}?sys_policy=""`;
             return this.HttpClient.get(url);
         }
     }
 ```
-## Step 6
-
+## Step 7
 Add the record to the **WorkspaceManager.ts** file in the *Manager* folder.
-
 The class should be added to the functions: 
 
-- GetRecord
 - createMetadata
 
-## Step 7
-Add the records to the **StateKeys.ts** in *Manager* folder.
 ## Step 8
+Add the records to the **StateKeys.ts** in *Manager* folder.
+
+
+## Step 9
 Add getters and setters in **WorkspaceStateManager.ts** in *Manager* folder.
 
 ```typescript
@@ -88,14 +85,12 @@ Add getters and setters in **WorkspaceStateManager.ts** in *Manager* folder.
 ```
 ## Step 9
 Add record to in **Instance.ts** in *ServiceNow* folder.
--	SaveRecord 
--	Get Record
 
-Add Get function for record 
+Add Get function for record (cached)
 
 Add Get Upstream function
 
-Add record to cache.
+Add record to cache function.
 
 ## Step 10
 Add command to **package.json.**
@@ -211,7 +206,7 @@ declare namespace sn_ws
          */
         saveResponseBodyAsAttachment(tableName: string, recordSysId: string, fileName: string): void;
 
-        //trunced for readibility
+        //truncated for readibility
     }
 }
 
