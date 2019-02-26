@@ -4,6 +4,7 @@ import { FileTypes } from "../Manager/all";
 
 export class MailScript extends Record implements ISysMailScript, QuickPickItem
 {
+
     constructor(u: ISysMailScript)
     {
         super(u);
@@ -36,5 +37,10 @@ export class MailScript extends Record implements ISysMailScript, QuickPickItem
         {
             return this.script;
         }
+    }
+
+    GetPatchable(): Object
+    {
+        return { script: this.script };
     }
 }

@@ -65,4 +65,11 @@ export class Theme extends Record implements ISpTheme, QuickPickItem
                 break;
         }
     }
+
+    GetPatchable(): Object
+    {
+        return {
+            css_variables: this.css_variables
+        };
+    }
 }

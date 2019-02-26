@@ -97,4 +97,14 @@ export class SpHeaderFooter extends Record implements ISpHeaderFooter, QuickPick
                 break;
         }
     }
+
+    GetPatchable(): Object
+    {
+        return {
+            script: this.script,
+            css: this.css,
+            client_script: this.client_script,
+            template: this.template
+        };
+    }
 }
