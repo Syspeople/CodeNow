@@ -3,6 +3,7 @@ import { FileTypes } from "../Manager/all";
 
 export class Processor extends Record implements ISysProcessor
 {
+
     active: boolean;
     description: string;
     interactive: boolean;
@@ -45,11 +46,17 @@ export class Processor extends Record implements ISysProcessor
             this.script = content;
         }
     }
+
     GetAttribute(filetype: FileTypes): string | undefined
     {
         if (filetype === FileTypes.serverScript)
         {
             return this.script;
         }
+    }
+
+    GetPatchable(): Object
+    {
+        return { script: this.script };
     }
 }

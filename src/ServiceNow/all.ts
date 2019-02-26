@@ -26,4 +26,5 @@ export * from './MailScript';
 export * from './IScriptedRestAPIResource';
 export * from './ScriptedRestAPIResource';
 export * from './ISysProcessor';
+export * from './Processor';
 export * from './converter';
