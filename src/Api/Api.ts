@@ -327,86 +327,8 @@ export class Api
         if (this.HttpClient)
         {
             //trim data to speed up patch
-<<<<<<< HEAD
-            switch (record.sys_class_name)
-            {
-                case "sys_script_include":
-                    url = `${this._SNScriptIncludeTable}/${record.sys_id}`;
-                    //@ts-ignore
-                    let si = record as ISysScriptInclude;
-                    return this.HttpClient.patch<IServiceNowResponse<ISysScriptInclude>>(url, {
-                        "script": si.script
-                    });
-                case "sp_widget":
-                    url = `${this._SNWidgetTable}/${record.sys_id}`;
-                    //@ts-ignore
-                    let widget = record as ISpWidget;
-                    return this.HttpClient.patch<IServiceNowResponse<ISpWidget>>(url, {
-                        "script": widget.script,
-                        "css": widget.css,
-                        "client_script": widget.client_script,
-                        'template': widget.template
-                    });
-                case "sp_theme":
-                    url = `${this._SNSpThemeTable}/${record.sys_id}`;
-                    //@ts-ignore
-                    let theme = record as ISpTheme;
-                    return this.HttpClient.patch<IServiceNowResponse<ISpTheme>>(url, {
-                        "css_variables": theme.css_variables
-                    });
-                case "sp_css":
-                    url = `${this._SNSpStyleSheet}/${record.sys_id}`;
-                    //@ts-ignore
-                    let styleSheet = record as ISpCss;
-                    return this.HttpClient.patch<IServiceNowResponse<ISpCss>>(url, {
-                        "css": styleSheet.css
-                    });
-                case "sys_ui_script":
-                    url = `${this._SNSysUiScript}/${record.sys_id}`;
-                    //@ts-ignore
-                    let us = record as ISysUiScript;
-                    return this.HttpClient.patch<IServiceNowResponse<ISysUiScript>>(url, {
-                        "script": us.script
-                    });
-                case "sp_header_footer":
-                    url = `${this._SNHeaderFooter}/${record.sys_id}`;
-                    //@ts-ignore
-                    let hf = record as ISpHeaderFooter;
-                    return this.HttpClient.patch<IServiceNowResponse<ISpHeaderFooter>>(url, {
-                        "script": hf.script,
-                        "css": hf.css,
-                        "client_script": hf.client_script,
-                        'template': hf.template
-                    });
-                case "sys_script_email":
-                    url = `${this._SNSysEmailScript}/${record.sys_id}`;
-                    //@ts-ignore
-                    let ms = record as ISysMailScript;
-                    return this.HttpClient.patch<IServiceNowResponse<ISysMailScript>>(url, {
-                        "script": ms.script
-                    });
-                case "sys_ws_operation":
-                    url = `${this._SNScriptedRestApiResource}/${record.sys_id}`;
-                    //@ts-ignore
-                    let spr = record as IScriptedRestAPIResource;
-                    return this.HttpClient.patch<IServiceNowResponse<IScriptedRestAPIResource>>(url, {
-                        "script": spr.operation_script
-                    });
-                case "sys_ws_operation":
-                    url = `${this._SNScriptedRestApiResource}/${record.sys_id}`;
-                    //@ts-ignore
-                    let p = record as ISysProcessor;
-                    return this.HttpClient.patch<IServiceNowResponse<ISysProcessor>>(url, {
-                        "script": p.script
-                    });
-                default:
-                    console.warn("PatchRecord: Record not Recognized");
-                    break;
-            }
-=======
             let url: string = `${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`;
             return this.HttpClient.patch<IServiceNowResponse<T>>(url, record.GetPatchable());
->>>>>>> dev
         }
     }
 
@@ -414,43 +336,11 @@ export class Api
      * return a promise with a single full Record
      * @param record 
      */
-<<<<<<< HEAD
-    public GetRecord<T extends ISysMetadata>(record: T): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>> | undefined
-    {
-        if (this.HttpClient)
-        {
-            let sysid = record.sys_id;
-            switch (record.sys_class_name)
-            {
-                case "sys_script_include":
-                    return this.HttpClient.get<IServiceNowResponse<ISysScriptInclude>>(`${this._SNScriptIncludeTable}/${sysid}`);
-                case "sp_widget":
-                    return this.HttpClient.get<IServiceNowResponse<ISpWidget>>(`${this._SNWidgetTable}/${sysid}`);
-                case "sp_theme":
-                    return this.HttpClient.get<IServiceNowResponse<ISpTheme>>(`${this._SNSpThemeTable}/${sysid}`);
-                case "sp_css":
-                    return this.HttpClient.get<IServiceNowResponse<ISpCss>>(`${this._SNSpStyleSheet}/${sysid}`);
-                case "sys_ui_script":
-                    return this.HttpClient.get<IServiceNowResponse<ISysUiScript>>(`${this._SNSysUiScript}/${sysid}`);
-                case "sp_header_footer":
-                    return this.HttpClient.get<IServiceNowResponse<ISpHeaderFooter>>(`${this._SNHeaderFooter}/${sysid}`);
-                case "sys_script_email":
-                    return this.HttpClient.get<IServiceNowResponse<ISysMailScript>>(`${this._SNSysEmailScript}/${sysid}`);
-                case "sys_ws_operation":
-                    return this.HttpClient.get<IServiceNowResponse<IScriptedRestAPIResource>>(`${this._SNScriptedRestApiResource}/${sysid}`);
-                case "sys_processor":
-                    return this.HttpClient.get<IServiceNowResponse<ISysProcessor>>(`${this._SNProcessor}/${sysid}`);
-                default:
-                    console.warn(`GetRecord: Record ${record.sys_class_name} not recognized`);
-                    break;
-            }
-=======
     public GetRecord<T extends ISysMetadata>(record: ISysMetadata): Axios.AxiosPromise<IServiceNowResponse<T>> | undefined
     {
         if (this.HttpClient)
         {
             return this.HttpClient.get<IServiceNowResponse<T>>(`${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`);
->>>>>>> dev
         }
     }
 
