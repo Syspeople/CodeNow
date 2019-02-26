@@ -7,7 +7,7 @@ export interface ISysProcessor extends ISysMetadata, IWorkspaceConvertable
     description: string;
     interactive: boolean;
     name: string;
-    prameters: string;
+    parameters: string;
     parameters_endpoint: string;
     path: string;
     path_endpoint: string;
