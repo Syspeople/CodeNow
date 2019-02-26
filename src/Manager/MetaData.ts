@@ -123,4 +123,22 @@ export class MetaData extends Record implements ILocalMetaData
 
         return new MetaData(m, files, m.instanceName, m.RecordName);
     }
+
+    public toJSON()
+    {
+        let b = super.toJSON();
+        return {
+            sys_class_name: b.sys_class_name,
+            sys_id: b.sys_id,
+            sys_policy: b.sys_policy,
+            sys_updated_on: b.sys_updated_on,
+            sys_created_on: b.sys_created_on,
+            sys_package: b.sys_package,
+            sys_scope: b.sys_scope,
+            Files: this.Files,
+            RecordName: this.RecordName,
+            basePath: this.basePath,
+            instanceName: this.instanceName,
+        };
+    }
 }
