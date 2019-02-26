@@ -407,23 +407,31 @@ export function activate(context: vscode.ExtensionContext)
     {
         if (instance.IsInitialized())
         {
-            let record = wm.GetRecord(uri);
+            let p = instance.UpdateSetIsValid();
 
-            if (record)
+            p.then((res) =>
             {
-                let o = instance.SaveRecord(record);
-                if (o)
+                let record = wm.GetRecord(uri);
+
+                if (record)
                 {
-                    o.then((res) =>
+                    let o = instance.SaveRecord(record);
+                    if (o)
                     {
-                        vscode.window.showInformationMessage(`Saved`);
-                        wm.UpdateRecord(res, uri);
-                    }).catch((er) =>
-                    {
-                        vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
-                    });
+                        o.then((res) =>
+                        {
+                            vscode.window.showInformationMessage(`Saved`);
+                            wm.UpdateRecord(res, uri);
+                        }).catch((er) =>
+                        {
+                            vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
+                        });
+                    }
                 }
-            }
+            }).catch((err) =>
+            {
+                vscode.window.showErrorMessage("Update set no longer in progress.");
+            });
         }
         else
         {
