@@ -5,6 +5,7 @@ import * as qs from "querystring";
 import { ISysUiScript } from "../ServiceNow/ISysUiScript";
 import { ISpHeaderFooter } from "../ServiceNow/ISpHeaderFooter";
 import { ISysMailScript } from "../ServiceNow/ISysMailScript";
+import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
 
 export class Api
 {
@@ -316,16 +317,17 @@ export class Api
             return this.HttpClient.get(url);
         }
     }
+
     /**
      * Patch a record.
      * 
      */
-    public PatchRecord<T extends ISysMetadata>(record: T): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>> | undefined
+    public PatchRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Axios.AxiosPromise<IServiceNowResponse<T>> | undefined
     {
         if (this.HttpClient)
         {
-            let url: string;
             //trim data to speed up patch
+<<<<<<< HEAD
             switch (record.sys_class_name)
             {
                 case "sys_script_include":
@@ -401,13 +403,18 @@ export class Api
                     console.warn("PatchRecord: Record not Recognized");
                     break;
             }
+=======
+            let url: string = `${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`;
+            return this.HttpClient.patch<IServiceNowResponse<T>>(url, record.GetPatchable());
+>>>>>>> dev
         }
     }
 
     /**
-     * return a promise with the full Record
+     * return a promise with a single full Record
      * @param record 
      */
+<<<<<<< HEAD
     public GetRecord<T extends ISysMetadata>(record: T): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>> | undefined
     {
         if (this.HttpClient)
@@ -437,6 +444,13 @@ export class Api
                     console.warn(`GetRecord: Record ${record.sys_class_name} not recognized`);
                     break;
             }
+=======
+    public GetRecord<T extends ISysMetadata>(record: ISysMetadata): Axios.AxiosPromise<IServiceNowResponse<T>> | undefined
+    {
+        if (this.HttpClient)
+        {
+            return this.HttpClient.get<IServiceNowResponse<T>>(`${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`);
+>>>>>>> dev
         }
     }
 

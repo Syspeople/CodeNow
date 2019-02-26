@@ -46,4 +46,9 @@ export class UiScript extends Record implements ISysUiScript
             return this.script;
         }
     }
+
+    GetPatchable(): Object
+    {
+        return { script: this.script };
+    }
 }

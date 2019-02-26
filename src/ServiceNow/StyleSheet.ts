@@ -46,5 +46,10 @@ export class StyleSheet extends Record implements ISpCss
                 break;
         }
     }
-
+    GetPatchable(): Object
+    {
+        return {
+            css: this.css
+        };
+    }
 }

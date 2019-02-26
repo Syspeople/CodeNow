@@ -1,10 +1,18 @@
 import { FileTypes } from "./all";
+<<<<<<< HEAD
 import { QuickPickItem } from "vscode";
+=======
+import { IPatchable } from "../Api/all";
+>>>>>>> dev
 
 /**
  * interface required to write and read records to and from workspace.
  */
+<<<<<<< HEAD
 export interface IWorkspaceConvertable extends QuickPickItem
+=======
+export interface IWorkspaceConvertable extends IPatchable
+>>>>>>> dev
 {
     /**
      * Set value on object based on filetype. 

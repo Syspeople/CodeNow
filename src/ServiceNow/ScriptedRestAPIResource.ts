@@ -6,6 +6,7 @@ import { Relation } from "./Relation";
 
 export class ScriptedRestAPIResource extends Record implements IScriptedRestAPIResource, QuickPickItem
 {
+
     constructor(u: IScriptedRestAPIResource)
     {
         super(u);
@@ -48,4 +49,8 @@ export class ScriptedRestAPIResource extends Record implements IScriptedRestAPIR
         }
     }
 
+    GetPatchable(): Object
+    {
+        throw new Error("Method not implemented.");
+    }
 }

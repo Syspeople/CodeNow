@@ -64,4 +64,11 @@ export class Theme extends Record implements ISpTheme
                 break;
         }
     }
+
+    GetPatchable(): Object
+    {
+        return {
+            css_variables: this.css_variables
+        };
+    }
 }
