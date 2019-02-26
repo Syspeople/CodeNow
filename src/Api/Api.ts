@@ -8,7 +8,6 @@ import { ISysMailScript } from "../ServiceNow/ISysMailScript";
 
 export class Api
 {
-
     private _SNHost: string = "";
     private _SNApiEndpoint = "/api";
     private _SNTableSuffix: string = `${this._SNApiEndpoint}/now/table`;
@@ -336,7 +335,6 @@ export class Api
                     return this.HttpClient.patch<IServiceNowResponse<ISysScriptInclude>>(url, {
                         "script": si.script
                     });
-
                 case "sp_widget":
                     url = `${this._SNWidgetTable}/${record.sys_id}`;
                     //@ts-ignore
@@ -392,6 +390,13 @@ export class Api
                     return this.HttpClient.patch<IServiceNowResponse<IScriptedRestAPIResource>>(url, {
                         "script": spr.operation_script
                     });
+                case "sys_ws_operation":
+                    url = `${this._SNScriptedRestApiResource}/${record.sys_id}`;
+                    //@ts-ignore
+                    let p = record as ISysProcessor;
+                    return this.HttpClient.patch<IServiceNowResponse<ISysProcessor>>(url, {
+                        "script": p.script
+                    });
                 default:
                     console.warn("PatchRecord: Record not Recognized");
                     break;
@@ -403,7 +408,7 @@ export class Api
      * return a promise with the full Record
      * @param record 
      */
-    public GetRecord(record: ISysMetadata): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>> | undefined
+    public GetRecord<T extends ISysMetadata>(record: T): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>> | undefined
     {
         if (this.HttpClient)
         {
@@ -426,6 +431,8 @@ export class Api
                     return this.HttpClient.get<IServiceNowResponse<ISysMailScript>>(`${this._SNSysEmailScript}/${sysid}`);
                 case "sys_ws_operation":
                     return this.HttpClient.get<IServiceNowResponse<IScriptedRestAPIResource>>(`${this._SNScriptedRestApiResource}/${sysid}`);
+                case "sys_processor":
+                    return this.HttpClient.get<IServiceNowResponse<ISysProcessor>>(`${this._SNProcessor}/${sysid}`);
                 default:
                     console.warn(`GetRecord: Record ${record.sys_class_name} not recognized`);
                     break;
