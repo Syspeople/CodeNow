@@ -773,9 +773,72 @@ declare class GlideDateTime
 declare class GlideDate
 {
     /**
-     * Not fully documented yet.
+     * Creates a GlideDate object with the current date time.
      */
     constructor();
+
+    /**
+     * Gets the date in the specified date format.
+     * @param format the desired date format
+     * @returns the date in the specified format
+     */
+    getByFormat(format: string): string;
+
+    /**
+     * Gets the day of the month stored by the GlideDate object, expressed in the UTC time zone.
+     * @returns The day of the month in the UTC time zone, from 1 to 31.
+     */
+    getDayOfMonthNoTZ(): Number;
+
+    /**
+     * Gets the date in the current user's display format and time zone.
+     * @returns The date in the user's format and time zone. Keep in mind when designing business rules or script includes that this method may return values in different formats for different users.
+     */
+    getDisplayValue(): string;
+
+    /**
+     * Gets the display value in the internal format (yyyy-MM-dd).
+     * @returns The date values for the GlideDate object in the current user's time zone and the internal time format of yyyy-MM-dd.
+     */
+    getDisplayValueInternal(): string;
+
+    /**
+     * Gets the month stored by the GlideDate object, expressed in the UTC time zone.
+     * @returns The numerical value of the month from 1 to 12.
+     */
+    getMonthNoTZ(): Number;
+
+    /**
+     * Gets the date value stored in the database by the GlideDate object in the internal format, yyyy-MM-dd, and the system time zone, UTC by default.
+     * @returns The date value in the internal format and system time zone.
+     */
+    getValue(): string;
+
+    /**
+     * Gets the year stored by the GlideDate object, expressed in the UTC time zone.
+     * @returns The numerical value of the year.
+     */
+    getYearNoTZ(): Number;
+
+    /**
+     * Sets a date value using the current user's display format and time zone.
+     * @param asDisplayed The date in the current user's display format and time zone. The parameter must be formatted using the current user's preferred display format, such as yyyy-MM-dd.
+     */
+    setDisplayValue(asDisplayed: string): void;
+
+    /**
+     * Sets the date of the GlideDate object.
+     * @param o The date and time to use.
+     */
+    setValue(o: string): void;
+
+    /**
+     * Gets the duration difference between two GlideDate values.
+     * @param start The start value.
+     * @param end The end value.
+     * @returns The duration between the two values.
+     */
+    subtract(start: GlideDate, end: GlideDate): GlideDuration;
 }
 
 declare class GlideTime
