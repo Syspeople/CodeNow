@@ -1423,26 +1423,26 @@ declare class SpModal
      * Displays an alert.
      * @param message Message to show
      */
-    alert(message: string): Promise<T>;
+    alert(message: string): Promise<any>;
 
     /**
      * Displays a confirmation message.
      * @param message message to show
      */
-    confirm(message: string): Promise<T>;
+    confirm(message: string): Promise<any>;
 
     /**
      * Opens a modal window using the specified options.
      * @param options 
      */
-    open(options: SpModalOptions): Promise<T>;
+    open(options: SpModalOptions): Promise<any>;
 
     /**
      * Displays a prompt for user input.
      * @param message message to show.
      * @param defaultValue optional default value.
      */
-    prompt(message: string, defaultValue?: string): Promise<T>;
+    prompt(message: string, defaultValue?: string): Promise<any>;
 }
 //client angular
 
@@ -1512,7 +1512,7 @@ declare class $Q
     /**
      * @returns The newly created promise.
      */
-    defer(): Promise<T>;
+    defer(): Promise<any>;
 
     /**
      * Creates a promise that is resolved as rejected with the specified reason. This api should be used to forward rejection in a chain of promises. 
@@ -1534,7 +1534,7 @@ declare class $Q
      * @param errorCallback callback
      * @param progressCallback callback
      */
-    when(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise<T>;
+    when(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise<any>;
 
     /**
      * Alias of when to maintain naming consistency with ES6.
@@ -1543,19 +1543,19 @@ declare class $Q
      * @param errorCallback callback
      * @param progressCallback callback 
      */
-    resolve(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise<T>;
+    resolve(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise<any>;
 
     /**
      * Combines multiple promises into a single promise that is resolved when all of the input promises are resolved.
      * @param promises An array or hash of promises.
      */
-    all(promises: Array<Promise>): Promise<T>;
+    all(promises: Array<Promise<any>>): Promise<any>;
 
     /**
      * Returns a promise that resolves or rejects as soon as one of those promises resolves or rejects, with the value or reason from that promise.
      * @param promises An array or hash of promises.
      */
-    race(promises: Array<Promise>): Promise<T>;
+    race(promises: Array<Promise<any>>): Promise<any>;
 }
 
 //client angular
@@ -1580,17 +1580,17 @@ declare class Server
      * Calls the server and sends custom input.
      * @param Object Custom input object
      */
-    get(Object?: object): Promise<T>;
+    get(Object?: object): Promise<any>;
 
     /**
      * Calls the server and posts this.data to the server script. Returns Promise.
      */
-    update(): Promise<T>;
+    update(): Promise<any>;
 
     /**
      * Calls the server and automatically replaces the current options and data from the server response. Returns Promise.
      */
-    refresh(): Promise<T>;
+    refresh(): Promise<any>;
 }
 
 //Client Angular
