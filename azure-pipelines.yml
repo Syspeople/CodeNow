@@ -16,7 +16,6 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
-    npm install
-    npm install vsce
+    npm install --only=dev
     npm run vscode:prepublish
   displayName: 'npm install and build'
