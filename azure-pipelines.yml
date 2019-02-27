@@ -18,4 +18,5 @@ steps:
 - script: |
     npm install
     npm install vsce
+    vsce package
   displayName: 'npm install and build'
