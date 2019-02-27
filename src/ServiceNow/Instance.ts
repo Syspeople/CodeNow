@@ -944,7 +944,6 @@ export class Instance
     {
         if (this.ApiProxy)
         {
-            console.log("Entered Instance");
             this.ApiProxy.CreateUpdateSet(name);
         }
     }

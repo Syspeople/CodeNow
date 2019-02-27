@@ -6,6 +6,7 @@ import { ISysUiScript } from "../ServiceNow/ISysUiScript";
 import { ISpHeaderFooter } from "../ServiceNow/ISpHeaderFooter";
 import { ISysMailScript } from "../ServiceNow/ISysMailScript";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
+import { WSAEACCES } from "constants";
 
 export class Api
 {
@@ -481,53 +482,36 @@ export class Api
         }
     }
 
-    public CreateUpdateSet(name: string): void
+    public CreateUpdateSet(name: string): Axios.AxiosPromise<IServiceNowResponse<any>> | undefined
     {
-        if (this.HttpClient)
+
+        return new Promise((resolve, reject) =>
         {
-            //let url = `${this._SNHost}/${this._SNXmlHttp}`;
-            let url = `${this._SNSysUpdateSet}?sys_policy=""`;
+            let url = `${this._SNSysUpdateSet}`;
             var i = this.NewSession();
 
             i.then((res) =>
             {
-                /*
-                let data = {
-                    sysparm_processor: "UpdateSetAPI",
-                    sysparm_scope: "global",
-                    sysparm_want_session_messages: false,
-                    sysparm_type: "insertUpdateSet",
-                    sysparm_value: res
-                };*/
-
-                let data = {
-                    name: name
-                };
 
                 if (this.HttpClient)
                 {
-                    let setUpdateSet = this.HttpClient.post(url, qs.stringify(data), {
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        }
-                    });
+                    this.HttpClient.post(url, {
+                        name: name
+                    })
+                        .then(function (response)
+                        {
+                            console.log(response);
+                        })
+                        .catch(function (error)
+                        {
+                            console.log(error);
+                        });
                 }
+
             }).catch((er) =>
             {
                 console.error(er);
             });
-            /*
-            console.log("Entered API");
-            var data = {
-                "name": '${name}'
-            };
-            //Set updateset.
-            let url = `${this._SNSysUpdateSet}?sys_policy=""`;
- 
-            this.HttpClient.post(url, data).then(function (response)
-            {
-                console.log(response);
-            });*/
-        }
+        });
     }
 }
