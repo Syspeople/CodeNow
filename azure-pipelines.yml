@@ -18,5 +18,5 @@ steps:
 - script: |
     npm install
     npm install vsce
-    vsce package
+    npm run vscode:prepublish
   displayName: 'npm install and build'
