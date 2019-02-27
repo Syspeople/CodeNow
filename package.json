@@ -175,8 +175,7 @@
         "vscode": "^1.1.6",
         "tslint": "^5.8.0",
         "@types/node": "^7.0.43",
-        "@types/mocha": "^2.2.42",
-        "vsce": "^1.57.1"
+        "@types/mocha": "^2.2.42"
     },
     "dependencies": {
         "@types/opn": "^5.1.0",
