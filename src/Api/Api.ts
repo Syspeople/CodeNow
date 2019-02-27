@@ -480,4 +480,54 @@ export class Api
             return this.HttpClient.get(url);
         }
     }
+
+    public CreateUpdateSet(name: string): void
+    {
+        if (this.HttpClient)
+        {
+            //let url = `${this._SNHost}/${this._SNXmlHttp}`;
+            let url = `${this._SNSysUpdateSet}?sys_policy=""`;
+            var i = this.NewSession();
+
+            i.then((res) =>
+            {
+                /*
+                let data = {
+                    sysparm_processor: "UpdateSetAPI",
+                    sysparm_scope: "global",
+                    sysparm_want_session_messages: false,
+                    sysparm_type: "insertUpdateSet",
+                    sysparm_value: res
+                };*/
+
+                let data = {
+                    name: name
+                };
+
+                if (this.HttpClient)
+                {
+                    let setUpdateSet = this.HttpClient.post(url, qs.stringify(data), {
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    });
+                }
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+            /*
+            console.log("Entered API");
+            var data = {
+                "name": '${name}'
+            };
+            //Set updateset.
+            let url = `${this._SNSysUpdateSet}?sys_policy=""`;
+ 
+            this.HttpClient.post(url, data).then(function (response)
+            {
+                console.log(response);
+            });*/
+        }
+    }
 }

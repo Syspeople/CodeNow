@@ -934,6 +934,21 @@ export class Instance
         }
     }
 
+
+    /**
+ * SetUpdateSet
+ * 
+ * Sets the update to the one provided.
+ */
+    public CreateUpdateSet(name: string): void
+    {
+        if (this.ApiProxy)
+        {
+            console.log("Entered Instance");
+            this.ApiProxy.CreateUpdateSet(name);
+        }
+    }
+
     /**
      * GetRecord, returns record metadata from instance
      */

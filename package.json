@@ -160,6 +160,11 @@
                 "command": "snsb.getHeadersAndFooters",
                 "title": "Add Header | Footer Widget to Workspace",
                 "category": "snsb"
+            },
+            {
+                "command": "snsb.createUpdateSet",
+                "title": "Create Updateset",
+                "category": "snsb"
             }
         ]
     },
