@@ -1,5 +1,5 @@
 import * as fileSystem from 'fs';
-import { ISysMetadata, Instance, ScriptInclude, ISysScriptInclude, ISpWidget, Widget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript } from '../ServiceNow/all';
+import { ISysMetadata, Instance, ISysScriptInclude, ISpWidget, ISpTheme, ISpCss, ISysUiScript, ISysMailScript, ISpHeaderFooter, IScriptedRestAPIResource, Converter } from '../ServiceNow/all';
 import { MetaData, KeyValuePair, WorkspaceStateManager, FileTypes } from './all';
 import { Uri, ExtensionContext, window, WorkspaceFolder, workspace } from 'vscode';
 import { ISysMetadataIWorkspaceConvertable } from '../MixIns/all';
@@ -58,55 +58,32 @@ export class WorkspaceManager
 
             if (md)
             {
-                let record: ISysMetadataIWorkspaceConvertable | undefined;
-                let c: unknown;
-
-                //add new records here
-                switch (md.sys_class_name)
-                {
-                    case "sys_script_include":
-                        c = <unknown>md;
-                        record = new ScriptInclude(<ISysScriptInclude>c);
-                        break;
-                    case "sp_widget":
-                        c = <unknown>md;
-                        record = new Widget(<ISpWidget>c);
-                        break;
-                    case "sp_theme":
-                        c = <unknown>md;
-                        record = new Theme(<ISpTheme>c);
-                        break;
-                    case "sp_css":
-                        c = <unknown>md;
-                        record = new StyleSheet(<ISpCss>c);
-                        break;
-                    case "sys_ui_script":
-                        c = <unknown>md;
-                        record = new UiScript(<ISysUiScript>c);
-                        break;
-                    default:
-                        let msg = `GetRecord: Record ${md.sys_class_name} not recognized`;
-                        console.warn(msg);
-                        break;
-                }
+                let record = Converter.CastSysMetaData(md);
 
                 //read files into object
                 let arrEnum = MetaData.getFileTypes();
 
-                for (let index = 0; index < arrEnum.length; index++)
+                if (record)
                 {
-                    const element = arrEnum[index];
-                    let uri = md.getFileUri(element);
-                    if (uri && record)
+                    for (let index = 0; index < arrEnum.length; index++)
                     {
-                        let content = this.ReadTextFile(uri.fsPath);
-                        if (content)
+                        const element = arrEnum[index];
+                        let uri = md.getFileUri(element);
+                        if (uri && record)
                         {
-                            record.SetAttribute(content, element);
+                            let content = this.ReadTextFile(uri.fsPath);
+                            if (content)
+                            {
+                                record.SetAttribute(content, element);
+                            }
                         }
                     }
+                    return record;
                 }
-                return record;
+            }
+            else
+            {
+                console.warn("Unable to find metadataa in local storage for " + uri.fsPath);
             }
         }
         catch (e)
@@ -149,7 +126,7 @@ export class WorkspaceManager
     /**
      * AddRecord a new record. 
      */
-    public AddRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T, instance: Instance)
+    public AddRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T, instance: Instance): MetaData | undefined
     {
         let options = this.createMetadata(record, instance);
 
@@ -180,6 +157,7 @@ export class WorkspaceManager
                     }
                 }
             }
+            return options;
         }
     }
 
@@ -240,6 +218,27 @@ export class WorkspaceManager
                 f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
                 meta = new MetaData(record, f, instanceName, recordName);
                 break;
+            case "sp_header_footer":
+                recordName = (<ISpHeaderFooter>record).name;
+
+                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
+                f.push(new KeyValuePair(FileTypes.clientScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.clientScript)}`)));
+                f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
+                f.push(new KeyValuePair(FileTypes.html, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.html)}`)));
+                meta = new MetaData(record, f, instanceName, recordName);
+                break;
+            case "sys_script_email":
+                recordName = (<ISysMailScript>record).name;
+
+                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
+                meta = new MetaData(record, f, instanceName, recordName);
+                break;
+            case "sys_ws_operation":
+                recordName = (<IScriptedRestAPIResource>record).name;
+
+                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
+                meta = new MetaData(record, f, instanceName, recordName);
+                break;
             default:
                 console.warn(`createMetadata: Record ${record.sys_class_name} not recognized`);
                 break;
@@ -250,7 +249,10 @@ export class WorkspaceManager
             this._wsm.AddMetaData(meta);
             return meta;
         }
-
+        else
+        {
+            console.warn("Metadata undefined");
+        }
     }
 
     private getFileTypeExtension(type: FileTypes): string
@@ -314,8 +316,6 @@ export class WorkspaceManager
         }
     }
 
-
-
     private GetPathInstance(i: Instance): string | undefined
     {
         let workspaceRoot = this.GetPathWorkspace();
@@ -326,8 +326,6 @@ export class WorkspaceManager
             return path;
         }
     }
-
-
 
     private GetPathWorkspace(): WorkspaceFolder | undefined
     {
@@ -447,71 +445,4 @@ export class WorkspaceManager
             return false;
         }
     }
-
-    /*
-    CLEAN UP AT SOME TIME
-    */
-
-    // private GetOptionsPretty(record: ISysMetadata): string
-    // {
-    //     return JSON.stringify(record, null, 2);
-    // }
-
-
-    // private GetPathParent(Uri: Uri): string
-    // {
-    //     let nameLength = this.GetFileName(Uri).length;
-    //     return Uri.fsPath.substring(0, Uri.fsPath.length - nameLength - 1);
-    // }
-
-    // private GetFileName(Uri: Uri): string
-    // {
-    //     let split = Uri.fsPath.split(`${this._delimiter}`);
-    //     return split[split.length - 1];
-    // }
-
-    // private GetPathRecordScript(uri: Uri): string
-    // {
-    //     let parentPath = this.GetPathParent(uri);
-    //     let recordName = this.GetFileName(uri);
-
-    //     return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.server_script.js`;
-    // }
-
-    // private GetPathRecordClientScript(uri: Uri): string
-    // {
-    //     let parentPath = this.GetPathParent(uri);
-
-    //     let recordName = this.GetFileName(uri);
-
-    //     return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.client_script.js`;
-    // }
-
-    // //returns the path of hte option.json that should reside in same dir. 
-    // private GetPathRecordOptions(uri: Uri): string
-    // {
-    //     let parentPath = this.GetPathParent(uri);
-
-    //     let recordName = this.GetFileName(uri);
-
-    //     return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.options.json`;
-    // }
-
-    // private GetPathRecordCss(uri: Uri): string
-    // {
-    //     let parentPath = this.GetPathParent(uri);
-
-    //     let recordName = this.GetFileName(uri);
-
-    //     return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.scss`;
-    // }
-
-    // private GetPathRecordHtmlTemplate(uri: Uri): string
-    // {
-    //     let parentPath = this.GetPathParent(uri);
-
-    //     let recordName = this.GetFileName(uri);
-
-    //     return `${parentPath}${this._delimiter}${recordName.split('.')[0]}.html`;
-    // }
 }

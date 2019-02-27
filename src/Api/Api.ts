@@ -1,8 +1,11 @@
 import * as Axios from "axios";
-import { Instance, ISysMetadata, ISysScriptInclude, ISpWidget, ISysProperty, SysProperty, ISpTheme, ISysUserSession, ISysUpdateSet, ISpCss, UpdateSet } from "../ServiceNow/all";
+import { Instance, ISysMetadata, ISysScriptInclude, ISpWidget, ISysProperty, SysProperty, ISpTheme, ISysUserSession, ISysUpdateSet, ISpCss, UpdateSet, IScriptedRestAPIResource } from "../ServiceNow/all";
 import { IServiceNowResponse, ICookie } from "./all";
 import * as qs from "querystring";
 import { ISysUiScript } from "../ServiceNow/ISysUiScript";
+import { ISpHeaderFooter } from "../ServiceNow/ISpHeaderFooter";
+import { ISysMailScript } from "../ServiceNow/ISysMailScript";
+import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
 
 export class Api
 {
@@ -20,6 +23,10 @@ export class Api
     private _SNSysUpdateSet: string = `${this._SNTableSuffix}/sys_update_set`;
     private _SNSpStyleSheet: string = `${this._SNTableSuffix}/sp_css`;
     private _SNSysUiScript: string = `${this._SNTableSuffix}/sys_ui_script`;
+    private _SNHeaderFooter: string = `${this._SNTableSuffix}/sp_header_footer`;
+    private _SNSysEmailScript: string = `${this._SNTableSuffix}/sys_script_email`;
+    private _SNScriptedRestApiResource: string = `${this._SNTableSuffix}/sys_ws_operation`;
+
 
     private _SNXmlHttp: string = `xmlhttp.do`;
     private _Properties: Array<ISysProperty> = new Array<ISysProperty>();
@@ -310,89 +317,30 @@ export class Api
             return this.HttpClient.get(url);
         }
     }
+
     /**
      * Patch a record.
      * 
      */
-    public PatchRecord<T extends ISysMetadata>(record: T): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>> | undefined
+    public PatchRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Axios.AxiosPromise<IServiceNowResponse<T>> | undefined
     {
         if (this.HttpClient)
         {
-            let url: string;
             //trim data to speed up patch
-            switch (record.sys_class_name)
-            {
-                case "sys_script_include":
-                    url = `${this._SNScriptIncludeTable}/${record.sys_id}`;
-                    //@ts-ignore
-                    let si = record as ISysScriptInclude;
-                    return this.HttpClient.patch<IServiceNowResponse<ISysScriptInclude>>(url, {
-                        "script": si.script
-                    });
-
-                case "sp_widget":
-                    url = `${this._SNWidgetTable}/${record.sys_id}`;
-                    //@ts-ignore
-                    let widget = record as ISpWidget;
-                    return this.HttpClient.patch<IServiceNowResponse<ISpWidget>>(url, {
-                        "script": widget.script,
-                        "css": widget.css,
-                        "client_script": widget.client_script,
-                        'template': widget.template
-                    });
-                case "sp_theme":
-                    url = `${this._SNSpThemeTable}/${record.sys_id}`;
-                    //@ts-ignore
-                    let theme = record as ISpTheme;
-                    return this.HttpClient.patch<IServiceNowResponse<ISpTheme>>(url, {
-                        "css_variables": theme.css_variables
-                    });
-                case "sp_css":
-                    url = `${this._SNSpStyleSheet}/${record.sys_id}`;
-                    //@ts-ignore
-                    let styleSheet = record as ISpCss;
-                    return this.HttpClient.patch<IServiceNowResponse<ISpCss>>(url, {
-                        "css": styleSheet.css
-                    });
-                case "sys_ui_script":
-                    url = `${this._SNSysUiScript}/${record.sys_id}`;
-                    //@ts-ignore
-                    let us = record as ISysUiScript;
-                    return this.HttpClient.patch<IServiceNowResponse<ISysUiScript>>(url, {
-                        "script": us.script
-                    });
-                default:
-                    console.warn("PatchRecord: Record not Recognized");
-                    break;
-            }
+            let url: string = `${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`;
+            return this.HttpClient.patch<IServiceNowResponse<T>>(url, record.GetPatchable());
         }
     }
 
     /**
-     * return a promise with the full Record
+     * return a promise with a single full Record
      * @param record 
      */
-    public GetRecord(record: ISysMetadata): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>> | undefined
+    public GetRecord<T extends ISysMetadata>(record: ISysMetadata): Axios.AxiosPromise<IServiceNowResponse<T>> | undefined
     {
         if (this.HttpClient)
         {
-            let sysid = record.sys_id;
-            switch (record.sys_class_name)
-            {
-                case "sys_script_include":
-                    return this.HttpClient.get<IServiceNowResponse<ISysScriptInclude>>(`${this._SNScriptIncludeTable}/${sysid}`);
-                case "sp_widget":
-                    return this.HttpClient.get<IServiceNowResponse<ISpWidget>>(`${this._SNWidgetTable}/${sysid}`);
-                case "sp_theme":
-                    return this.HttpClient.get<IServiceNowResponse<ISpTheme>>(`${this._SNSpThemeTable}/${sysid}`);
-                case "sp_css":
-                    return this.HttpClient.get<IServiceNowResponse<ISpCss>>(`${this._SNSpStyleSheet}/${sysid}`);
-                case "sys_ui_script":
-                    return this.HttpClient.get<IServiceNowResponse<ISysUiScript>>(`${this._SNSysUiScript}/${sysid}`);
-                default:
-                    console.warn(`GetRecord: Record ${record.sys_class_name} not recognized`);
-                    break;
-            }
+            return this.HttpClient.get<IServiceNowResponse<T>>(`${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`);
         }
     }
 
@@ -486,6 +434,49 @@ export class Api
         {
             //update sets in global and in progress
             let url = `${this._SNSysUiScript}?sys_policy=""`;
+            return this.HttpClient.get(url);
+        }
+    }
+
+    /**
+    * GetHeaderAndFooters
+    * 
+    */
+    public GetHeadersAndFooters(): Axios.AxiosPromise<IServiceNowResponse<Array<ISpHeaderFooter>>> | undefined
+    {
+        if (this.HttpClient)
+        {
+            //update sets in global and in progress
+            let url = `${this._SNHeaderFooter}?internal=false&sys_policy=""`;
+            return this.HttpClient.get(url);
+        }
+    }
+
+
+    /**
+    * GetEmailScripts
+    * 
+    */
+    public GetEmailScripts(): Axios.AxiosPromise<IServiceNowResponse<Array<ISysMailScript>>> | undefined
+    {
+        if (this.HttpClient)
+        {
+            //update sets in global and in progress
+            let url = `${this._SNSysEmailScript}?sys_policy=""`;
+            return this.HttpClient.get(url);
+        }
+    }
+
+    /**
+    * GetEmailScripts
+    * 
+    */
+    public GetScriptedApiResources(): Axios.AxiosPromise<IServiceNowResponse<Array<IScriptedRestAPIResource>>> | undefined
+    {
+        if (this.HttpClient)
+        {
+            //update sets in global and in progress
+            let url = `${this._SNScriptedRestApiResource}?sys_policy=""`;
             return this.HttpClient.get(url);
         }
     }

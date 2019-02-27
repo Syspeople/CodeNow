@@ -1,5 +1,6 @@
 import { URL } from "url";
-import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript } from "./all";
+
+import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript, MailScript, ISysMailScript, SpHeaderFooter, ISpHeaderFooter, IScriptedRestAPIResource, ScriptedRestAPIResource, Converter } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
@@ -93,7 +94,6 @@ export class Instance
             p.then(() =>
             {
                 this.Cache();
-                //this.TestConnection(nm);
                 resolve();
             }).catch((error) =>
             {
@@ -174,6 +174,49 @@ export class Instance
     }
 
     /**
+     * Verifies current update set. Ensures update set is still in progress before saving.
+     */
+    public UpdateSetIsValid(): Promise<Boolean>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            let p = this.GetUpdateSets();
+
+            p.then((us) =>
+            {
+                let set: UpdateSet | undefined;
+                if (this._wsm)
+                {
+                    //only gets in progress update set.
+                    set = this._wsm.GetUpdateSet();
+                }
+
+                let index: number = -1;
+                if (set)
+                {
+                    index = us.findIndex((element) =>
+                    {
+                        //@ts-ignore variable set already null checked
+                        return element.sys_id === set.sys_id;
+                    });
+                }
+
+                if (index !== -1)
+                {
+                    resolve(true);
+                }
+                else
+                {
+                    reject(false);
+                }
+            }).catch((r) =>
+            {
+                reject(r);
+            });
+        });
+    }
+
+    /**
      * OpenInPlatform Opens a record in hte default browser
      */
     public OpenInPlatformRecord(record: ISysMetadata): void
@@ -203,7 +246,7 @@ export class Instance
      * @param record 
      * @returns new record object from instance. if failed undefined.
      */
-    public SaveRecord<T extends ISysMetadata>(record: T): Promise<ISysMetadataIWorkspaceConvertable> | undefined
+    public SaveRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Promise<ISysMetadataIWorkspaceConvertable> | undefined
     {
         return new Promise((resolve, reject) =>
         {
@@ -214,25 +257,7 @@ export class Instance
                 {
                     p.then((res) =>
                     {
-                        let r = new Record(res.data.result);
-                        switch (r.sys_class_name)
-                        {
-                            case "sys_script_include":
-                                resolve(new ScriptInclude(<ISysScriptInclude>res.data.result));
-                                break;
-                            case "sp_widget":
-                                resolve(new Widget(<ISpWidget>res.data.result));
-                                break;
-                            case "sp_theme":
-                                resolve(new Theme(<ISpTheme>res.data.result));
-                                break;
-                            case "sp_css":
-                                resolve(new StyleSheet(<ISpCss>res.data.result));
-                                break;
-                            default:
-                                console.warn(`SaveRecord: Record from ${r.sys_class_name} not recognized`);
-                                break;
-                        }
+                        resolve(Converter.CastSysMetaData(res.data.result));
                     }).catch((er) =>
                     {
                         reject(er);
@@ -241,6 +266,7 @@ export class Instance
             }
         });
     }
+
     /**
     * GetRecord retrieves full record from instance
     */
@@ -255,31 +281,11 @@ export class Instance
                 {
                     p.then((res) =>
                     {
-                        //add new record
-                        switch (res.data.result.sys_class_name)
-                        {
-                            case "sys_script_include":
-                                resolve(new ScriptInclude(<ISysScriptInclude>res.data.result));
-                                break;
-                            case "sp_widget":
-                                resolve(new Widget(<ISpWidget>res.data.result));
-                                break;
-                            case "sp_theme":
-                                resolve(new Theme(<ISpTheme>res.data.result));
-                                break;
-                            case "sp_css":
-                                resolve(new StyleSheet(<ISpCss>res.data.result));
-                                break;
-                            case "sys_ui_script":
-                                resolve(new UiScript(<ISysUiScript>res.data.result));
-                                break;
-                            default:
-                                console.warn(`GetRecord: Record ${res.data.result.sys_class_name} not recognized`);
-                                break;
-                        }
+                        resolve(Converter.CastSysMetaData(res.data.result));
                     }).catch((er) =>
                     {
                         console.error(er);
+                        reject(er);
                     });
                 }
             }
@@ -367,6 +373,28 @@ export class Instance
         });
     }
 
+
+    /**returns all cached widgets */
+    public GetHeadersAndFooters(): Promise<SpHeaderFooter[]>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this._wsm)
+            {
+                let wi = this._wsm.GetHeadersAndFooters();
+                if (wi)
+                {
+                    resolve(wi);
+                }
+            }
+            else
+            {
+                reject("No records found");
+            }
+        });
+    }
+
+
     /**returns all cached ui scripts */
     public GetUiScripts(): Promise<UiScript[]>
     {
@@ -378,6 +406,46 @@ export class Instance
                 if (u)
                 {
                     resolve(u);
+                }
+            }
+            else
+            {
+                reject("No records found");
+            }
+        });
+    }
+
+    /**returns all cached mail scripts */
+    public GetMailScripts(): Promise<MailScript[]>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this._wsm)
+            {
+                let m = this._wsm.GetMailScript();
+                if (m)
+                {
+                    resolve(m);
+                }
+            }
+            else
+            {
+                reject("No records found");
+            }
+        });
+    }
+
+    /**returns all cached mail scripts */
+    public GetSriptedApiResources(): Promise<ScriptedRestAPIResource[]>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this._wsm)
+            {
+                let m = this._wsm.GetScriptedApiResource();
+                if (m)
+                {
+                    resolve(m);
                 }
             }
             else
@@ -524,6 +592,42 @@ export class Instance
         });
     }
 
+    private GetHeadersAndFootersUpStream(): Promise<Array<SpHeaderFooter>>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                var include = this.ApiProxy.GetHeadersAndFooters();
+
+                if (include)
+                {
+                    let result = new Array<SpHeaderFooter>();
+
+                    include.then((res) =>
+                    {
+                        if (res.data.result.length > 0)
+                        {
+                            res.data.result.forEach((element) =>
+                            {
+                                result.push(new SpHeaderFooter(<ISpHeaderFooter>element));
+                            });
+                            resolve(result);
+                        }
+                        else
+                        {
+                            reject("No elements Found");
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                        reject(er);
+                    });
+                }
+            }
+        });
+    }
+
     private GetThemesUpStream(): Promise<Array<Theme>>
     {
         return new Promise((resolve, reject) =>
@@ -582,6 +686,82 @@ export class Instance
                             res.data.result.forEach((element) =>
                             {
                                 result.push(new UiScript(<ISysUiScript>element));
+                            });
+                            resolve(result);
+                        }
+                        else
+                        {
+                            reject("No elements Found");
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                        reject(er);
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+ * get all ui elegible mail scripts
+ */
+    private GetMailScriptsUpStream(): Promise<Array<MailScript>>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                var include = this.ApiProxy.GetEmailScripts();
+
+                if (include)
+                {
+                    let result = new Array<MailScript>();
+
+                    include.then((res) =>
+                    {
+                        if (res.data.result.length > 0)
+                        {
+                            res.data.result.forEach((element) =>
+                            {
+                                result.push(new MailScript(<ISysMailScript>element));
+                            });
+                            resolve(result);
+                        }
+                        else
+                        {
+                            reject("No elements Found");
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                        reject(er);
+                    });
+                }
+            }
+        });
+    }
+
+    // Get Scripted API Resources
+    private GetScriptedApiResourcesUpStream(): Promise<Array<ScriptedRestAPIResource>>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                var include = this.ApiProxy.GetScriptedApiResources();
+
+                if (include)
+                {
+                    let result = new Array<ScriptedRestAPIResource>();
+
+                    include.then((res) =>
+                    {
+                        if (res.data.result.length > 0)
+                        {
+                            res.data.result.forEach((element) =>
+                            {
+                                result.push(new ScriptedRestAPIResource(<IScriptedRestAPIResource>element));
                             });
                             resolve(result);
                         }
@@ -697,6 +877,42 @@ export class Instance
                 if (this._wsm)
                 {
                     this._wsm.SetUiScript(res);
+                }
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+
+            let mailScripts = this.GetMailScriptsUpStream();
+            mailScripts.then((res) =>
+            {
+                if (this._wsm)
+                {
+                    this._wsm.SetMailScript(res);
+                }
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+
+            let scriptedApiResources = this.GetScriptedApiResourcesUpStream();
+            scriptedApiResources.then((res) =>
+            {
+                if (this._wsm)
+                {
+                    this._wsm.SetScriptedApiResource(res);
+                }
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+
+            let headersAndFooters = this.GetHeadersAndFootersUpStream();
+            headersAndFooters.then((res) =>
+            {
+                if (this._wsm)
+                {
+                    this._wsm.SetHeadersAndFooters(res);
                 }
             }).catch((er) =>
             {
