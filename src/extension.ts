@@ -501,6 +501,33 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    let createUpdateSetAndSetAsCurrent = vscode.commands.registerCommand("snsb.createUpdateSetAndSetAsCurrent", () =>
+    {
+        //vscode.window.showInformationMessage('Hello World!');
+        if (instance.IsInitialized())
+        {
+            let option = new Object() as vscode.InputBoxOptions;
+            option.prompt = "Enter update-set name";
+
+            let updateSetPromise = vscode.window.showInputBox(option);
+            updateSetPromise.then((res) =>
+            {
+                if (res !== undefined)
+                {
+                    let p = instance.CreateUpdateSet(res);
+
+                    p.then((res) =>
+                    {
+                        vscode.window.showInformationMessage(`Update set: ${res.name} created`);
+                    }).catch((err) =>
+                    {
+                        vscode.window.showErrorMessage("Update-set not created");
+                    });
+                }
+            });
+        }
+    });
+
     var listenerOnDidSave = vscode.workspace.onDidSaveTextDocument((e) =>
     {
         if (instance.IsInitialized())
@@ -607,6 +634,8 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(listenerOnDidSave);
     context.subscriptions.push(listenerOnDidOpen);
     context.subscriptions.push(createUpdateSet);
+    context.subscriptions.push(createUpdateSetAndSetAsCurrent);
+
 }
 // this method is called when your extension is deactivated
 export function deactivate(context: vscode.ExtensionContext)

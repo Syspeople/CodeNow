@@ -937,10 +937,11 @@ export class Instance
 
     /**
      * Create Update Set
-     * 
      * Creates an update-set with the provided name.
+     * @param name name of the update set
+     * @returns the newly created updateset
      */
-    public CreateUpdateSet(name: string): Promise<any>
+    public CreateUpdateSet(name: string): Promise<UpdateSet> | undefined
     {
         return new Promise((resolve, reject) =>
         {
@@ -954,8 +955,9 @@ export class Instance
                     {
                         if (res.data.result)
                         {
-                            //let r = new Record(res.data.result);
-                            resolve(res.data.result);
+                            let r = new UpdateSet(res.data.result);
+                            resolve(r);
+                            //resolve(res.data.result);
                         }
                         else
                         {

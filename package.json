@@ -165,6 +165,11 @@
                 "command": "snsb.createUpdateSet",
                 "title": "Create Updateset",
                 "category": "snsb"
+            },
+            {
+                "command": "snsb.createUpdateSetAndSetAsCurrent",
+                "title": "Create Updateset and set as current",
+                "category": "snsb"
             }
         ]
     },
