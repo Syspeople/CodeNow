@@ -487,7 +487,16 @@ export function activate(context: vscode.ExtensionContext)
             {
                 if (res !== undefined)
                 {
-                    instance.CreateUpdateSet(res);
+                    let p = instance.CreateUpdateSet(res);
+
+                    p.then((res) =>
+                    {
+                        console.log(res);
+                        vscode.window.showInformationMessage(res.name);
+                    }).catch((err) =>
+                    {
+                        vscode.window.showErrorMessage("Update set no longer in progress. Changes not saves to instance.");
+                    });
                 }
             });
         }

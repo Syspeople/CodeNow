@@ -500,7 +500,8 @@ export class Api
                     })
                         .then(function (response)
                         {
-                            console.log(response);
+                            //console.log(response);
+                            resolve(response);
                         })
                         .catch(function (error)
                         {

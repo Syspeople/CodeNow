@@ -940,12 +940,41 @@ export class Instance
  * 
  * Sets the update to the one provided.
  */
-    public CreateUpdateSet(name: string): void
+    public CreateUpdateSet(name: string): Promise<any>
     {
-        if (this.ApiProxy)
+        return new Promise((resolve, reject) =>
         {
-            this.ApiProxy.CreateUpdateSet(name);
-        }
+            if (this.ApiProxy)
+            {
+                let p = this.ApiProxy.CreateUpdateSet(name);
+
+                if (p)
+                {
+                    p.then((res) =>
+                    {
+                        if (res.data.result)
+                        {
+                            //let r = new Record(res.data.result);
+                            resolve(res.data.result);
+                        }
+                        else
+                        {
+                            reject(res.data);
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                    });
+                }
+                else
+                {
+                    reject("axios Promise is null or undefined");
+                }
+            } else
+            {
+                reject("API Proxy is null or undefined");
+            }
+        });
     }
 
     /**
