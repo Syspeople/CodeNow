@@ -491,11 +491,10 @@ export function activate(context: vscode.ExtensionContext)
 
                     p.then((res) =>
                     {
-                        console.log(res);
-                        vscode.window.showInformationMessage(res.name);
+                        vscode.window.showInformationMessage(`Update set: ${res.name} created`);
                     }).catch((err) =>
                     {
-                        vscode.window.showErrorMessage("Update set no longer in progress. Changes not saves to instance.");
+                        vscode.window.showErrorMessage("Update-set not created");
                     });
                 }
             });

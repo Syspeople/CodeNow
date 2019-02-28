@@ -936,10 +936,10 @@ export class Instance
 
 
     /**
- * SetUpdateSet
- * 
- * Sets the update to the one provided.
- */
+     * Create Update Set
+     * 
+     * Creates an update-set with the provided name.
+     */
     public CreateUpdateSet(name: string): Promise<any>
     {
         return new Promise((resolve, reject) =>
