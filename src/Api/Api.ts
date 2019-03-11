@@ -482,7 +482,7 @@ export class Api
         }
     }
 
-    public CreateUpdateSet(name: string): Axios.AxiosPromise<IServiceNowResponse<any>> | undefined
+    public CreateUpdateSet(name: string, parent: string): Axios.AxiosPromise<IServiceNowResponse<any>> | undefined
     {
 
         return new Promise((resolve, reject) =>
@@ -496,7 +496,8 @@ export class Api
                 if (this.HttpClient)
                 {
                     this.HttpClient.post(url, {
-                        name: name
+                        name: name,
+                        parent: parent
                     })
                         .then(function (response)
                         {

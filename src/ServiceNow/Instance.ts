@@ -941,13 +941,13 @@ export class Instance
      * @param name name of the update set
      * @returns the newly created updateset
      */
-    public CreateUpdateSet(name: string): Promise<UpdateSet> | undefined
+    public CreateUpdateSet(name: string, parent: string): Promise<UpdateSet> | undefined
     {
         return new Promise((resolve, reject) =>
         {
             if (this.ApiProxy)
             {
-                let p = this.ApiProxy.CreateUpdateSet(name);
+                let p = this.ApiProxy.CreateUpdateSet(name, parent);
 
                 if (p)
                 {
