@@ -957,7 +957,6 @@ export class Instance
                         {
                             let r = new UpdateSet(res.data.result);
                             resolve(r);
-                            //resolve(res.data.result);
                         }
                         else
                         {

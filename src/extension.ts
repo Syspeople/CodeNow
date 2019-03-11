@@ -518,7 +518,22 @@ export function activate(context: vscode.ExtensionContext)
 
                     p.then((res) =>
                     {
-                        vscode.window.showInformationMessage(`Update set: ${res.name} created`);
+                        let set = instance.SetUpdateSet(res);
+
+                        if (set)
+                        {
+                            set.then((us) =>
+                            {
+                                wsm.SetUpdateSet(us);
+                                nm.SetNotificationUpdateSet(us);
+                                let msg = `UpdateSet Changed: ${us.name}`;
+                                console.log(msg);
+                                vscode.window.showInformationMessage(msg);
+                            }).catch((er) =>
+                            {
+                                console.error(er);
+                            });
+                        }
                     }).catch((err) =>
                     {
                         vscode.window.showErrorMessage("Update-set not created");
