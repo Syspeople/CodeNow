@@ -14,5 +14,6 @@ export enum StateKeys
     HeadersAndFooters,
     MailScripts,
     ScriptedApiResources,
-    metaData
+    metaData,
+    Processor
 }

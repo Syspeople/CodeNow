@@ -402,6 +402,33 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    /**
+     * add Processor
+     */
+    let getProcessor = vscode.commands.registerCommand("snsb.getProcessor", () =>
+    {
+        if (instance.IsInitialized())
+        {
+            let themes = instance.GetProcessors();
+            themes.then((res) =>
+            {
+                vscode.window.showQuickPick(res).then((item) =>
+                {
+                    if (item)
+                    {
+                        wm.AddRecord(item, instance);
+                    }
+                });
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance");
+        }
+    });
 
     let saveRecord = vscode.commands.registerCommand("snsb.saveRecord", (uri) =>
     {
@@ -722,10 +749,11 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-    context.subscriptions.push(openInPlatformRecord);
-    context.subscriptions.push(openInPlatformList);
     context.subscriptions.push(setUpdateSet);
     context.subscriptions.push(connect);
+    context.subscriptions.push(createUpdateSet);
+    context.subscriptions.push(createUpdateSetAndSetAsCurrent);
+    context.subscriptions.push(clearWorkState);
     context.subscriptions.push(getInclude);
     context.subscriptions.push(getWidget);
     context.subscriptions.push(getTheme);
@@ -734,15 +762,14 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(getMailScript);
     context.subscriptions.push(getScriptedApiResource);
     context.subscriptions.push(getHeadersAndFooters);
-    context.subscriptions.push(saveRecord);
-    context.subscriptions.push(updateRecord);
-    context.subscriptions.push(clearWorkState);
-    context.subscriptions.push(rebuildCache);
+    context.subscriptions.push(getProcessor);
     context.subscriptions.push(listenerOnDidSave);
     context.subscriptions.push(listenerOnDidOpen);
-    context.subscriptions.push(createUpdateSet);
-    context.subscriptions.push(createUpdateSetAndSetAsCurrent);
-
+    context.subscriptions.push(openInPlatformRecord);
+    context.subscriptions.push(openInPlatformList);
+    context.subscriptions.push(rebuildCache);
+    context.subscriptions.push(saveRecord);
+    context.subscriptions.push(updateRecord);
 }
 // this method is called when your extension is deactivated
 export function deactivate(context: vscode.ExtensionContext)

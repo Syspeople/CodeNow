@@ -170,6 +170,11 @@
                 "command": "snsb.createUpdateSetAndSetAsCurrent",
                 "title": "Create Updateset and set as current",
                 "category": "snsb"
+            },
+            {
+                "command": "snsb.getProcessor",
+                "title": "Add Processor to Workspace",
+                "category": "snsb"
             }
         ]
     },

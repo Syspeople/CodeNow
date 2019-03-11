@@ -498,7 +498,6 @@ export class Api
 
     public CreateUpdateSet(name: string, parent: string): Axios.AxiosPromise<IServiceNowResponse<any>> | undefined
     {
-
         return new Promise((resolve, reject) =>
         {
             let url = `${this._SNSysUpdateSet}`;

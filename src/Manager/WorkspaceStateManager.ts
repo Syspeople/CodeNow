@@ -1,10 +1,11 @@
 import { Uri, ExtensionContext } from 'vscode';
 import { StateKeys, MemCache, MetaData } from "./all";
-import { ScriptInclude, Widget, UpdateSet, StyleSheet, Theme, UiScript, MailScript, SpHeaderFooter, ScriptedRestAPIResource } from "../ServiceNow/all";
+import { ScriptInclude, Widget, UpdateSet, StyleSheet, Theme, UiScript, MailScript, SpHeaderFooter, ScriptedRestAPIResource, Processor } from "../ServiceNow/all";
 
 //get update and manage workpace state.
 export class WorkspaceStateManager
 {
+
 
     constructor(context: ExtensionContext)
     {
@@ -285,5 +286,14 @@ export class WorkspaceStateManager
     public GetHeadersAndFooters(): Array<SpHeaderFooter> | undefined
     {
         return this._memCache.Get<Array<SpHeaderFooter>>((StateKeys.HeadersAndFooters));
+    }
+
+    public SetProcessor(processors: Array<Processor>): void
+    {
+        this._memCache.Set(StateKeys.Processor, processors);
+    }
+    public GetProcessor(): Array<Processor> | undefined
+    {
+        return this._memCache.Get<Array<Processor>>(StateKeys.Processor);
     }
 }
