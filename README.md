@@ -11,7 +11,7 @@ Only Basic auth is currently available.
 ## Which elements is added?
 We intend support all "code only" functionality in ServiceNow, these elements have first priority.
 
-Low code elements might get added. But none is planned. 
+Low code elements might get added, but _none_ is planned. 
 
 No code elements will not added to the extension in a way that will allow you to configure them directly from VsCode.
 
@@ -20,8 +20,10 @@ No code elements will not added to the extension in a way that will allow you to
 * Work with multiple ServicNow record.
 * Automatically saves to your instance.
 * Automatically updates from your instance.
-* Intellisense for ServiceNow and Angular API's
+* Intellisense for ServiceNow and Angular API's.
 * Change update Set.
+* Create Update Set.
+* Set Parent on created update set.
 
 # How to
 Add screenshots and stuff. 
@@ -53,14 +55,15 @@ Extensions that go very well with this extension
 ## Supported Records
 Records types currently supported. 
 
-* Script includes.
+* Script Includes.
 * Service Portal Themes.
 * Service Portal Widgets.
-* StyleSheets
-* JS Includes
-* UI Scripts
-* Mail Scripts
-* Service Portal Headers and Footers
+* StyleSheets.
+* JS Includes.
+* UI Scripts.
+* Mail Scripts.
+* Service Portal Headers and Footers.
+* Scripted Rest API.
 
 ## Intellisense
 Currently there is intellisense for the following API's.
@@ -138,8 +141,38 @@ spModal.open(opt).then(function (res)
 
 
 # Commands
+
+1. [Connect to ServiceNow](#connect-to-servicenow)
+1. [Change Update Set](#change-update-set)
+1. [Create Update Set](#create-update-set)
+1. [Create Update Set and set as Current](#Create-Update-Set-and-set-as-Current)
+1. [Add Script Include To Workspace](#Add-Script-Include-To-Workspace)
+1. [Add Widget to Workspace](#add-widget-to-workspace)
+1. [Add Theme to Workspace](#add-theme-to-worksace)
+1. [Add Mail Script to Workspace](#add-mail-script-to-workspace)
+1. [Add UI Script to Workspace](#add-ui-script-to-workspace)
+1. [Add Script Include to Workspace]()
+1. [Add Stylesheet to Workspace](#add-stylesheet-to-workspace)
+1. [Add Header | Footer Widget to Workspace](#add-header-|-footer-widget-to-workspace)
+1. [Open Record in platform](#open-record-in-platform)
+1. [Open list in platform](#open-list-in-platform)
+1. [Save](#save)
+1. [Update](#update)
+1. [Clear Instance](#clear-instance)
+1. [Refresh Records](#refresh-records)
+1. []()
+
+
+
+    
+
+
 ## Connect to ServiceNow
-prompts for url, username and password.
+URL: instanceurl, excluding _.service-now.com_.
+
+Username: username of the user using the extension.
+
+Password: password for the user.
 
 if the workspace is already associated with a ServiceNow instance only the password is required.
 
@@ -147,62 +180,77 @@ if the workspace is already associated with a ServiceNow instance only the passw
 
 
 ## Change Update Set
-Choose an active UpdateSet and set is as your working update set. Only in progress and global scoped update sets are currently available.
+Choose an active UpdateSet and set it as your working update set. Only in progress and global scoped update sets are currently available.
 
 **IMPORTANT** Update set changes do not apply to active sessions. Be sure to validate your update set in your browser if working in the web UI and in VsCode at the same time.
 
-The extension will automatically use the previuosly selected update set. if it has been closed, default i selected. 
+The extension will automatically use the previuosly selected update set. if it has been closed, default is selected. 
 
+## Create Update Set
+Lets you create a new update set. 
+
+It can be chosen if a parent update set should be added.
+
+## Create Update Set and set as Current
+Lets you create a new update set and sets it as the current update set.
+
+It can be chosen if a parent update set should be added.
 
 ## Add Script Include To Workspace
 Imports a script include into the workspace for edit.
 
 Read only and restricted script includes is not available.
 
-
 ## Add Widget to Workspace
-imports a widget into the the workspace.
+Imports a widget into the the workspace.
 
 Read only and restricted widgets is not available.
 
-
 ## Add Theme to Workspace
-imports a theme into the workspace
+Imports a theme into the workspace.
 
 Read only and restricted themes is not available.
 
+## Add Mail Script to Workspace
+Imports a Mail Script into the workspace.
+
+## Add UI Script to Workspace
+Imports a UI Script into the workspace.
+
+## Add Script Include to Workspace
+Imports a Script Include into the workspace.
+
+## Add Stylesheet to Workspace
+Imports a Stylesheet into the workspace.
+
+## Add Header | Footer Widget to Workspace
+Imports a Service Portal header or footer widget into the workspace.
 
 ## Open Record in platform
 Right click a record to open it in the platform. 
 
-
 ## Open list in platform
 Right click a record to open the associated list.
-
 
 ## Save
 Right click a record to force save the version currently in VsCode.
 
 **This will force the local to be saved on instance**
 
-
 ## Update
 Right click a record to force download the latest version into VsCode.
 
 **This will overwrite the local file**
 
-
 ## Clear Instance
-clear workspace data. eg. cached records, urls, username.
+Clear workspace data. eg. cached records, urls, username.
 
-make sure to reconnect to service and refresh records or reload vscode.
-
+Make sure to reconnect to ServiceNow and refresh records or reload vscode.
 
 ## Refresh Records
 Reloads caches records from you instance.
 
-if you missing a script in the list when trying to load one use this command to retreive all from instance.
-
+If you are missing a script in the list when trying to load one use this command to retreive all from instance.
 
 # Options
 ## uploadOnSave

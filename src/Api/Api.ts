@@ -6,6 +6,7 @@ import { ISysUiScript } from "../ServiceNow/ISysUiScript";
 import { ISpHeaderFooter } from "../ServiceNow/ISpHeaderFooter";
 import { ISysMailScript } from "../ServiceNow/ISysMailScript";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
+import { WSAEACCES } from "constants";
 
 export class Api
 {
@@ -493,5 +494,39 @@ export class Api
             let url = `${this._SNProcessor}?sysparm_query=sys_policy=^type=script`;
             return this.HttpClient.get(url);
         }
+    }
+
+    public CreateUpdateSet(name: string, parent: string): Axios.AxiosPromise<IServiceNowResponse<any>> | undefined
+    {
+
+        return new Promise((resolve, reject) =>
+        {
+            let url = `${this._SNSysUpdateSet}`;
+            var i = this.NewSession();
+
+            i.then((res) =>
+            {
+
+                if (this.HttpClient)
+                {
+                    this.HttpClient.post(url, {
+                        name: name,
+                        parent: parent
+                    })
+                        .then(function (response)
+                        {
+                            resolve(response);
+                        })
+                        .catch(function (error)
+                        {
+                            console.log(error);
+                        });
+                }
+
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+        });
     }
 }
