@@ -474,6 +474,156 @@ export function activate(context: vscode.ExtensionContext)
         instance.RebuildCache();
     });
 
+    let createUpdateSet = vscode.commands.registerCommand("snsb.createUpdateSet", () =>
+    {
+        //vscode.window.showInformationMessage('Hello World!');
+        if (instance.IsInitialized())
+        {
+            let option = new Object() as vscode.InputBoxOptions;
+            option.prompt = "Enter update-set name";
+
+            let updateSetPromise = vscode.window.showInputBox(option);
+            updateSetPromise.then((res) =>
+            {
+                if (res !== undefined)
+                {
+                    vscode.window.showQuickPick(["Yes", "No"], {
+                        placeHolder: "Choose Parent Update-Set"
+                    }).then((item) =>
+                    {
+                        if (item === "Yes")
+                        {
+                            let updatesets = instance.GetUpdateSets();
+                            updatesets.then((result) =>
+                            {
+                                vscode.window.showQuickPick(result).then((item) =>
+                                {
+                                    if (item)
+                                    {
+                                        let parent = item.sys_id;
+                                        let p = instance.CreateUpdateSet(res, parent);
+
+                                        p.then((res) =>
+                                        {
+                                            vscode.window.showInformationMessage(`Update set: ${res.name} created`);
+                                        }).catch((err) =>
+                                        {
+                                            vscode.window.showErrorMessage("Update-set not created");
+                                        });
+                                    }
+                                });
+                            }).catch((er) =>
+                            {
+                                console.error(er);
+                            });
+                        } else
+                        {
+                            let p = instance.CreateUpdateSet(res, "");
+
+                            p.then((res) =>
+                            {
+                                vscode.window.showInformationMessage(`Update set: ${res.name} created`);
+                            }).catch((err) =>
+                            {
+                                vscode.window.showErrorMessage("Update-set not created");
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+    let createUpdateSetAndSetAsCurrent = vscode.commands.registerCommand("snsb.createUpdateSetAndSetAsCurrent", () =>
+    {
+        //vscode.window.showInformationMessage('Hello World!');
+        if (instance.IsInitialized())
+        {
+            let option = new Object() as vscode.InputBoxOptions;
+            option.prompt = "Enter update-set name";
+
+            let updateSetPromise = vscode.window.showInputBox(option);
+            updateSetPromise.then((res) =>
+            {
+                if (res !== undefined)
+                {
+                    vscode.window.showQuickPick(["Yes", "No"], {
+                        placeHolder: "Choose Parent Update-Set"
+                    }).then((item) =>
+                    {
+                        if (item === "Yes")
+                        {
+                            let updatesets = instance.GetUpdateSets();
+                            updatesets.then((result) =>
+                            {
+                                vscode.window.showQuickPick(result).then((item) =>
+                                {
+                                    if (item)
+                                    {
+                                        let parent = item.sys_id;
+                                        let p = instance.CreateUpdateSet(res, parent);
+
+                                        p.then((res) =>
+                                        {
+                                            let set = instance.SetUpdateSet(res);
+
+                                            if (set)
+                                            {
+                                                set.then((us) =>
+                                                {
+                                                    wsm.SetUpdateSet(us);
+                                                    nm.SetNotificationUpdateSet(us);
+                                                    let msg = `UpdateSet Created and set as current: ${us.name}`;
+                                                    console.log(msg);
+                                                    vscode.window.showInformationMessage(msg);
+                                                }).catch((er) =>
+                                                {
+                                                    console.error(er);
+                                                });
+                                            }
+                                        }).catch((err) =>
+                                        {
+                                            vscode.window.showErrorMessage("Update-set not created");
+                                        });
+                                    }
+                                });
+                            }).catch((er) =>
+                            {
+                                console.error(er);
+                            });
+                        } else
+                        {
+                            let p = instance.CreateUpdateSet(res, "");
+
+                            p.then((res) =>
+                            {
+                                let set = instance.SetUpdateSet(res);
+
+                                if (set)
+                                {
+                                    set.then((us) =>
+                                    {
+                                        wsm.SetUpdateSet(us);
+                                        nm.SetNotificationUpdateSet(us);
+                                        let msg = `UpdateSet Created and set as current: ${us.name}`;
+                                        console.log(msg);
+                                        vscode.window.showInformationMessage(msg);
+                                    }).catch((er) =>
+                                    {
+                                        console.error(er);
+                                    });
+                                }
+                            }).catch((err) =>
+                            {
+                                vscode.window.showErrorMessage("Update-set not created");
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    });
+
     var listenerOnDidSave = vscode.workspace.onDidSaveTextDocument((e) =>
     {
         if (instance.IsInitialized())
@@ -579,6 +729,9 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(rebuildCache);
     context.subscriptions.push(listenerOnDidSave);
     context.subscriptions.push(listenerOnDidOpen);
+    context.subscriptions.push(createUpdateSet);
+    context.subscriptions.push(createUpdateSetAndSetAsCurrent);
+
 }
 // this method is called when your extension is deactivated
 export function deactivate(context: vscode.ExtensionContext)

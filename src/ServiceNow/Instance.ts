@@ -934,6 +934,50 @@ export class Instance
         }
     }
 
+
+    /**
+     * Create Update Set
+     * Creates an update-set with the provided name.
+     * @param name name of the update set
+     * @returns the newly created updateset
+     */
+    public CreateUpdateSet(name: string, parent: string): Promise<UpdateSet> | undefined
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                let p = this.ApiProxy.CreateUpdateSet(name, parent);
+
+                if (p)
+                {
+                    p.then((res) =>
+                    {
+                        if (res.data.result)
+                        {
+                            let r = new UpdateSet(res.data.result);
+                            resolve(r);
+                        }
+                        else
+                        {
+                            reject(res.data);
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                    });
+                }
+                else
+                {
+                    reject("axios Promise is null or undefined");
+                }
+            } else
+            {
+                reject("API Proxy is null or undefined");
+            }
+        });
+    }
+
     /**
      * GetRecord, returns record metadata from instance
      */
