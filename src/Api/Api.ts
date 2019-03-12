@@ -6,7 +6,6 @@ import { ISysUiScript } from "../ServiceNow/ISysUiScript";
 import { ISpHeaderFooter } from "../ServiceNow/ISpHeaderFooter";
 import { ISysMailScript } from "../ServiceNow/ISysMailScript";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
-import { WSAEACCES } from "constants";
 
 export class Api
 {
