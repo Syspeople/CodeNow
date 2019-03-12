@@ -30,7 +30,10 @@ export class ScriptAction extends Record implements ISysEventScriptAction, Quick
         return this.name;
     }
 
-    detail?: string | undefined;
+    public get detail(): string
+    {
+        return this.event_name;
+    }
 
     SetAttribute(content: string, filetype: FileTypes): void
     {
@@ -39,6 +42,7 @@ export class ScriptAction extends Record implements ISysEventScriptAction, Quick
             this.script = content;
         }
     }
+
     GetAttribute(filetype: FileTypes): string | undefined
     {
         if (filetype === FileTypes.serverScript)
