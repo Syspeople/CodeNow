@@ -26,3 +26,4 @@ export * from './MailScript';
 export * from './IScriptedRestAPIResource';
 export * from './ScriptedRestAPIResource';
 export * from './converter';
+export * from './ISysEventScriptAction';
