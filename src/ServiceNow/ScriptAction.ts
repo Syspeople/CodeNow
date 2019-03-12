@@ -1,4 +1,4 @@
-import { Record, ISysUiScript, ISysEventScriptAction } from "./all";
+import { Record, ISysEventScriptAction } from "./all";
 import { QuickPickItem } from "vscode";
 import { FileTypes } from "../Manager/all";
 
