@@ -1,5 +1,12 @@
+# SNSB (ServiceNow Scripting Bridge)
+The Visual Code Extension for developing on the ServiceNow platform.
+
+This extension aims to provide ServiceNow developers a first class development experience without depending on instance specific configuration.
+
+**No ServiceNow configuration required.**
+
 - [SNSB (ServiceNow Scripting Bridge)](#snsb-servicenow-scripting-bridge)
-  - [Which elements is added?](#which-elements-is-added)
+- [Which elements is added?](#which-elements-is-added)
 - [Features](#features)
 - [How to](#how-to)
 - [Try it](#try-it)
@@ -40,16 +47,8 @@
   - [addOnOpen](#addonopen)
     - [Contributors](#contributors)
 
-# SNSB (ServiceNow Scripting Bridge)
-The Visual Code Extension for developing on the ServiceNow platform.
 
-This extension aims to provide ServiceNow developers a first class development experience without depending on instance specific configuration.
-
-Only Basic auth is currently available. 
-
-**No ServiceNow configuration required.**
-
-## Which elements is added?
+# Which elements is added?
 We intend support all "code only" functionality in ServiceNow, these elements have first priority.
 
 Low code elements might get added, but _none_ is planned. 
@@ -71,6 +70,9 @@ Add screenshots and stuff.
 
 # Try it
 You need to have [Node.js](https://nodejs.org/en/) installed either way. make sure the path variable is up to date (reboot).
+
+Only Basic auth is currently available. 
+
 
 ## Vscode Debugger
 1. Clone and open repository
