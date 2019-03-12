@@ -17,7 +17,7 @@ export function activate(context: vscode.ExtensionContext)
     const wsm = new Managers.WorkspaceStateManager(context);
     const wm = new Managers.WorkspaceManager(wsm);
     const nm = new StatusBarManager();
-    let config: vscode.WorkspaceConfiguration;
+    let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration("snsb");
 
     let instance: ServiceNow.Instance;
     if (wsm.HasInstanceInState)
@@ -541,7 +541,6 @@ export function activate(context: vscode.ExtensionContext)
 
     let createUpdateSetAndSetAsCurrent = vscode.commands.registerCommand("snsb.createUpdateSetAndSetAsCurrent", () =>
     {
-        //vscode.window.showInformationMessage('Hello World!');
         if (instance.IsInitialized())
         {
             let option = new Object() as vscode.InputBoxOptions;
@@ -643,7 +642,6 @@ export function activate(context: vscode.ExtensionContext)
 
             p.then((res) =>
             {
-                config = vscode.workspace.getConfiguration("snsb");
                 if (config.uploadOnSave)
                 {
                     let record = wm.GetRecord(e.uri);
@@ -691,7 +689,6 @@ export function activate(context: vscode.ExtensionContext)
     {
         if (instance.IsInitialized())
         {
-            config = vscode.workspace.getConfiguration("snsb");
             if (config.addOnOpen)
             {
                 var recordLocal = wm.GetRecord(e.uri);
@@ -722,6 +719,11 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    let listeneronDidChangeConfiguration = vscode.workspace.onDidChangeConfiguration((e) =>
+    {
+        config = vscode.workspace.getConfiguration("snsb");
+    });
+
     context.subscriptions.push(openInPlatformRecord);
     context.subscriptions.push(openInPlatformList);
     context.subscriptions.push(setUpdateSet);
@@ -740,6 +742,7 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(rebuildCache);
     context.subscriptions.push(listenerOnDidSave);
     context.subscriptions.push(listenerOnDidOpen);
+    context.subscriptions.push(listeneronDidChangeConfiguration);
     context.subscriptions.push(createUpdateSet);
     context.subscriptions.push(createUpdateSetAndSetAsCurrent);
 
