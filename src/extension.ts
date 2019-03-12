@@ -527,6 +527,45 @@ export function activate(context: vscode.ExtensionContext)
         instance.RebuildCache();
     });
 
+    let createRecord = vscode.commands.registerCommand('snsb.createRecord', () =>
+    {
+        if (instance.IsInitialized())
+        {
+            let availableRecords = Object.keys(SupportedRecords);
+            let p = vscode.window.showQuickPick(availableRecords, { placeHolder: "Select Record" });
+            p.then((recordtype) =>
+            {
+                if (recordtype)
+                {
+                    let n = vscode.window.showInputBox({ prompt: "Name of the Record" });
+                    n.then((name) =>
+                    {
+                        // //select template
+                        // let templates = config.templates.find((element: object) =>
+                        // {
+                        //     //@ts-ignore already null checked and string value can only be valid or undefined.
+                        //     return element.class_name === SupportedRecords[recordtype];
+                        // });
+                        // let t = vscode.window.showQuickPick(config.templates);
+
+                        if (name)
+                        {
+                            //@ts-ignore already null checked
+                            var r = instance.CreateRecord(SupportedRecords[recordtype], name);
+                            r.then((newRecord) =>
+                            {
+                                wm.AddRecord(newRecord, instance);
+                            }).catch((err) =>
+                            {
+                                vscode.window.showErrorMessage(err);
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    });
+
     let createUpdateSet = vscode.commands.registerCommand("snsb.createUpdateSet", () =>
     {
         //vscode.window.showInformationMessage('Hello World!');
@@ -589,42 +628,6 @@ export function activate(context: vscode.ExtensionContext)
                     });
                 }
             });
-        }
-    });
-
-    let createRecord = vscode.commands.registerCommand('snsb.createRecord', () =>
-    {
-        if (true /*instance.IsInitialized()*/)
-        {
-
-            let availableRecords = Object.keys(SupportedRecords);
-
-            let p = vscode.window.showQuickPick(availableRecords, { placeHolder: "Select Record" });
-
-            p.then((recordtype) =>
-            {
-                if (recordtype)
-                {
-                    //prompt for name
-                    let n = vscode.window.showInputBox({ prompt: "Name of the Record" });
-                    n.then((name) =>
-                    {
-                        console.log(`name: ${name}`);
-                        //@ts-ignore already null checked and string value can only be valid or undefined.
-                        console.log(`RecordType: ${SupportedRecords[recordtype]}`);
-
-                        //select template
-                        let templates = config.templates.find((element: object) =>
-                        {
-                            //@ts-ignore already null checked and string value can only be valid or undefined.
-                            return element.class_name === SupportedRecords[recordtype];
-                        });
-
-                        let t = vscode.window.showQuickPick(config.templates);
-                    });
-                }
-            });
-            //instance.CreateRecord(SupportedRecords[recordtype],name,template);
         }
     });
 
@@ -817,6 +820,7 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(openInPlatformList);
     context.subscriptions.push(setUpdateSet);
     context.subscriptions.push(connect);
+    context.subscriptions.push(createRecord);
     context.subscriptions.push(createUpdateSet);
     context.subscriptions.push(createUpdateSetAndSetAsCurrent);
     context.subscriptions.push(clearWorkState);

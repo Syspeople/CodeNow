@@ -1034,11 +1034,6 @@ declare class GlideSession
 
 }
 
-/**
- * Available in mail scripts
- */
-declare var template: TemplatePrinter;
-
 declare class TemplatePrinter
 {
     /**
@@ -1058,11 +1053,6 @@ declare class TemplatePrinter
      */
     space(spaces: number): void;
 }
-
-/**
- * Available in mailscripts
- */
-declare var email: GlideEmailOutbound;
 
 declare class GlideEmailOutbound
 {
@@ -1735,17 +1725,17 @@ declare class GlideSystem
 /**
  * Available in Scripted processors.
  */
-declare var g_processor: GlideScriptedProcessor;
+// declare var g_processor: GlideScriptedProcessor;
 
 /**
  * Available in Scripted processors.
  */
-declare var g_request: HttpServletRequest;
+// declare var g_request: HttpServletRequest;
 
 /**
  * Available in Scripted processors.
  */
-declare var g_response: HttpServletResponse;
+// declare var g_response: HttpServletResponse;
 
 /**
  * Available in Scripted processors.

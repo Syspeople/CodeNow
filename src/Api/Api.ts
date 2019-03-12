@@ -1,5 +1,5 @@
 import * as Axios from "axios";
-import { Instance, ISysMetadata, ISysScriptInclude, ISpWidget, ISysProperty, SysProperty, ISpTheme, ISysUserSession, ISysUpdateSet, ISpCss, UpdateSet, IScriptedRestAPIResource, ISysEventScriptAction, ISysProcessor } from "../ServiceNow/all";
+import { Instance, ISysMetadata, ISysScriptInclude, ISpWidget, ISysProperty, SysProperty, ISpTheme, ISysUserSession, ISysUpdateSet, ISpCss, UpdateSet, IScriptedRestAPIResource, ISysEventScriptAction, ISysProcessor, SupportedRecords } from "../ServiceNow/all";
 import { IServiceNowResponse, ICookie } from "./all";
 import * as qs from "querystring";
 import { ISysUiScript } from "../ServiceNow/ISysUiScript";
@@ -503,6 +503,15 @@ export class Api
             //Processors that are not readonly and of the type === script.
             let url = `${this._SNProcessor}?sysparm_query=sys_policy=^type=script`;
             return this.HttpClient.get(url);
+        }
+    }
+
+    public CreateRecord(type: SupportedRecords, body: object): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>> | undefined
+    {
+        if (this.HttpClient)
+        {
+            let url = `${this._SNTableSuffix}/${type}`;
+            return this.HttpClient.post(url, body);
         }
     }
 
