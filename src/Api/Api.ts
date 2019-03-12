@@ -30,6 +30,9 @@ export class Api
     private _SNXmlHttp: string = `xmlhttp.do`;
     private _Properties: Array<ISysProperty> = new Array<ISysProperty>();
     private _Cookies: Array<ICookie> = [];
+    private _csrfToken: string = "";
+    private _username: string = "";
+    private _password: string = "";
 
     private get _session_store(): string | undefined
     {
@@ -45,11 +48,6 @@ export class Api
             }
         }
     }
-
-    private _csrfToken: string = "";
-
-    private _username: string = "";
-    private _password: string = "";
 
     /**
          * Setup class, Currently only basic auth.
@@ -266,6 +264,7 @@ export class Api
     {
         return this._HttpClient;
     }
+
     public set HttpClient(v: Axios.AxiosInstance | undefined)
     {
         this._HttpClient = v;
@@ -494,7 +493,6 @@ export class Api
 
     public CreateUpdateSet(name: string, parent: string): Axios.AxiosPromise<IServiceNowResponse<any>> | undefined
     {
-
         return new Promise((resolve, reject) =>
         {
             let url = `${this._SNSysUpdateSet}`;
@@ -502,7 +500,6 @@ export class Api
 
             i.then((res) =>
             {
-
                 if (this.HttpClient)
                 {
                     this.HttpClient.post(url, {
@@ -518,10 +515,10 @@ export class Api
                             console.log(error);
                         });
                 }
-
             }).catch((er) =>
             {
                 console.error(er);
+                reject(er);
             });
         });
     }
