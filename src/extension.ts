@@ -7,6 +7,7 @@ import { URL } from 'url';
 import * as ServiceNow from './ServiceNow/all';
 import * as Managers from './Manager/all';
 import { StatusBarManager, NotifationState } from './Manager/all';
+import { SupportedRecords } from './ServiceNow/all';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -17,7 +18,7 @@ export function activate(context: vscode.ExtensionContext)
     const wsm = new Managers.WorkspaceStateManager(context);
     const wm = new Managers.WorkspaceManager(wsm);
     const nm = new StatusBarManager();
-    let config: vscode.WorkspaceConfiguration;
+    let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration("snsb");
 
     let instance: ServiceNow.Instance;
     if (wsm.HasInstanceInState)
@@ -402,6 +403,58 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    /**
+     * add scripted API to workspace
+     */
+    let getScriptAction = vscode.commands.registerCommand("snsb.getScriptAction", () =>
+    {
+        if (instance.IsInitialized())
+        {
+            let sa = instance.GetScriptActions();
+            sa.then((res) =>
+            {
+                vscode.window.showQuickPick(res).then((item) =>
+                {
+                    if (item)
+                    {
+                        wm.AddRecord(item, instance);
+                    }
+                });
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance");
+        }
+    });
+
+    let getProcessor = vscode.commands.registerCommand("snsb.getProcessor", () =>
+    {
+        if (instance.IsInitialized())
+        {
+            let proc = instance.GetProcessors();
+            proc.then((res) =>
+            {
+                vscode.window.showQuickPick(res).then((item) =>
+                {
+                    if (item)
+                    {
+                        wm.AddRecord(item, instance);
+                    }
+                });
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance");
+        }
+    });
 
     let saveRecord = vscode.commands.registerCommand("snsb.saveRecord", (uri) =>
     {
@@ -474,6 +527,45 @@ export function activate(context: vscode.ExtensionContext)
         instance.RebuildCache();
     });
 
+    let createRecord = vscode.commands.registerCommand('snsb.createRecord', () =>
+    {
+        if (instance.IsInitialized())
+        {
+            let availableRecords = Object.keys(SupportedRecords);
+            let p = vscode.window.showQuickPick(availableRecords, { placeHolder: "Select Record" });
+            p.then((recordtype) =>
+            {
+                if (recordtype)
+                {
+                    let n = vscode.window.showInputBox({ prompt: "Name of the Record" });
+                    n.then((name) =>
+                    {
+                        // //select template
+                        // let templates = config.templates.find((element: object) =>
+                        // {
+                        //     //@ts-ignore already null checked and string value can only be valid or undefined.
+                        //     return element.class_name === SupportedRecords[recordtype];
+                        // });
+                        // let t = vscode.window.showQuickPick(config.templates);
+
+                        if (name)
+                        {
+                            //@ts-ignore already null checked
+                            var r = instance.CreateRecord(SupportedRecords[recordtype], name);
+                            r.then((newRecord) =>
+                            {
+                                wm.AddRecord(newRecord, instance);
+                            }).catch((err) =>
+                            {
+                                vscode.window.showErrorMessage(err);
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    });
+
     let createUpdateSet = vscode.commands.registerCommand("snsb.createUpdateSet", () =>
     {
         //vscode.window.showInformationMessage('Hello World!');
@@ -541,7 +633,6 @@ export function activate(context: vscode.ExtensionContext)
 
     let createUpdateSetAndSetAsCurrent = vscode.commands.registerCommand("snsb.createUpdateSetAndSetAsCurrent", () =>
     {
-        //vscode.window.showInformationMessage('Hello World!');
         if (instance.IsInitialized())
         {
             let option = new Object() as vscode.InputBoxOptions;
@@ -643,7 +734,6 @@ export function activate(context: vscode.ExtensionContext)
 
             p.then((res) =>
             {
-                config = vscode.workspace.getConfiguration("snsb");
                 if (config.uploadOnSave)
                 {
                     let record = wm.GetRecord(e.uri);
@@ -691,7 +781,6 @@ export function activate(context: vscode.ExtensionContext)
     {
         if (instance.IsInitialized())
         {
-            config = vscode.workspace.getConfiguration("snsb");
             if (config.addOnOpen)
             {
                 var recordLocal = wm.GetRecord(e.uri);
@@ -722,10 +811,19 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    let listeneronDidChangeConfiguration = vscode.workspace.onDidChangeConfiguration((e) =>
+    {
+        config = vscode.workspace.getConfiguration("snsb");
+    });
+
     context.subscriptions.push(openInPlatformRecord);
     context.subscriptions.push(openInPlatformList);
     context.subscriptions.push(setUpdateSet);
     context.subscriptions.push(connect);
+    context.subscriptions.push(createRecord);
+    context.subscriptions.push(createUpdateSet);
+    context.subscriptions.push(createUpdateSetAndSetAsCurrent);
+    context.subscriptions.push(clearWorkState);
     context.subscriptions.push(getInclude);
     context.subscriptions.push(getWidget);
     context.subscriptions.push(getTheme);
@@ -734,15 +832,16 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(getMailScript);
     context.subscriptions.push(getScriptedApiResource);
     context.subscriptions.push(getHeadersAndFooters);
-    context.subscriptions.push(saveRecord);
-    context.subscriptions.push(updateRecord);
-    context.subscriptions.push(clearWorkState);
-    context.subscriptions.push(rebuildCache);
+    context.subscriptions.push(getScriptAction);
+    context.subscriptions.push(getProcessor);
     context.subscriptions.push(listenerOnDidSave);
     context.subscriptions.push(listenerOnDidOpen);
-    context.subscriptions.push(createUpdateSet);
-    context.subscriptions.push(createUpdateSetAndSetAsCurrent);
-
+    context.subscriptions.push(listeneronDidChangeConfiguration);
+    context.subscriptions.push(openInPlatformRecord);
+    context.subscriptions.push(openInPlatformList);
+    context.subscriptions.push(rebuildCache);
+    context.subscriptions.push(saveRecord);
+    context.subscriptions.push(updateRecord);
 }
 // this method is called when your extension is deactivated
 export function deactivate(context: vscode.ExtensionContext)

@@ -1,8 +1,7 @@
-import { QuickPickItem } from 'vscode';
 import { Record, ISpWidget } from "./all";
 import { FileTypes } from '../Manager/all';
 
-export class Widget extends Record implements ISpWidget, QuickPickItem
+export class Widget extends Record implements ISpWidget
 {
     constructor(w: ISpWidget)
     {

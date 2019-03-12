@@ -1,6 +1,5 @@
 import { URL } from "url";
-
-import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript, MailScript, ISysMailScript, SpHeaderFooter, ISpHeaderFooter, IScriptedRestAPIResource, ScriptedRestAPIResource, Converter } from "./all";
+import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript, MailScript, ISysMailScript, SpHeaderFooter, ISpHeaderFooter, IScriptedRestAPIResource, ScriptedRestAPIResource, Converter, ScriptAction, ISysEventScriptAction, SupportedRecords, Processor } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
@@ -455,6 +454,46 @@ export class Instance
         });
     }
 
+    /**returns all cached script actions */
+    public GetScriptActions(): Promise<ScriptAction[]>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this._wsm)
+            {
+                let m = this._wsm.GetScriptActions();
+                if (m)
+                {
+                    resolve(m);
+                }
+            }
+            else
+            {
+                reject("No records found");
+            }
+        });
+    }
+    /**returns all cached processors */
+    public GetProcessors(): Promise<Processor[]>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this._wsm)
+            {
+                let m = this._wsm.GetProcessor();
+                if (m)
+                {
+                    resolve(m);
+                }
+            }
+            else
+            {
+                reject("No records found");
+            }
+        });
+    }
+
+
 
     /**
      * IsLatest 
@@ -779,6 +818,79 @@ export class Instance
         });
     }
 
+    // Get Scripted API Resources
+    private GetScriptActionUpStream(): Promise<Array<ScriptAction>>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                var include = this.ApiProxy.GetScriptActions();
+
+                if (include)
+                {
+                    let result = new Array<ScriptAction>();
+
+                    include.then((res) =>
+                    {
+                        if (res.data.result.length > 0)
+                        {
+                            res.data.result.forEach((element) =>
+                            {
+                                result.push(new ScriptAction(<ISysEventScriptAction>element));
+                            });
+                            resolve(result);
+                        }
+                        else
+                        {
+                            reject("No elements Found");
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                        reject(er);
+                    });
+                }
+            }
+        });
+    }
+
+    private GetScriptProcessorUpStream(): Promise<Array<Processor>>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                var include = this.ApiProxy.GetProcessors();
+
+                if (include)
+                {
+                    let result = new Array<Processor>();
+
+                    include.then((res) =>
+                    {
+                        if (res.data.result.length > 0)
+                        {
+                            res.data.result.forEach((element) =>
+                            {
+                                result.push(new Processor(<Processor>element));
+                            });
+                            resolve(result);
+                        }
+                        else
+                        {
+                            reject("No elements Found");
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                        reject(er);
+                    });
+                }
+            }
+        });
+    }
+
     /**
      * GetUpdateSets
      * 
@@ -918,6 +1030,32 @@ export class Instance
             {
                 console.error(er);
             });
+
+            //GetScriptActionUpStream
+            let scriptActions = this.GetScriptActionUpStream();
+            scriptActions.then((res) =>
+            {
+                if (this._wsm)
+                {
+                    this._wsm.SetScriptActions(res);
+                }
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+
+            let processors = this.GetScriptProcessorUpStream();
+            processors.then((res) =>
+            {
+                if (this._wsm)
+                {
+                    this._wsm.SetProcessor(res);
+                }
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+
         }
     }
 
@@ -933,7 +1071,6 @@ export class Instance
             return this.ApiProxy.SetUpdateSet(updateSet);
         }
     }
-
 
     /**
      * Create Update Set
@@ -1016,6 +1153,190 @@ export class Instance
                 reject("API Proxy is null or undefined");
             }
         });
+    }
 
+    /**
+     * Create and add record to workspace
+     * @param type 
+     * @param name 
+     * @param template 
+     */
+    public CreateRecord(type: SupportedRecords, name: string): Promise<ISysMetadataIWorkspaceConvertable>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            //get template
+            let r = this.getTemplate(type, name);
+            //create record upstream and return converted class
+            if (r)
+            {
+                if (this.ApiProxy)
+                {
+                    let p = this.ApiProxy.CreateRecord(type, r);
+                    if (p)
+                    {
+                        p.then((res) =>
+                        {
+                            resolve(Converter.CastSysMetaData(res.data.result));
+                        }).catch((err) =>
+                        {
+                            console.error(err);
+                            reject(err);
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+    //returns an object for containing a template where applicable. 
+    private getTemplate(type: SupportedRecords, name: string): Object | undefined
+    {
+        switch (type)
+        {
+            case SupportedRecords["Script Include"]:
+                return {
+                    name: name,
+                    script:
+                        `
+var ${name} = Class.create();
+newinclude.prototype = {
+    initialize: function() {
+    },
+
+    type: '${name}'
+};`
+                };
+            case SupportedRecords["Header or Footer Widget"]:
+                return {
+                    name: name,
+                    script:
+                        `
+(function() {
+    /* populate the 'data' object */
+    /* e.g., data.table = $sp.getValue('table'); */
+    
+    })();`,
+                    css: ``,
+                    client_script:
+                        `
+/**
+ * @this {Controller}
+ * @param {$Scope} $scope 
+ */
+function($scope) {
+    /* widget controller */
+    var c = this;
+}`,
+                    template:
+                        `
+<div>
+<!-- your widget template -->
+</div>`
+                };
+            case SupportedRecords["Mail Script"]:
+                return {
+                    name: name,
+                    script:
+                        `
+(
+    /**
+    * @param {GlideRecord} current
+    * @param {TemplatePrinter} template
+    * @param {GlideEmailOutbound} email
+    * @param {GlideRecord} email_action
+    * @param {GlideRecord} event
+    */
+   function runMailScript(current, template, email, email_action, event) {
+
+        // Add your code here
+
+    }
+)(current, template, email, email_action, event);`
+                };
+            case SupportedRecords.Processor:
+                return {
+                    name: name,
+                    script:
+                        `
+(
+    /**
+     * @param {HttpServletRequest} g_request 
+     * @param {HttpServletResponse} g_response 
+     * @param {GlideScriptedProcessor} g_processor 
+     */
+    function process(g_request, g_response, g_processor)
+    {
+        // Add your code here
+    }
+)(g_request, g_response, g_processor);`
+
+                };
+            case SupportedRecords["Script Action"]:
+                return {
+                    name: name,
+                    script:
+                        `
+/**
+ * @type {GlideRecord} Event record
+ */
+var event = event;
+/**
+ * @type {GlideRecord} Record event is spawned for.
+ */
+var current = current;
+
+//add your code`
+                };
+            case SupportedRecords["Scripted Rest API"]:
+                return {
+                    name: name
+                };
+            case SupportedRecords["Stylesheet"]:
+                return {
+                    name: name,
+                    css: ``
+                };
+            case SupportedRecords.Theme:
+                return {
+                    name: name,
+                    css_variables: ``
+                };
+            case SupportedRecords["UI Script"]:
+                return {
+                    name: name,
+                    script: ``
+                };
+            case SupportedRecords.Widget:
+                return {
+                    name: name,
+                    script:
+                        `
+(function() {
+/* populate the 'data' object */
+/* e.g., data.table = $sp.getValue('table'); */
+
+})();`,
+                    css: ``,
+                    client_script:
+                        `
+/**
+* @this {Controller}
+* @param {$Scope} $scope 
+*/
+function($scope) {
+/* widget controller */
+var c = this;
+}`,
+                    template:
+                        `
+<div>
+<!-- your widget template -->
+</div>`
+                };
+            default:
+                console.error(`Supported record type: ${type} not recognize`);
+                break;
+        }
     }
 }
