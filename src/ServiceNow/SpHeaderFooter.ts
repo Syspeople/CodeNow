@@ -1,9 +1,10 @@
-import { Record, ISpWidget } from "./all";
+import { Record, } from "./all";
 import { FileTypes } from '../Manager/all';
+import { ISpHeaderFooter } from './ISpHeaderFooter';
 
-export class Widget extends Record implements ISpWidget
+export class SpHeaderFooter extends Record implements ISpHeaderFooter
 {
-    constructor(w: ISpWidget)
+    constructor(w: ISpHeaderFooter)
     {
         super(w);
 

@@ -1,3 +1,5 @@
+/* SN SERVERSIDE */
+
 declare class GlideRecord
 {
     /**
@@ -403,7 +405,7 @@ declare class GlideDateTime
      * Adds a GlideTime object to the current GlideDateTime object.
      * @param gd The GlideTime object to add.
      */
-    add(gd: GlideDateTime): void;
+    add(gd: GlideTime): void;
 
     /**
      * Adds the specified number of milliseconds to the current GlideDateTime object.
@@ -472,7 +474,391 @@ declare class GlideDateTime
      * @param years The number of years to add. Use a negative value to subtract.
      */
     addYearsLocalTime(years: Number): void;
+
+    /**
+     * Adds a specified number of years to the current GlideDateTime object. A negative parameter subtracts years. The date and time value stored by GlideDateTime object is interpreted as being in the UTC time zone.
+     * @param years The number of years to add. Use a negative value to subtract.
+     */
+    addYearsUTC(years: Number): void;
+
+    /**
+     * Determines if the GlideDateTime object occurs after the specified GlideDateTime.
+     * @param gdt The time to check against.
+     */
+    after(gdt: GlideDateTime): boolean
+
+    /**
+     * Determines if the GlideDateTime object occurs before the specified GlideDateTime.
+     * @param gdt The time to check against.
+     */
+    before(gdt: GlideDateTime): boolean
+
+    /**
+     * Compares two date and time objects to determine whether they are equivalent or one occurs before or after the other.
+     * @param gdt
+     * @returns 0 = Dates are equal, 1 = date is after input date, -1 = date is before input date
+     */
+    compareTo(gdt: GlideDateTime): Number
+
+    /**
+     * Compares a datetime with an existing value for equality.
+     * @param dateTime 	GlideDateTime object or String to compare
+     */
+    equals(dateTime: GlideDateTime | string): boolean;
+
+    /**
+     * Gets the date stored by the GlideDateTime object, expressed in the standard format, yyyy-MM-dd, and the system time zone, UTC by default.
+     * @returns The date in the system time zone.
+     */
+    getDate(): GlideDateTime;
+
+    /**
+     * Gets the day of the month stored by the GlideDateTime object, expressed in the current user's time zone.
+     * @returns from 1 to 31.
+     */
+    getDayOfMonthLocalTime(): Number;
+
+    /**
+     * Gets the day of the month stored by the GlideDateTime object, expressed in the UTC time zone.
+     */
+    getDayOfMonthUTC(): Number;
+
+    /**
+     * Gets the day of the week stored by the GlideDateTime object, expressed in the user's time zone.
+     */
+    getDayOfWeekLocalTime(): Number;
+
+    /**
+     * Gets the day of the week stored by the GlideDateTime object, expressed in the UTC time zone.
+     */
+    getDayOfWeekUTC(): Number;
+
+    /**
+     * Gets the number of days in the month stored by the GlideDateTime object, expressed in the current user's time zone.
+     */
+    getDaysInMonthLocalTime(): Number
+
+    /**
+     * Gets the number of days in the month stored by the GlideDateTime object, expressed in the UTC time zone.
+     */
+    getDaysInMonthUTC(): Number;
+
+    /**
+     * Gets the date and time value in the current user's display format and time zone.
+     */
+    getDisplayValue(): String;
+
+    /**
+     * Gets the display value in the internal format (yyyy-MM-dd HH:mm:ss).
+     */
+    getDisplayValueInternal(): String
+
+    /**
+     * Gets the amount of time that daylight saving time is offset.
+     */
+    getDSTOffset(): Number;
+
+    /**
+     * Gets the current error message.
+     */
+    getErrorMsg(): String;
+
+    /**
+     * Returns the object's time in the local time zone and in the internal format.
+     */
+    getInternalFormattedLocalTime(): String;
+
+    /**
+     * Gets the date stored by the GlideDateTime object, expressed in the standard format, yyyy-MM-dd, and the current user's time zone.
+     */
+    getLocalDate(): GlideDate;
+
+    /**
+     * Returns a GlideTime object that represents the time portion of the GlideDateTime object in the user's time zone.
+     */
+    getLocalTime(): GlideTime;
+
+    /**
+     * Gets the month stored by the GlideDateTime object, expressed in the current user's time zone.
+     */
+    getMonthLocalTime(): Number;
+
+    /**
+     * Gets the month stored by the GlideDateTime object, expressed in the UTC time zone.
+     */
+    getMonthUTC(): Number;
+
+    /**
+     * Gets the number of milliseconds since January 1, 1970, 00:00:00 GMT.
+     */
+    getNumericValue(): Number;
+
+    /**
+     * Returns a GlideTime object that represents the time portion of the GlideDateTime object.
+     */
+    getTime(): GlideTime;
+
+    /**
+     * Gets the time zone offset in milliseconds.
+     */
+    getTZOffset(): Number;
+
+    /**
+     * Returns the object's time in the local time zone and in the user's format.
+     */
+    getUserFormattedLocalTime(): String;
+
+    /**
+     * Gets the date and time value stored by the GlideDateTime object in the internal format, yyyy-MM-dd HH:mm:ss, and the system time zone, UTC by default. 
+     */
+    getValue(): String;
+
+    /**
+     * Gets the number of the week stored by the GlideDateTime object, expressed in the current user's time zone. 
+     * All weeks begin on Sunday. The first week of the year is the week that contains at least one day of the new year. 
+     * The week beginning Sunday 2015-12-27 is considered the first week of 2016 as that week contains January 1 and 2.
+     */
+    getWeekOfYearLocalTime(): Number;
+
+    /**
+     * Gets the number of the week stored by the GlideDateTime object, expressed in the UTC time zone. 
+     * All weeks begin on Sunday. The first week of the year is the week that contains at least one day of the new year. 
+     * The week beginning Sunday 2015-12-27 is considered the first week of 2016 as that week contains January 1 and 2.
+     */
+    getWeekOfYearUTC(): Number;
+
+    /**
+     * Gets the year stored by the GlideDateTime object, expressed in the current user's time zone.
+     */
+    getYearLocalTime(): Number;
+
+    /**
+     * Gets the year stored by the GlideDateTime object, expressed in the UTC time zone.
+     */
+    getYearUTC(): Number;
+
+    /**
+     * Determines if an object's date is set.
+     */
+    hasDate(): Boolean;
+
+    /**
+     * Determines if an object's time uses a daylight saving offset.
+     */
+    isDST(): Boolean;
+
+    /**
+     * Determines if a value is a valid date and time.
+     */
+    isValid(): Boolean;
+
+    /**
+     * Determines if the GlideDateTime object occurs on or after the specified GlideDateTime.
+     * @param gdt The time to check against.
+     * @returns Returns true if the GlideDateTime object's time is on or after the time specified by the parameter.
+     */
+    onOrAfter(gdt: GlideDateTime): Boolean;
+
+    /**
+     * Determines if the GlideDateTime object occurs on or before the specified GlideDateTime.
+     * @param gdt The time to check against.
+     * @returns Returns true if the GlideDateTime object's time is on or before the time specified by the parameter.
+     */
+    onOrBefore(gdt: GlideDateTime): Boolean;
+
+    /**
+     * Sets the day of the month to a specified value in the current user's time zone.
+     * @param day The day of month to change to, from 1 to 31. If this value is greater than the maximum number of days in the month, the value is set to the last day of the month.
+     */
+    setDayOfMonthLocalTime(day: Number): void;
+
+    /**
+     * Sets the day of the month to a specified value in the UTC time zone.
+     * @param day The day of month to change to, from 1 to 31. If this value is greater than the maximum number of days in the month, the value is set to the last day of the month.
+     */
+    setDayOfMonthUTC(day: Number): void;
+
+    /**
+     * Sets a date and time value using the current user's display format and time zone.
+     * @param asDisplayed The date and time in the current user's display format and time zone. The parameter must be formatted using the current user's preferred display format, such as MM-dd-yyyy HH:mm:ss. To assign the current date and time to a variable in a workflow script, use variable.setDisplayValue(gs.nowDateTime);.
+     */
+
+    setDisplayValue(asDisplayed: string): void;
+
+    /**
+     * Sets a date and time value using the current user's time zone and the specified date and time format. This method throws a runtime exception if the date and time format used in the value parameter does not match the format parameter. You can retrieve the error message by calling getErrorMsg() on the GlideDateTime object after the exception is caught.
+     * @param value The date and time in the current user's time zone.
+     * @param format The date and time format to use to parse the value parameter.
+     */
+    setDisplayValue(value: string, format: string): void;
+
+    /**
+     * Sets a date and time value using the internal format (yyyy-MM-dd HH:mm:ss) and the current user's time zone.
+     * @param value The date and time in internal format.
+     */
+    setDisplayValueInternal(value: string): void;
+
+    /**
+     * Sets the date and time of the current object using an existing GlideDateTime object. This method is equivalent to instantiating a new object with a GlideDateTime parameter.
+     * @param g The object to use for setting the datetime value.
+     */
+    setGlideDateTime(g: GlideDateTime): void;
+
+    /**
+     * Sets the month stored by the GlideDateTime object to the specified value using the current user's time zone.
+     * @param month The month to change to.
+     */
+    setMonthLocalTime(month: Number): void;
+
+    /**
+     * Sets the month stored by the GlideDateTime object to the specified value using the UTC time zone.
+     * @param month The month to change to.
+     */
+    setMonthUTC(month: Number): void;
+
+    /**
+     * Sets the date and time of the GlideDateTime object.
+     * @param o The date and time to use. This parameter may be one of several types:
+    A string in the UTC time zone and the internal format of yyyy-MM-dd HH:mm:ss. Sets the value of the object to the specified date and time. Using the method this way is equivalent to instantiating a new GlideDateTime object using the GlideDateTime(String value) constructor. If the date and time format used does not match the internal format, the method attempts to set the date and time using other available formats. Resolving the date and time this way can lead to inaccurate data due to ambiguity in the day and month values. When using a non-standard date and time format, use etValueUTC(String dt, String format) instead.
+    A GlideDateTime object. Sets the value of the object to the date and time stored by the GlideDateTime passed in the parameter. Using the method this way is equivalent to instantiating a new GlideDateTime object using the GlideDateTime(GlideDateTime g) constructor.
+    A JavaScript Number. Sets the value of the object using the Number value as milliseconds past January 1, 1970 00:00:00 GMT.
+     */
+    setValue(o: string): void;
+
+    /**
+     * Sets a date and time value using the UTC time zone and the specified date and time format. This method throws a runtime exception if the date and time format used in the dt parameter does not match the format parameter. You can retrieve the error message by calling getErrorMsg() on the GlideDateTime object after the exception is caught.
+     * @param dt The date and time to use.
+     * @param format The date and time format to use.
+     */
+    setValueUTC(dt: string, format: string): void;
+
+    /**
+     * Sets the year stored by the GlideDateTime object to the specified value using the current user's time zone.
+     * @param year The year to change to.
+     */
+    setYearLocalTime(year: Number): void;
+
+    /**
+     * Sets the year stored by the GlideDateTime object to the specified value using the UTC time zone
+     * @param year The year to change to.
+     */
+    setYearUTC(year: Number): void;
+
+    /**
+     * Subtracts a specified amount of time from the current GlideDateTime object.
+     * @param time The time value to subtract.
+     */
+    subtract(time: GlideTime): void;
+
+    /**
+     * Subtracts the specified number of milliseconds from the GlideDateTime object.
+     * @param milliseconds The number of milliseconds to subtract.
+     */
+    subtract(milliseconds: Number): void;
+
+    /**
+     * Gets the duration difference between two GlideDateTime values.
+     * @param start The start value.
+     * @param end The end value.
+     * @returns The duration between the two values.
+     */
+    subtract(start: GlideDateTime, end: GlideDateTime): GlideDuration;
+
+    /**
+     * Gets the date and time value stored by the GlideDateTime object in the internal format, yyyy-MM-dd HH:mm:ss, and the system time zone, UTC by default. This method is equivalent to getValue().
+     */
+    toString(): void;
+
+
 }
+
+declare class GlideDate
+{
+    /**
+     * Creates a GlideDate object with the current date time.
+     */
+    constructor();
+
+    /**
+     * Gets the date in the specified date format.
+     * @param format the desired date format
+     * @returns the date in the specified format
+     */
+    getByFormat(format: string): string;
+
+    /**
+     * Gets the day of the month stored by the GlideDate object, expressed in the UTC time zone.
+     * @returns The day of the month in the UTC time zone, from 1 to 31.
+     */
+    getDayOfMonthNoTZ(): Number;
+
+    /**
+     * Gets the date in the current user's display format and time zone.
+     * @returns The date in the user's format and time zone. Keep in mind when designing business rules or script includes that this method may return values in different formats for different users.
+     */
+    getDisplayValue(): string;
+
+    /**
+     * Gets the display value in the internal format (yyyy-MM-dd).
+     * @returns The date values for the GlideDate object in the current user's time zone and the internal time format of yyyy-MM-dd.
+     */
+    getDisplayValueInternal(): string;
+
+    /**
+     * Gets the month stored by the GlideDate object, expressed in the UTC time zone.
+     * @returns The numerical value of the month from 1 to 12.
+     */
+    getMonthNoTZ(): Number;
+
+    /**
+     * Gets the date value stored in the database by the GlideDate object in the internal format, yyyy-MM-dd, and the system time zone, UTC by default.
+     * @returns The date value in the internal format and system time zone.
+     */
+    getValue(): string;
+
+    /**
+     * Gets the year stored by the GlideDate object, expressed in the UTC time zone.
+     * @returns The numerical value of the year.
+     */
+    getYearNoTZ(): Number;
+
+    /**
+     * Sets a date value using the current user's display format and time zone.
+     * @param asDisplayed The date in the current user's display format and time zone. The parameter must be formatted using the current user's preferred display format, such as yyyy-MM-dd.
+     */
+    setDisplayValue(asDisplayed: string): void;
+
+    /**
+     * Sets the date of the GlideDate object.
+     * @param o The date and time to use.
+     */
+    setValue(o: string): void;
+
+    /**
+     * Gets the duration difference between two GlideDate values.
+     * @param start The start value.
+     * @param end The end value.
+     * @returns The duration between the two values.
+     */
+    subtract(start: GlideDate, end: GlideDate): GlideDuration;
+}
+
+declare class GlideTime
+{
+    /**
+     * Not fully documented yet.
+     */
+    constructor();
+}
+
+declare class GlideDuration
+{
+    /**
+     * Not fully documented yet.
+     */
+    constructor();
+}
+
 
 declare class GlideQueryCondition
 {
@@ -647,217 +1033,74 @@ declare class GlideSession
 
 
 }
-/**
- * Available in Widget Server script
- */
-declare var $sp: GlideSPScriptable;
-declare class GlideSPScriptable
+
+declare class TemplatePrinter
 {
     /**
-     * No constructor availble
-     * 
-     * use via global variable: $sp
+     * no Constructor. Global variable available in mail scripts.
      */
     constructor();
 
     /**
-     * Returns true if the user can read the specified GlideRecord.
-     * 
-     * If the record type is kb_knowledge, sc_cat_item, or sc_category, the method checks if the user can view the item.
-     * @param gr The GlideRecord to check.
+     * Prints the string to the email body.
+     * @param string
      */
-    canReadRecord(gr: GlideRecord): boolean;
+    print(string: string): void;
 
     /**
-     * Returns true if the user can read the specified GlideRecord.
-     * 
-     * If the record type is kb_knowledge, sc_cat_item, or sc_category, the method checks if the user can view the item.
-     * @param table Name of the table to query.
-     * @param sysId Sys_id of the record to query.
+     * Adds non-breaking spaces to the email body.
+     * @param spaces 
      */
-    canReadRecord(table: string, sysId: string): boolean;
+    space(spaces: number): void;
+}
+
+declare class GlideEmailOutbound
+{
+    constructor();
 
     /**
-     * Returns a model and view model for a sc_cat_item or sc_cat_item_guide.
-     * 
-     * This method is a quick way to get the data necessary to render and order a catalog item using <sp-model />. If you just need to get a catalog item to show its picture or name, use GlideRecord to query the sc_cat_item table.
-     * @param sysId The sys_id of the catalog item (sc_cat_item) or order guide (sc_cat_item_guide).
-     * @param isOrdering When true, uses create roles security check. When false, uses write roles security check. When users are ordering an item or have it in their cart, check using the create roles. If users are not ordering, for example, somebody is looking at a requested item to see the variables associated with that item, then check using the write roles.
+     * Adds the recipient to either the cc or bcc list
+     * @param type Either cc or bcc, determines the list to which the address is added.
+     * @param address The recipient's email address.
      */
-    getCatalogItem(sysId: string, isOrdering?: boolean): object;
+    addAddress(type: string, address: string): void;
 
     /**
-     * Returns the display value of the specified field (if it exists and has a value) from either the widget's sp_instance or the sp_portal record.
-     * @param fieldName Name of the field
+     * Adds the recipient to either the cc or bcc list, but uses the display name instead of the address when showing the recipient.
+     * @param type Either cc or bcc, determines the list to which the address is added.
+     * @param address The recipient's email address.
+     * @param displayName The name to be shown instead of the email address.
      */
-    getDisplayValue(fieldName: string): string;
+    addAddress(type: string, address: string, displayName: string): void;
 
     /**
-     * Returns information about the specified field in the specified GlideRecord.
-     * @param gr The GlideRecord to check
-     * @param fieldName The field to find information for
+     * Returns the email's subject line.
      */
-    getField(gr: GlideRecord, fieldName: string): object
+    getSubject(): string;
 
     /**
-     * Checks the specified list of field names, and returns an array of valid field names.
-     * @param gr The GlideRecord to check
-     * @param fieldNames A comma separated list of field names.
+     * Sets the body of the email.
+     * @param bodyText 
      */
-    getFields(gr: GlideRecord, fieldNames: string): Array<string>;
+    setBody(bodyText: string): void;
 
     /**
-     * Checks the specified list of field names and returns an object of valid field names.
-     * @param gr The GlideRecord to check
-     * @param fieldNames A comma separated list of field names.
+     * Sets the sender's address.
+     * @param address 
      */
-    getFieldsObject(gr: GlideRecord, fieldNames: string): object;
+    setFrom(address: string): void;
 
     /**
-     * Return the form.
-     * @param tableName The name of the table.
-     * @param sysId The form's sys_id.
+     * Sets the reply to address.
+     * @param address 
      */
-    getForm(tableName: string, sysId: string): object;
+    setReplyTo(address: string): void;
 
     /**
-     * Returns KB articles in the specified category and its subcategories.
-     * 
-     * To avoid performance issues, do not use this method to return articles in large categories or articles with inline images. Instead, use getKBArticleSummaries().
-     * @param sys_id Sys_id of the KB article category.
-     * @param limit Maximum number of KB articles returned.
-     * @returns The articles within the category and its subcategories with: A workflow_state of published and a valid_to date greater than or equal to the current date.
+     * Sets the email's subject line.
+     * @param subject 
      */
-    getKBCategoryArticles(sys_id: string, limit: number): Array<object>;
-
-    /**
-     * Returns Knowledge Base article summaries in the specified category and its subcategories.
-     * @param sys_id Sys_id of the KB article category.
-     * @param limit Maximum number of KB articles returned.
-     * @param maxChars Maximum number of characters to return from the article text. For full article text, set the value to -1.
-     */
-    getKBCategoryArticleSummaries(sys_id: string, limit: number, maxChars: number): Array<object>;
-
-    /**
-     * Returns the number of articles in the defined Knowledge Base.
-     * @param sys_id Sys_id of a Knowledge Base record.
-     */
-    getKBCount(sys_id: string): number;
-
-    /**
-     * Returns a list of the specified table's columns in the specified view.
-     * @param tableName Name of the table
-     * @param view The view by which to filter the columns
-     */
-    getListColumns(tableName: string, view: string): object;
-
-    /**
-     * Returns the (?id=) portion of the URL based on the sp_menu type.
-     * 
-     * @param page 
-     */
-    getMenuHREF(page: GlideRecord): string;
-
-    /**
-     * Returns an array of menu items for the specified instance.
-     * @param sysId 	sysId of the instance
-     */
-    getMenuItems(sysId: string): Array<object>;
-
-    /**
-     * Returns the value of the specified parameter.
-     * @param name The name of the key from the query string or post body.
-     * @returns Returns the specified parameter as an object. Returns null if there is no request, JSON request, or widget.
-     */
-    getParameter(name: string): object;
-
-    /**
-     * Returns the portal's GlideRecord.
-     */
-    getPortalRecord(): GlideRecord;
-
-    /**
-     * Returns the current portal context.
-     */
-    getRecord(): GlideRecord;
-
-    /**
-     * Copies display values for the specified fields into the data parameter.
-     * @param data The display values for the specified fields are copied to this object.
-     * @param from The GlideRecord to process.
-     * @param names A comma-separated list of field names.
-     */
-    getRecordDisplayValues(data: object, from: GlideRecord, names: string): void;
-
-    /**
-     * For the specified fields, copies the element's name, display value, and value into the data parameter.
-     * @param data The display values for the specified fields are copied to this object.
-     * @param from The GlideRecord to process.
-     * @param names A comma-separated list of field names.
-     */
-    getRecordElements(data: object, from: GlideRecord, names: string): void;
-
-    /**
-     * Copies values for the specified field names from the GlideRecord into the data parameter.
-     * @param data 
-     * @param from 
-     * @param names 
-     */
-    getRecordValues(data: object, from: GlideRecord, names: string): void;
-
-    /**
-     * Returns an array of Service Catalog variables associated with a record.
-     * @param gr The record to retrieve Service Catalog variables for. Must be a record with Service Catalog variables defined, such as a requested item [sc_req_item] record or an incident submitted through a record producer.
-     * @param includeNilResponses 	Optional parameter. If true, variables with no user-defined value are included in the array.
-     */
-    getRecordVariablesArray(gr: GlideRecord, includeNilResponses?: boolean): Array<object>;
-
-    /**
-     * Gets the activity stream for the specified record. This method works on tables that extend the task table.
-     * 
-     * **Note** The user_login property contains the User ID of the current user. The user_sys_id and iser_full_name properties reference the creator of the queried record.
-     * @param table The table name
-     * @param sysId The sys_id of the record
-     * @returns If a table extending the task table is specified, contains the display_value, sys_id, short_description,number, entries, user_sys_id, user_full_name, user_login, label, table, and journal_fields properties; otherwise contains the table and sys_id properties.
-     */
-    getStream(table: string, sysId: string): object;
-
-    /**
-     * Returns the user's initials.
-     */
-    getUserInitials(): string;
-
-    /**
-     * Returns the value of the specified parameter.
-     * @param name 	Name of the parameter
-     * @returns Value of the specified parameter. Null if the request does not exist or has no such parameter, the rectangle does not exist or has no such parameter, or the portal is null or has no such parameter.
-     */
-    getValue(name: string): object;
-
-    /**
-     * Copies values from the request or instance to the data parameter.
-     * @param data Receives the parameter values.
-     * @param names Comma-separated string of field names.
-     */
-    getValues(data: object, names: string): void;
-
-    /**
-     * Gets a widget by id or sys_id, executes that widget's server script using the provided options, then returns the widget model.
-     * @param sysID The widget sys_id or widget_id
-     * @param options An object to pass to the widget's server script. Refer to this object as options in your server script.
-     * @returns A widget model to be used with sp-widget.
-     */
-    getWidget(sysID: string, options: object): object;
-
-    /**
-     * Transforms a URL requesting a list or form in the platform UI into the URL of the corresponding id=list or id=form Service Portal page.
-     * 
-     * Use this method to perform tasks such as redirecting a user after login to the correct Service Portal page when they request a platform UI form or list URL. Note that the id=list and id=form page targets are not customizable.
-     * 
-     * **Note**: Table, sys_id, and sysparm_query values are preserved from the original URL; sysparm_view is not.
-     * @param url Platform UI URL
-     */
-    mapUrlToSPUrl(url: string): string;
+    setSubject(subject: string): void;
 }
 
 declare class GlideSysAttachment
@@ -932,7 +1175,6 @@ declare class GlideSysAttachment
      */
     writeContentStream(gr: GlideRecord, fileName: string, contentType: string, inputStream: GlideScriptableInputStream): string;
 }
-
 declare class GlideScriptableInputStream
 {
     /**
@@ -942,509 +1184,9 @@ declare class GlideScriptableInputStream
     constructor();
 }
 
-//client angular
-declare var spModal: SpModal;
-
-declare class SpModal
-{
-    /**
-     * available via angular di as spModal
-     */
-    constructor()
-
-    /**
-     * Displays an alert.
-     * @param message Message to show
-     */
-    alert(message: string): Promise<T>;
-
-    /**
-     * Displays a confirmation message.
-     * @param message message to show
-     */
-    confirm(message: string): Promise<T>;
-
-    /**
-     * Opens a modal window using the specified options.
-     * @param options 
-     */
-    open(options: SpModalOptions): Promise<T>;
-
-    /**
-     * Displays a prompt for user input.
-     * @param message message to show.
-     * @param defaultValue optional default value.
-     */
-    prompt(message: string, defaultValue?: string): Promise<T>;
-}
-//client angular
 /**
- * spModal options object, available options for using spModal.
+ * Available in Server Scripts
  */
-declare class SpModalOptions
-{
-    /**
-     *  a string that can be HTML that goes in the header. The default is empty.
-     */
-    title: string;
-    /** 
-     * a string that can be HTML that goes in the header. The default is empty.
-     */
-    message: string;
-
-    /**
-     * an array that contains the buttons to show on the dialog. The default is Cancel and OK.
-     */
-    buttons: Array<string>;
-
-    /**
-     * a Boolean. When true shows an input field on the dialog. The default is false.
-     */
-    input: boolean;
-
-    /**
-     * a string containing the value of the input field. The default is empty.
-     */
-    value: string;
-
-    /**
-     * a string that identifies the widget ID or sys_id to embed in the dialog. The default is empty.
-     */
-    widget: string;
-
-    /**
-     * an object to send the embedded widget as input. The default is null.
-     */
-    widgetInput: object;
-
-    /**
-     * a client-side object to share data with the embedded widget client script.
-     */
-    shared: object;
-
-    /**
-     * a string indicating the size of the window. Can be 'sm' or 'lg'. The default is empty.
-     */
-    size: string;
-}
-
-//client angular
-declare var $q: $Q;
-declare class $Q
-{
-    /**
-      *  available via angular DI as $q.
-      */
-    constructor();
-
-    /**
-     * @returns The newly created promise.
-     */
-    defer(): Promise<T>;
-
-    /**
-     * Creates a promise that is resolved as rejected with the specified reason. This api should be used to forward rejection in a chain of promises. 
-     * 
-     * If you are dealing with the last promise in a promise chain, you don't need to worry about it.
-     * 
-     * 
-     * When comparing deferreds/promises to the familiar behavior of try/catch/throw, think of reject as the throw keyword in JavaScript. 
-     * This also means that if you "catch" an error via a promise error callback and you want to forward the error to the promise derived from the current promise, you have to "rethrow" the error by returning a rejection constructed via reject.
-     * 
-     * @param reason Constant, message, exception or an object representing the rejection reason.
-     */
-    reject(reason: object): object;
-
-    /**
-     * Wraps an object that might be a value or a (3rd party) then-able promise into a $q promise. This is useful when you are dealing with an object that might or might not be a promise, or if the promise comes from a source that can't be trusted.
-     * @param value Value or a promise
-     * @param successCallback callback
-     * @param errorCallback callback
-     * @param progressCallback callback
-     */
-    when(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise<T>;
-
-    /**
-     * Alias of when to maintain naming consistency with ES6.
-     * @param value Value or a promise
-     * @param successCallback callback
-     * @param errorCallback callback
-     * @param progressCallback callback 
-     */
-    resolve(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise<T>;
-
-    /**
-     * Combines multiple promises into a single promise that is resolved when all of the input promises are resolved.
-     * @param promises An array or hash of promises.
-     */
-    all(promises: Array<Promise>): Promise<T>;
-
-    /**
-     * Returns a promise that resolves or rejects as soon as one of those promises resolves or rejects, with the value or reason from that promise.
-     * @param promises An array or hash of promises.
-     */
-    race(promises: Array<Promise>): Promise<T>;
-}
-
-//client angular
-declare class Controller
-{
-    /**
-     * available in widget client script as this. add @type for intellisense
-     */
-    constructor();
-    server: Server;
-}
-
-//client angular
-declare class Server
-{
-    /**
-     * available via the controlle class
-     */
-    constructor();
-
-    /**
-     * Calls the server and sends custom input.
-     * @param Object Custom input object
-     */
-    get(Object?: object): Promise<T>;
-
-    /**
-     * Calls the server and posts this.data to the server script. Returns Promise.
-     */
-    update(): Promise<T>;
-
-    /**
-     * Calls the server and automatically replaces the current options and data from the server response. Returns Promise.
-     */
-    refresh(): Promise<T>;
-}
-
-//Client Angular
-declare var $location: $Location;
-
-declare class $Location
-{
-    /**
-     * availabe via Angualr DI
-     */
-    constructor();
-
-    /**
-     * This method is getter only.
-     * Return full URL representation with all segments encoded according to rules specified in RFC 3986.
-     * 
-     *  ```javascript
-      var absUrl = $location.absUrl();
-      // => "http://example.com/#/some/path?foo=bar&baz=xoxo"
-      ```
-     */
-    absUrl(): string;
-
-    /**
-     * This method is getter / setter.
-     * Return URL (e.g. /path?a=b#hash) when called without any parameter.
-     * Change path, search and hash, when called with parameter and return $location.
-     * 
-     *  ```javascript
-     var url = $location.url();
-     // => "/some/path?foo=bar&baz=xoxo"
-     ```
-     * @param url New URL without base prefix
-     */
-    url(url?: string): string;
-
-    /**
-     * This method is getter only.
-     * Return protocol of current URL.
-     * 
-     * ```javascript
-      var protocol = $location.protocol();
-      // => "http"
-     * ```
-     */
-    protocol(): string;
-
-    /**
-     * This method is getter only.
-     * Return host of current URL.
-     * **Note:** compared to the non-AngularJS version location.host which returns hostname:port, this returns the hostname portion only.
-     * 
-     * ```javascript
-      host = $location.host();
-      // => "example.com"
-      ```
-     */
-    host(): string;
-
-    /**
-     * This method is getter only.
-     * Return port of current URL.
-     * 
-     * ```javascript
-      var port = $location.port(); 
-      // => 80
-      ```
-     */
-    port(): number;
-
-    /**
-     * This method is getter / setter.
-     * Return path of current URL when called without any parameter.
-     * Change path when called with parameter and return $location.
-     * **Note:** Path should always begin with forward slash (/), this method will add the forward slash if it is missing.
-     * ```javascript
-        var path = $location.path();
-        // => "/some/path"
-        ```
-     * 
-     * @param path New path
-     */
-    path(path?: string | number): string | object;
-
-    /**
-     * This method is getter / setter.
-     * Return search part (as object) of current URL when called without any parameter.
-     * Change search part when called with parameter and return $location.
-     * 
-     * ```javascript
-      var searchObject = $location.search();
-      // => {foo: 'bar', baz: 'xoxo'}
-
-      $location.search('foo', 'yipee');
-      // $location.search() => {foo: 'yipee', baz: 'xoxo'}
-    ```
-     * 
-     * @param search New search params - string or hash object. When called with a single argument the method acts as a setter, setting the search component of $location to the specified value. If the argument is a hash object containing an array of values, these values will be encoded as duplicate search parameters in the URL.
-     * @param paramValue If search is a string or number, then paramValue will override only a single search property. If paramValue is an array, it will override the property of the search component of $location specified via the first argument. If paramValue is null, the property specified via the first argument will be deleted. If paramValue is true, the property specified via the first argument will be added with no value nor trailing equal sign.
-     * @returns If called with no arguments returns the parsed search object. If called with one or more arguments returns $location object itself.
-     */
-    search(search: string | Array<string> | object, paramValue?: string | Number | Array<string> | boolean): object;
-
-    /**
-     * This method is getter / setter.
-     * Returns the hash fragment when called without any parameters.
-     * Changes the hash fragment when called with a parameter and returns $location.
-     * @param hash New hash fragment
-     */
-    hash(hash?: string | number): string;
-
-    /**
-     * If called, all changes to $location during the current $digest will replace the current history record, instead of adding a new one.
-     */
-    replace(): void;
-
-    /**
-     * This method is getter / setter.
-     * Return the history state object when called without any parameter.
-     * Change the history state object when called with one parameter and return $location. The state object is later passed to pushState or replaceState.
-     * **NOTE:** This method is supported only in HTML5 mode and only in browsers supporting the HTML5 History API (i.e. methods pushState and replaceState). If you need to support older browsers (like IE9 or Android < 4.0), don't use this method.
-     * @param state State object for pushState or replaceState
-     */
-    state(state?: object): object;
-}
-
-//client angular
-declare var $http: $Http;
-/**
- * angualar $https Directive.
- */
-declare class $Http
-{
-    /**
-     *  available via angular DI as $http. 
-     */
-    constructor();
-
-    /**
-     * Shortcut method to perform GET request
-     * @param url url
-     * @param config options
-     */
-    get(url: string, config?: object): Promise<object>;
-
-    delete(url: string, config?: object): Promise<object>;
-
-    head(url: string, config?: object): Promise<object>;
-
-    /**
-     * Shortcut method to perform JSONP request.
-     * 
-     * **Note** that, since JSONP requests are sensitive because the response is given full access to the browser, the url must be declared, via $sce as a trusted resource URL. You can trust a URL by adding it to the whitelist via $sceDelegateProvider.resourceUrlWhitelist or by explicitly trusting the URL via $sce.trustAsResourceUrl(url).
-     * 
-     * You should avoid generating the URL for the JSONP request from user provided data. Provide additional query parameters via params property of the config parameter, rather than modifying the URL itself.
-     * 
-     * JSONP requests must specify a callback to be used in the response from the server. This callback is passed as a query parameter in the request. You must specify the name of this parameter by setting the jsonpCallbackParam property on the request config object.
-     * @param url
-     * @param config options
-     */
-    jsonp(url: string, config?: object): Promise<object>;
-
-    post(url: string, data: object, config?: object): Promise<object>;
-
-    put(url: string, data: object, config?: object): Promise<object>;
-
-    patch(url: string, data: object, config?: object): Promise<object>;
-
-}
-
-//client angular
-declare var $scope: $Scope;
-declare class $Scope
-{
-    /**
-     *Does not have an constructor. available via global variable: $scope
-     */
-    constructor();
-
-    /**
-     * Creates a new child scope.
-     * 
-     * The parent scope will propagate the $digest() event. The scope can be removed from the scope hierarchy using $destroy().
-     * 
-     * $destroy() must be called on a scope when it is desired for the scope and its child scopes to be permanently detached from the parent and thus stop participating in model change detection and listener notification by invoking.
-     * @param isolate If true, then the scope does not prototypically inherit from the parent scope. The scope is isolated, as it can not see parent scope properties. When creating widgets, it is useful for the widget to not accidentally read parent state.
-     * @param parent The Scope that will be the $parent of the newly created scope. Defaults to this scope if not provided. This is used when creating a transclude scope to correctly place it in the scope hierarchy while maintaining the correct prototypical inheritance.
-     */
-    $new(isolate: boolean, parent: $Scope): $Scope;
-
-    /**
-     * Registers a listener callback to be executed whenever the watchExpression changes.
-     * * The watchExpression is called on every call to $digest() and should return the value that will be watched. (watchExpression should not change its value when executed multiple times with the same input because it may be executed multiple times by $digest(). That is, watchExpression should be idempotent.)
-     * * The listener is called only when the value from the current watchExpression and the previous call to watchExpression are not equal (with the exception of the initial run, see below). Inequality is determined according to reference inequality, strict comparison via the !== Javascript operator, unless objectEquality == true (see next point)
-     * * When objectEquality == true, inequality of the watchExpression is determined according to the angular.equals function. To save the value of the object for later comparison, the angular.copy function is used. This therefore means that watching complex objects will have adverse memory and performance implications.
-     * * This should not be used to watch for changes in objects that are (or contain) File objects due to limitations with angular.copy.
-     * * The watch listener may change the model, which may trigger other listeners to fire. This is achieved by rerunning the watchers until no changes are detected. The rerun iteration limit is 10 to prevent an infinite loop deadlock.
-     * 
-     * If you want to be notified whenever $digest is called, you can register a watchExpression function with no listener. (Be prepared for multiple calls to your watchExpression because it will execute multiple times in a single $digest cycle if a change is detected.)
-     * 
-     * After a watcher is registered with the scope, the listener fn is called asynchronously (via $evalAsync) to initialize the watcher. In rare cases, this is undesirable because the listener is called when the result of watchExpression didn't change. To detect this scenario within the listener fn, you can compare the newVal and oldVal. If these two values are identical (===) then the listener was called due to initialization.
-     * @param watchExpression Expression that is evaluated on each $digest cycle. A change in the return value triggers a call to the listener.
-     * @param listener Callback called whenever the value of watchExpression changes.
-     * @param objectEquality Compare for object equality using angular.equals instead of comparing for reference equality.
-     * @returns Returns a deregistration function for this listener.
-     */
-    $watch(watchExpression: Function | string, listener: Function, objectEquality?: boolean): Function;
-
-    /**
-     * A variant of $watch() where it watches an array of watchExpressions. If any one expression in the collection changes the listener is executed.
-     *  * The items in the watchExpressions array are observed via the standard $watch operation. Their return values are examined for changes on every call to $digest.
-     *  * The listener is called whenever any expression in the watchExpressions array changes.
-     * @param watchExpressions Array of expressions that will be individually watched using $watch()
-     * @param listener Callback called whenever the return value of any expression in watchExpressions changes The newValues array contains the current values of the watchExpressions, with the indexes matching those of watchExpression and the oldValues array contains the previous values of the watchExpressions, with the indexes matching those of watchExpression The scope refers to the current scope.
-     * @returns Returns a de-registration function for all listeners.
-     */
-    $watchGroup(watchExpressions: Array<Function | string>, listener: Function): Function;
-
-    /**
-     * Shallow watches the properties of an object and fires whenever any of the properties change (for arrays, this implies watching the array items; for object maps, this implies watching the properties). If a change is detected, the listener callback is fired.
-     * * The obj collection is observed via standard $watch operation and is examined on every call to $digest() to see if any items have been added, removed, or moved.
-     * * The listener is called whenever anything within the obj has changed. Examples include adding, removing, and moving items belonging to an object or array.
-     * @param obj Evaluated as expression. The expression value should evaluate to an object or an array which is observed on each $digest cycle. Any shallow change within the collection will trigger a call to the listener.
-     * @param listener a callback function called when a change is detected.
-     */
-    $watchCollection(obj: Function | string, listener: Function): Function;
-
-    /**
-     * Processes all of the watchers of the current scope and its children. Because a watcher's listener can change the model, the $digest() keeps calling the watchers until no more listeners are firing. 
-     * This means that it is possible to get into an infinite loop. This function will throw 'Maximum iteration limit exceeded.' if the number of iterations exceeds 10.
-     * 
-     * Usually, you don't call $digest() directly in controllers or in directives. Instead, you should call $apply() (typically from within a directive), which will force a $digest().
-     * If you want to be notified whenever $digest() is called, you can register a watchExpression function with $watch() with no listener.
-     * In unit tests, you may need to call $digest() to simulate the scope life cycle.
-     */
-    $digest(): void;
-
-    /**
-     * Suspend watchers of this scope subtree so that they will not be invoked during digest.
-     * This can be used to optimize your application when you know that running those watchers is redundant.
-     * 
-     * **Warning**
-     * 
-     * Suspending scopes from the digest cycle can have unwanted and difficult to debug results. Only use this approach if you are confident that you know what you are doing and have ample tests to ensure that bindings get updated as you expect.
-     * 
-     * Some of the things to consider are:
-     * * Any external event on a directive/component will not trigger a digest while the hosting scope is suspended - even if the event handler calls $apply() or $rootScope.$digest()
-     * * Transcluded content exists on a scope that inherits from outside a directive but exists as a child of the directive's containing scope. If the containing scope is suspended the transcluded scope will also be suspended, even if the scope from which the transcluded scope inherits is not suspended
-     * * Multiple directives trying to manage the suspended status of a scope can confuse each other:
-     * * * A call to $suspend() on an already suspended scope is a no-op.
-     * * * A call to $resume() on a non-suspended scope is a no-op.
-     * * * If two directives suspend a scope, then one of them resumes the scope, the scope will no longer be suspended. This could result in the other directive believing a scope to be suspended when it is not.
-     * * If a parent scope is suspended then all its descendants will be also excluded from future digests whether or not they have been suspended themselves. Note that this also applies to isolate child scopes.
-     * * Calling $digest() directly on a descendant of a suspended scope will still run the watchers for that scope and its descendants. When digesting we only check whether the current scope is locally suspended, rather than checking whether it has a suspended ancestor.
-     * * Calling $resume() on a scope that has a suspended ancestor will not cause the scope to be included in future digests until all its ancestors have been resumed.
-     * * Resolved promises, e.g. from explicit $q deferreds and $http calls, trigger $apply() against the $rootScope and so will still trigger a global digest even if the promise was initiated by a component that lives on a suspended scope.
-     */
-    $suspend(): void;
-
-    /**
-     * 
-     * @param name Event name to listen on.
-     * @param listener Function to call when the event is emitted.
-     */
-    $on(name: string, listener: Function): Function;
-
-    /**
-     * Dispatches an event name upwards through the scope hierarchy notifying the registered $rootScope.Scope listeners.
-     * 
-     * The event life cycle starts at the scope on which $emit was called. All listeners listening for name event on this scope get notified.
-     * Afterwards, the event traverses upwards toward the root scope and calls all registered listeners along the way. The event will stop propagating if one of the listeners cancels it.
-     * 
-     * Any exception emitted from the listeners will be passed onto the $exceptionHandler service.
-     * @param name Event name to emit.
-     * @param args Optional one or more arguments which will be passed onto the event listeners.
-     * @returns Event Object
-     */
-    $emit(name: string, args?: object): object
-
-    /**
-     * Dispatches an event name downwards to all child scopes (and their children) notifying the registered $rootScope.Scope listeners.
-     * 
-     * The event life cycle starts at the scope on which $broadcast was called. 
-     * All listeners listening for name event on this scope get notified. Afterwards, the event propagates to all direct and indirect scopes of the current scope and calls all registered listeners along the way. 
-     * The event cannot be canceled.
-     * 
-     * Any exception emitted from the listeners will be passed onto the $exceptionHandler service.
-     * @param name Event name to broadcast.
-     * @param args Optional one or more arguments which will be passed onto the event listeners.
-     */
-    $broadcast(name: string, args: object): object
-}
-
-//client api
-declare class GlideAjax
-{
-    /**
-     * 
-     * @param class_name The name of the server-side class that contains the method you want to execute.
-     */
-    constructor(class_name: string);
-
-    /**
-     * Specifies a parameter name and value to be passed to the server-side function associated with this GlideAjax object.
-     * 
-     * **Note** The first call to addParam should be with the parameter sysparm_name and the name of the server-side method you want to call. The server-side code does not execute until the client script calls getXML().
-     * @param parameter 
-     * @param value 
-     */
-    addParam(parameter: string, value: string): void;
-
-    /**
-     * Sends the server a request to execute the method and parameters associated with this GlideAjax object.
-     * The server processes the request asynchronously and -- when ready -- returns the results via the function specified as the callback_function.
-     * @param callback 
-     */
-    getXML(callback: Function): void;
-
-    /**
-     * Call the processor asynchronously and get the answer element of the response in XML format.
-     * @param callback 
-     */
-    getXMLAnswer(callback: Function): void
-
-}
-
 declare var gs: GlideSystem;
 declare class GlideSystem
 {
@@ -1980,6 +1722,141 @@ declare class GlideSystem
 
 }
 
+/**
+ * Available in Scripted processors.
+ */
+// declare var g_processor: GlideScriptedProcessor;
+
+/**
+ * Available in Scripted processors.
+ */
+// declare var g_request: HttpServletRequest;
+
+/**
+ * Available in Scripted processors.
+ */
+// declare var g_response: HttpServletResponse;
+
+/**
+ * Available in Scripted processors.
+ * @returns table name extracted from the uri. 
+ */
+declare var g_target: string
+
+declare class GlideScriptedProcessor
+{
+    /**
+     *Does not have an constructor. available via global variable: g_processor
+     */
+    constructor();
+
+    /**
+     * Redirects to the specified URL.
+     * @param url 
+     */
+    redirect(url: string): void;
+
+    /**
+     * Encodes an object as a JSON string and writes it to the current URL.
+     * @param o 
+     */
+    writeJSON(o: object): void;
+
+    /**
+     * Writes the specified string to the current URL in the specified character-encoding.
+     * @param contentType Sets the content type of the response sent to the client, if the response has not been committed, and may include a character-encoding specification.
+     * @param s The string to write.
+     */
+    writeOutput(contentType: string, s: string): void;
+
+    /**
+     * Writes the specified string to the current URL.
+     * @param s The string to write.
+     */
+    writeOutput(s: string): void;
+}
+
+//only partly documented. many methods are restricted.
+declare interface ServletResponse
+{
+    /**
+     * Sets the content type of the response being sent to the client, if the response has not been committed yet.
+     * @param type 
+     */
+    setContentType(type: String): void;
+}
+//only partly documented. many methods are restricted.
+declare interface HttpServletResponse extends ServletResponse
+{
+    /**
+     * Sends a temporary redirect response to the client using the specified redirect location URL.
+     * @param location Url
+     */
+    sendRedirect(location: String): void;
+
+    /**
+     * Sets a response header with the given name and value.
+     * @param name Header Name
+     * @param value Header Value
+     */
+    setHeader(name: String, value: String): void;
+
+    /**
+     * Sets the status code for this response.
+     * @param sc HTTP status code
+     */
+    setStatus(sc: Number): void;
+}
+
+//only partly documented. many methods are restricted.
+declare interface ServletRequest
+{
+    /**
+     *  Returns the MIME type of the body of the request, or null if the type is not known.
+     */
+    getContentType(): String;
+
+    /**
+     * Returns the value of a request parameter as a String, or null if the parameter does not exist.
+     * @param name 
+     */
+    getParameter(name: String): String
+
+    /**
+     *  Returns an Enumeration of String objects containing the names of the parameters contained in this request.
+     */
+    getParameterNames(): Array<string>;
+}
+
+//only partly documented. many methods are restricted.
+declare interface HttpServletRequest extends ServletRequest
+{
+    /**
+     * Returns the value of the specified request header as a String.
+     * @param name 
+     */
+    getHeader(name: String): String;
+
+    /**
+     * Returns an enumeration of all the header names this request contains.
+     */
+    getHeaderNames(): Array<String>;
+
+    /**
+     * Returns all the values of the specified request header as an Enumeration of String objects.
+     * 
+     * Some headers, such as Accept-Language can be sent by clients as several headers each with a different value rather than sending the header as a comma separated list.
+     * @param name 
+     */
+    getHeaders(name: String): Array<String>;
+
+    /**
+     * Returns the query string that is contained in the request URL after the path.
+     */
+    getQueryString(): String;
+
+}
+
 declare namespace sn_ws
 {
     class RestMessagev2
@@ -2246,4 +2123,734 @@ declare namespace sn_ws
     }
     //Not documentet
     class GlideHTTPHeader { }
+}
+
+/* SN SP SERVERSIDE */
+
+/**
+ * Available in Widget Server script
+ */
+declare var $sp: GlideSPScriptable;
+declare class GlideSPScriptable
+{
+    /**
+     * No constructor availble
+     * 
+     * use via global variable: $sp
+     */
+    constructor();
+
+    /**
+     * Returns true if the user can read the specified GlideRecord.
+     * 
+     * If the record type is kb_knowledge, sc_cat_item, or sc_category, the method checks if the user can view the item.
+     * @param gr The GlideRecord to check.
+     */
+    canReadRecord(gr: GlideRecord): boolean;
+
+    /**
+     * Returns true if the user can read the specified GlideRecord.
+     * 
+     * If the record type is kb_knowledge, sc_cat_item, or sc_category, the method checks if the user can view the item.
+     * @param table Name of the table to query.
+     * @param sysId Sys_id of the record to query.
+     */
+    canReadRecord(table: string, sysId: string): boolean;
+
+    /**
+     * Returns a model and view model for a sc_cat_item or sc_cat_item_guide.
+     * 
+     * This method is a quick way to get the data necessary to render and order a catalog item using <sp-model />. If you just need to get a catalog item to show its picture or name, use GlideRecord to query the sc_cat_item table.
+     * @param sysId The sys_id of the catalog item (sc_cat_item) or order guide (sc_cat_item_guide).
+     * @param isOrdering When true, uses create roles security check. When false, uses write roles security check. When users are ordering an item or have it in their cart, check using the create roles. If users are not ordering, for example, somebody is looking at a requested item to see the variables associated with that item, then check using the write roles.
+     */
+    getCatalogItem(sysId: string, isOrdering?: boolean): object;
+
+    /**
+     * Returns the display value of the specified field (if it exists and has a value) from either the widget's sp_instance or the sp_portal record.
+     * @param fieldName Name of the field
+     */
+    getDisplayValue(fieldName: string): string;
+
+    /**
+     * Returns information about the specified field in the specified GlideRecord.
+     * @param gr The GlideRecord to check
+     * @param fieldName The field to find information for
+     */
+    getField(gr: GlideRecord, fieldName: string): object
+
+    /**
+     * Checks the specified list of field names, and returns an array of valid field names.
+     * @param gr The GlideRecord to check
+     * @param fieldNames A comma separated list of field names.
+     */
+    getFields(gr: GlideRecord, fieldNames: string): Array<string>;
+
+    /**
+     * Checks the specified list of field names and returns an object of valid field names.
+     * @param gr The GlideRecord to check
+     * @param fieldNames A comma separated list of field names.
+     */
+    getFieldsObject(gr: GlideRecord, fieldNames: string): object;
+
+    /**
+     * Return the form.
+     * @param tableName The name of the table.
+     * @param sysId The form's sys_id.
+     */
+    getForm(tableName: string, sysId: string): object;
+
+    /**
+     * Returns KB articles in the specified category and its subcategories.
+     * 
+     * To avoid performance issues, do not use this method to return articles in large categories or articles with inline images. Instead, use getKBArticleSummaries().
+     * @param sys_id Sys_id of the KB article category.
+     * @param limit Maximum number of KB articles returned.
+     * @returns The articles within the category and its subcategories with: A workflow_state of published and a valid_to date greater than or equal to the current date.
+     */
+    getKBCategoryArticles(sys_id: string, limit: number): Array<object>;
+
+    /**
+     * Returns Knowledge Base article summaries in the specified category and its subcategories.
+     * @param sys_id Sys_id of the KB article category.
+     * @param limit Maximum number of KB articles returned.
+     * @param maxChars Maximum number of characters to return from the article text. For full article text, set the value to -1.
+     */
+    getKBCategoryArticleSummaries(sys_id: string, limit: number, maxChars: number): Array<object>;
+
+    /**
+     * Returns the number of articles in the defined Knowledge Base.
+     * @param sys_id Sys_id of a Knowledge Base record.
+     */
+    getKBCount(sys_id: string): number;
+
+    /**
+     * Returns a list of the specified table's columns in the specified view.
+     * @param tableName Name of the table
+     * @param view The view by which to filter the columns
+     */
+    getListColumns(tableName: string, view: string): object;
+
+    /**
+     * Returns the (?id=) portion of the URL based on the sp_menu type.
+     * 
+     * @param page 
+     */
+    getMenuHREF(page: GlideRecord): string;
+
+    /**
+     * Returns an array of menu items for the specified instance.
+     * @param sysId 	sysId of the instance
+     */
+    getMenuItems(sysId: string): Array<object>;
+
+    /**
+     * Returns the value of the specified parameter.
+     * @param name The name of the key from the query string or post body.
+     * @returns Returns the specified parameter as an object. Returns null if there is no request, JSON request, or widget.
+     */
+    getParameter(name: string): object;
+
+    /**
+     * Returns the portal's GlideRecord.
+     */
+    getPortalRecord(): GlideRecord;
+
+    /**
+     * Returns the current portal context.
+     */
+    getRecord(): GlideRecord;
+
+    /**
+     * Copies display values for the specified fields into the data parameter.
+     * @param data The display values for the specified fields are copied to this object.
+     * @param from The GlideRecord to process.
+     * @param names A comma-separated list of field names.
+     */
+    getRecordDisplayValues(data: object, from: GlideRecord, names: string): void;
+
+    /**
+     * For the specified fields, copies the element's name, display value, and value into the data parameter.
+     * @param data The display values for the specified fields are copied to this object.
+     * @param from The GlideRecord to process.
+     * @param names A comma-separated list of field names.
+     */
+    getRecordElements(data: object, from: GlideRecord, names: string): void;
+
+    /**
+     * Copies values for the specified field names from the GlideRecord into the data parameter.
+     * @param data 
+     * @param from 
+     * @param names 
+     */
+    getRecordValues(data: object, from: GlideRecord, names: string): void;
+
+    /**
+     * Returns an array of Service Catalog variables associated with a record.
+     * @param gr The record to retrieve Service Catalog variables for. Must be a record with Service Catalog variables defined, such as a requested item [sc_req_item] record or an incident submitted through a record producer.
+     * @param includeNilResponses 	Optional parameter. If true, variables with no user-defined value are included in the array.
+     */
+    getRecordVariablesArray(gr: GlideRecord, includeNilResponses?: boolean): Array<object>;
+
+    /**
+     * Gets the activity stream for the specified record. This method works on tables that extend the task table.
+     * 
+     * **Note** The user_login property contains the User ID of the current user. The user_sys_id and iser_full_name properties reference the creator of the queried record.
+     * @param table The table name
+     * @param sysId The sys_id of the record
+     * @returns If a table extending the task table is specified, contains the display_value, sys_id, short_description,number, entries, user_sys_id, user_full_name, user_login, label, table, and journal_fields properties; otherwise contains the table and sys_id properties.
+     */
+    getStream(table: string, sysId: string): object;
+
+    /**
+     * Returns the user's initials.
+     */
+    getUserInitials(): string;
+
+    /**
+     * Returns the value of the specified parameter.
+     * @param name 	Name of the parameter
+     * @returns Value of the specified parameter. Null if the request does not exist or has no such parameter, the rectangle does not exist or has no such parameter, or the portal is null or has no such parameter.
+     */
+    getValue(name: string): object;
+
+    /**
+     * Copies values from the request or instance to the data parameter.
+     * @param data Receives the parameter values.
+     * @param names Comma-separated string of field names.
+     */
+    getValues(data: object, names: string): void;
+
+    /**
+     * Gets a widget by id or sys_id, executes that widget's server script using the provided options, then returns the widget model.
+     * @param sysID The widget sys_id or widget_id
+     * @param options An object to pass to the widget's server script. Refer to this object as options in your server script.
+     * @returns A widget model to be used with sp-widget.
+     */
+    getWidget(sysID: string, options: object): object;
+
+    /**
+     * Transforms a URL requesting a list or form in the platform UI into the URL of the corresponding id=list or id=form Service Portal page.
+     * 
+     * Use this method to perform tasks such as redirecting a user after login to the correct Service Portal page when they request a platform UI form or list URL. Note that the id=list and id=form page targets are not customizable.
+     * 
+     * **Note**: Table, sys_id, and sysparm_query values are preserved from the original URL; sysparm_view is not.
+     * @param url Platform UI URL
+     */
+    mapUrlToSPUrl(url: string): string;
+}
+
+/* CLIENT ANGULAR */
+
+/**
+ * Angular DI service
+ */
+declare var spModal: SpModal;
+
+declare class SpModal
+{
+    /**
+     * available via angular di as spModal
+     */
+    constructor()
+
+    /**
+     * Displays an alert.
+     * @param message Message to show
+     */
+    alert(message: string): Promise<any>;
+
+    /**
+     * Displays a confirmation message.
+     * @param message message to show
+     */
+    confirm(message: string): Promise<any>;
+
+    /**
+     * Opens a modal window using the specified options.
+     * @param options 
+     */
+    open(options: SpModalOptions): Promise<any>;
+
+    /**
+     * Displays a prompt for user input.
+     * @param message message to show.
+     * @param defaultValue optional default value.
+     */
+    prompt(message: string, defaultValue?: string): Promise<any>;
+}
+
+/**
+ * spModal options object, available options for using spModal.
+ */
+declare class SpModalOptions
+{
+    /**
+     *  a string that can be HTML that goes in the header. The default is empty.
+     */
+    title: string;
+    /** 
+     * a string that can be HTML that goes in the header. The default is empty.
+     */
+    message: string;
+
+    /**
+     * an array that contains the buttons to show on the dialog. The default is Cancel and OK.
+     */
+    buttons: Array<string>;
+
+    /**
+     * a Boolean. When true shows an input field on the dialog. The default is false.
+     */
+    input: boolean;
+
+    /**
+     * a string containing the value of the input field. The default is empty.
+     */
+    value: string;
+
+    /**
+     * a string that identifies the widget ID or sys_id to embed in the dialog. The default is empty.
+     */
+    widget: string;
+
+    /**
+     * an object to send the embedded widget as input. The default is null.
+     */
+    widgetInput: object;
+
+    /**
+     * a client-side object to share data with the embedded widget client script.
+     */
+    shared: object;
+
+    /**
+     * a string indicating the size of the window. Can be 'sm' or 'lg'. The default is empty.
+     */
+    size: string;
+}
+
+/**
+ * Angular DI service
+ */
+declare var $q: $Q;
+declare class $Q
+{
+    /**
+      *  available via angular DI as $q.
+      */
+    constructor();
+
+    /**
+     * @returns The newly created promise.
+     */
+    defer(): Promise<any>;
+
+    /**
+     * Creates a promise that is resolved as rejected with the specified reason. This api should be used to forward rejection in a chain of promises. 
+     * 
+     * If you are dealing with the last promise in a promise chain, you don't need to worry about it.
+     * 
+     * 
+     * When comparing deferreds/promises to the familiar behavior of try/catch/throw, think of reject as the throw keyword in JavaScript. 
+     * This also means that if you "catch" an error via a promise error callback and you want to forward the error to the promise derived from the current promise, you have to "rethrow" the error by returning a rejection constructed via reject.
+     * 
+     * @param reason Constant, message, exception or an object representing the rejection reason.
+     */
+    reject(reason: object): object;
+
+    /**
+     * Wraps an object that might be a value or a (3rd party) then-able promise into a $q promise. This is useful when you are dealing with an object that might or might not be a promise, or if the promise comes from a source that can't be trusted.
+     * @param value Value or a promise
+     * @param successCallback callback
+     * @param errorCallback callback
+     * @param progressCallback callback
+     */
+    when(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise<any>;
+
+    /**
+     * Alias of when to maintain naming consistency with ES6.
+     * @param value Value or a promise
+     * @param successCallback callback
+     * @param errorCallback callback
+     * @param progressCallback callback 
+     */
+    resolve(value: object, successCallback?: Function, errorCallback?: Function, progressCallback?: Function): Promise<any>;
+
+    /**
+     * Combines multiple promises into a single promise that is resolved when all of the input promises are resolved.
+     * @param promises An array or hash of promises.
+     */
+    all(promises: Array<Promise<any>>): Promise<any>;
+
+    /**
+     * Returns a promise that resolves or rejects as soon as one of those promises resolves or rejects, with the value or reason from that promise.
+     * @param promises An array or hash of promises.
+     */
+    race(promises: Array<Promise<any>>): Promise<any>;
+}
+
+declare class Controller
+{
+    /**
+     * available in widget client script as this. add @type for intellisense
+     */
+    constructor();
+    server: Server;
+}
+
+declare class Server
+{
+    /**
+     * available via the controlle class
+     */
+    constructor();
+
+    /**
+     * Calls the server and sends custom input.
+     * @param Object Custom input object
+     */
+    get(Object?: object): Promise<any>;
+
+    /**
+     * Calls the server and posts this.data to the server script. Returns Promise.
+     */
+    update(): Promise<any>;
+
+    /**
+     * Calls the server and automatically replaces the current options and data from the server response. Returns Promise.
+     */
+    refresh(): Promise<any>;
+}
+
+/**
+ * Angular DI service
+ */
+declare var $location: $Location;
+
+declare class $Location
+{
+    /**
+     * availabe via Angualr DI
+     */
+    constructor();
+
+    /**
+     * This method is getter only.
+     * Return full URL representation with all segments encoded according to rules specified in RFC 3986.
+     * 
+     *  ```javascript
+      var absUrl = $location.absUrl();
+      // => "http://example.com/#/some/path?foo=bar&baz=xoxo"
+      ```
+     */
+    absUrl(): string;
+
+    /**
+     * This method is getter / setter.
+     * Return URL (e.g. /path?a=b#hash) when called without any parameter.
+     * Change path, search and hash, when called with parameter and return $location.
+     * 
+     *  ```javascript
+     var url = $location.url();
+     // => "/some/path?foo=bar&baz=xoxo"
+     ```
+     * @param url New URL without base prefix
+     */
+    url(url?: string): string;
+
+    /**
+     * This method is getter only.
+     * Return protocol of current URL.
+     * 
+     * ```javascript
+      var protocol = $location.protocol();
+      // => "http"
+     * ```
+     */
+    protocol(): string;
+
+    /**
+     * This method is getter only.
+     * Return host of current URL.
+     * **Note:** compared to the non-AngularJS version location.host which returns hostname:port, this returns the hostname portion only.
+     * 
+     * ```javascript
+      host = $location.host();
+      // => "example.com"
+      ```
+     */
+    host(): string;
+
+    /**
+     * This method is getter only.
+     * Return port of current URL.
+     * 
+     * ```javascript
+      var port = $location.port(); 
+      // => 80
+      ```
+     */
+    port(): number;
+
+    /**
+     * This method is getter / setter.
+     * Return path of current URL when called without any parameter.
+     * Change path when called with parameter and return $location.
+     * **Note:** Path should always begin with forward slash (/), this method will add the forward slash if it is missing.
+     * ```javascript
+        var path = $location.path();
+        // => "/some/path"
+        ```
+     * 
+     * @param path New path
+     */
+    path(path?: string | number): string | object;
+
+    /**
+     * This method is getter / setter.
+     * Return search part (as object) of current URL when called without any parameter.
+     * Change search part when called with parameter and return $location.
+     * 
+     * ```javascript
+      var searchObject = $location.search();
+      // => {foo: 'bar', baz: 'xoxo'}
+
+      $location.search('foo', 'yipee');
+      // $location.search() => {foo: 'yipee', baz: 'xoxo'}
+    ```
+     * 
+     * @param search New search params - string or hash object. When called with a single argument the method acts as a setter, setting the search component of $location to the specified value. If the argument is a hash object containing an array of values, these values will be encoded as duplicate search parameters in the URL.
+     * @param paramValue If search is a string or number, then paramValue will override only a single search property. If paramValue is an array, it will override the property of the search component of $location specified via the first argument. If paramValue is null, the property specified via the first argument will be deleted. If paramValue is true, the property specified via the first argument will be added with no value nor trailing equal sign.
+     * @returns If called with no arguments returns the parsed search object. If called with one or more arguments returns $location object itself.
+     */
+    search(search: string | Array<string> | object, paramValue?: string | Number | Array<string> | boolean): object;
+
+    /**
+     * This method is getter / setter.
+     * Returns the hash fragment when called without any parameters.
+     * Changes the hash fragment when called with a parameter and returns $location.
+     * @param hash New hash fragment
+     */
+    hash(hash?: string | number): string;
+
+    /**
+     * If called, all changes to $location during the current $digest will replace the current history record, instead of adding a new one.
+     */
+    replace(): void;
+
+    /**
+     * This method is getter / setter.
+     * Return the history state object when called without any parameter.
+     * Change the history state object when called with one parameter and return $location. The state object is later passed to pushState or replaceState.
+     * **NOTE:** This method is supported only in HTML5 mode and only in browsers supporting the HTML5 History API (i.e. methods pushState and replaceState). If you need to support older browsers (like IE9 or Android < 4.0), don't use this method.
+     * @param state State object for pushState or replaceState
+     */
+    state(state?: object): object;
+}
+
+/**
+ * Angular DI service
+ */
+declare var $http: $Http;
+
+/**
+ * angualar $https Directive.
+ */
+declare class $Http
+{
+    /**
+     *  available via angular DI as $http. 
+     */
+    constructor();
+
+    /**
+     * Shortcut method to perform GET request
+     * @param url url
+     * @param config options
+     */
+    get(url: string, config?: object): Promise<object>;
+
+    delete(url: string, config?: object): Promise<object>;
+
+    head(url: string, config?: object): Promise<object>;
+
+    /**
+     * Shortcut method to perform JSONP request.
+     * 
+     * **Note** that, since JSONP requests are sensitive because the response is given full access to the browser, the url must be declared, via $sce as a trusted resource URL. You can trust a URL by adding it to the whitelist via $sceDelegateProvider.resourceUrlWhitelist or by explicitly trusting the URL via $sce.trustAsResourceUrl(url).
+     * 
+     * You should avoid generating the URL for the JSONP request from user provided data. Provide additional query parameters via params property of the config parameter, rather than modifying the URL itself.
+     * 
+     * JSONP requests must specify a callback to be used in the response from the server. This callback is passed as a query parameter in the request. You must specify the name of this parameter by setting the jsonpCallbackParam property on the request config object.
+     * @param url
+     * @param config options
+     */
+    jsonp(url: string, config?: object): Promise<object>;
+
+    post(url: string, data: object, config?: object): Promise<object>;
+
+    put(url: string, data: object, config?: object): Promise<object>;
+
+    patch(url: string, data: object, config?: object): Promise<object>;
+
+}
+
+/**
+ * Angular DI service
+ */
+declare var $scope: $Scope;
+declare class $Scope
+{
+    /**
+     *Does not have an constructor. available via global variable: $scope
+     */
+    constructor();
+
+    /**
+     * Creates a new child scope.
+     * 
+     * The parent scope will propagate the $digest() event. The scope can be removed from the scope hierarchy using $destroy().
+     * 
+     * $destroy() must be called on a scope when it is desired for the scope and its child scopes to be permanently detached from the parent and thus stop participating in model change detection and listener notification by invoking.
+     * @param isolate If true, then the scope does not prototypically inherit from the parent scope. The scope is isolated, as it can not see parent scope properties. When creating widgets, it is useful for the widget to not accidentally read parent state.
+     * @param parent The Scope that will be the $parent of the newly created scope. Defaults to this scope if not provided. This is used when creating a transclude scope to correctly place it in the scope hierarchy while maintaining the correct prototypical inheritance.
+     */
+    $new(isolate: boolean, parent: $Scope): $Scope;
+
+    /**
+     * Registers a listener callback to be executed whenever the watchExpression changes.
+     * * The watchExpression is called on every call to $digest() and should return the value that will be watched. (watchExpression should not change its value when executed multiple times with the same input because it may be executed multiple times by $digest(). That is, watchExpression should be idempotent.)
+     * * The listener is called only when the value from the current watchExpression and the previous call to watchExpression are not equal (with the exception of the initial run, see below). Inequality is determined according to reference inequality, strict comparison via the !== Javascript operator, unless objectEquality == true (see next point)
+     * * When objectEquality == true, inequality of the watchExpression is determined according to the angular.equals function. To save the value of the object for later comparison, the angular.copy function is used. This therefore means that watching complex objects will have adverse memory and performance implications.
+     * * This should not be used to watch for changes in objects that are (or contain) File objects due to limitations with angular.copy.
+     * * The watch listener may change the model, which may trigger other listeners to fire. This is achieved by rerunning the watchers until no changes are detected. The rerun iteration limit is 10 to prevent an infinite loop deadlock.
+     * 
+     * If you want to be notified whenever $digest is called, you can register a watchExpression function with no listener. (Be prepared for multiple calls to your watchExpression because it will execute multiple times in a single $digest cycle if a change is detected.)
+     * 
+     * After a watcher is registered with the scope, the listener fn is called asynchronously (via $evalAsync) to initialize the watcher. In rare cases, this is undesirable because the listener is called when the result of watchExpression didn't change. To detect this scenario within the listener fn, you can compare the newVal and oldVal. If these two values are identical (===) then the listener was called due to initialization.
+     * @param watchExpression Expression that is evaluated on each $digest cycle. A change in the return value triggers a call to the listener.
+     * @param listener Callback called whenever the value of watchExpression changes.
+     * @param objectEquality Compare for object equality using angular.equals instead of comparing for reference equality.
+     * @returns Returns a deregistration function for this listener.
+     */
+    $watch(watchExpression: Function | string, listener: Function, objectEquality?: boolean): Function;
+
+    /**
+     * A variant of $watch() where it watches an array of watchExpressions. If any one expression in the collection changes the listener is executed.
+     *  * The items in the watchExpressions array are observed via the standard $watch operation. Their return values are examined for changes on every call to $digest.
+     *  * The listener is called whenever any expression in the watchExpressions array changes.
+     * @param watchExpressions Array of expressions that will be individually watched using $watch()
+     * @param listener Callback called whenever the return value of any expression in watchExpressions changes The newValues array contains the current values of the watchExpressions, with the indexes matching those of watchExpression and the oldValues array contains the previous values of the watchExpressions, with the indexes matching those of watchExpression The scope refers to the current scope.
+     * @returns Returns a de-registration function for all listeners.
+     */
+    $watchGroup(watchExpressions: Array<Function | string>, listener: Function): Function;
+
+    /**
+     * Shallow watches the properties of an object and fires whenever any of the properties change (for arrays, this implies watching the array items; for object maps, this implies watching the properties). If a change is detected, the listener callback is fired.
+     * * The obj collection is observed via standard $watch operation and is examined on every call to $digest() to see if any items have been added, removed, or moved.
+     * * The listener is called whenever anything within the obj has changed. Examples include adding, removing, and moving items belonging to an object or array.
+     * @param obj Evaluated as expression. The expression value should evaluate to an object or an array which is observed on each $digest cycle. Any shallow change within the collection will trigger a call to the listener.
+     * @param listener a callback function called when a change is detected.
+     */
+    $watchCollection(obj: Function | string, listener: Function): Function;
+
+    /**
+     * Processes all of the watchers of the current scope and its children. Because a watcher's listener can change the model, the $digest() keeps calling the watchers until no more listeners are firing. 
+     * This means that it is possible to get into an infinite loop. This function will throw 'Maximum iteration limit exceeded.' if the number of iterations exceeds 10.
+     * 
+     * Usually, you don't call $digest() directly in controllers or in directives. Instead, you should call $apply() (typically from within a directive), which will force a $digest().
+     * If you want to be notified whenever $digest() is called, you can register a watchExpression function with $watch() with no listener.
+     * In unit tests, you may need to call $digest() to simulate the scope life cycle.
+     */
+    $digest(): void;
+
+    /**
+     * Suspend watchers of this scope subtree so that they will not be invoked during digest.
+     * This can be used to optimize your application when you know that running those watchers is redundant.
+     * 
+     * **Warning**
+     * 
+     * Suspending scopes from the digest cycle can have unwanted and difficult to debug results. Only use this approach if you are confident that you know what you are doing and have ample tests to ensure that bindings get updated as you expect.
+     * 
+     * Some of the things to consider are:
+     * * Any external event on a directive/component will not trigger a digest while the hosting scope is suspended - even if the event handler calls $apply() or $rootScope.$digest()
+     * * Transcluded content exists on a scope that inherits from outside a directive but exists as a child of the directive's containing scope. If the containing scope is suspended the transcluded scope will also be suspended, even if the scope from which the transcluded scope inherits is not suspended
+     * * Multiple directives trying to manage the suspended status of a scope can confuse each other:
+     * * * A call to $suspend() on an already suspended scope is a no-op.
+     * * * A call to $resume() on a non-suspended scope is a no-op.
+     * * * If two directives suspend a scope, then one of them resumes the scope, the scope will no longer be suspended. This could result in the other directive believing a scope to be suspended when it is not.
+     * * If a parent scope is suspended then all its descendants will be also excluded from future digests whether or not they have been suspended themselves. Note that this also applies to isolate child scopes.
+     * * Calling $digest() directly on a descendant of a suspended scope will still run the watchers for that scope and its descendants. When digesting we only check whether the current scope is locally suspended, rather than checking whether it has a suspended ancestor.
+     * * Calling $resume() on a scope that has a suspended ancestor will not cause the scope to be included in future digests until all its ancestors have been resumed.
+     * * Resolved promises, e.g. from explicit $q deferreds and $http calls, trigger $apply() against the $rootScope and so will still trigger a global digest even if the promise was initiated by a component that lives on a suspended scope.
+     */
+    $suspend(): void;
+
+    /**
+     * 
+     * @param name Event name to listen on.
+     * @param listener Function to call when the event is emitted.
+     */
+    $on(name: string, listener: Function): Function;
+
+    /**
+     * Dispatches an event name upwards through the scope hierarchy notifying the registered $rootScope.Scope listeners.
+     * 
+     * The event life cycle starts at the scope on which $emit was called. All listeners listening for name event on this scope get notified.
+     * Afterwards, the event traverses upwards toward the root scope and calls all registered listeners along the way. The event will stop propagating if one of the listeners cancels it.
+     * 
+     * Any exception emitted from the listeners will be passed onto the $exceptionHandler service.
+     * @param name Event name to emit.
+     * @param args Optional one or more arguments which will be passed onto the event listeners.
+     * @returns Event Object
+     */
+    $emit(name: string, args?: object): object
+
+    /**
+     * Dispatches an event name downwards to all child scopes (and their children) notifying the registered $rootScope.Scope listeners.
+     * 
+     * The event life cycle starts at the scope on which $broadcast was called. 
+     * All listeners listening for name event on this scope get notified. Afterwards, the event propagates to all direct and indirect scopes of the current scope and calls all registered listeners along the way. 
+     * The event cannot be canceled.
+     * 
+     * Any exception emitted from the listeners will be passed onto the $exceptionHandler service.
+     * @param name Event name to broadcast.
+     * @param args Optional one or more arguments which will be passed onto the event listeners.
+     */
+    $broadcast(name: string, args: object): object
+}
+
+/* SN CLIENT SIDE */
+
+declare class GlideAjax
+{
+    /**
+     * 
+     * @param class_name The name of the server-side class that contains the method you want to execute.
+     */
+    constructor(class_name: string);
+
+    /**
+     * Specifies a parameter name and value to be passed to the server-side function associated with this GlideAjax object.
+     * 
+     * **Note** The first call to addParam should be with the parameter sysparm_name and the name of the server-side method you want to call. The server-side code does not execute until the client script calls getXML().
+     * @param parameter 
+     * @param value 
+     */
+    addParam(parameter: string, value: string): void;
+
+    /**
+     * Sends the server a request to execute the method and parameters associated with this GlideAjax object.
+     * The server processes the request asynchronously and -- when ready -- returns the results via the function specified as the callback_function.
+     * @param callback 
+     */
+    getXML(callback: Function): void;
+
+    /**
+     * Call the processor asynchronously and get the answer element of the response in XML format.
+     * @param callback 
+     */
+    getXMLAnswer(callback: Function): void
+
 }

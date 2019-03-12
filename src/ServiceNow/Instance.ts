@@ -1,5 +1,5 @@
 import { URL } from "url";
-import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript } from "./all";
+import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript, MailScript, ISysMailScript, SpHeaderFooter, ISpHeaderFooter, IScriptedRestAPIResource, ScriptedRestAPIResource, Converter, ScriptAction, ISysEventScriptAction, SupportedRecords, Processor } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
@@ -93,7 +93,6 @@ export class Instance
             p.then(() =>
             {
                 this.Cache();
-                //this.TestConnection(nm);
                 resolve();
             }).catch((error) =>
             {
@@ -174,6 +173,49 @@ export class Instance
     }
 
     /**
+     * Verifies current update set. Ensures update set is still in progress before saving.
+     */
+    public UpdateSetIsValid(): Promise<Boolean>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            let p = this.GetUpdateSets();
+
+            p.then((us) =>
+            {
+                let set: UpdateSet | undefined;
+                if (this._wsm)
+                {
+                    //only gets in progress update set.
+                    set = this._wsm.GetUpdateSet();
+                }
+
+                let index: number = -1;
+                if (set)
+                {
+                    index = us.findIndex((element) =>
+                    {
+                        //@ts-ignore variable set already null checked
+                        return element.sys_id === set.sys_id;
+                    });
+                }
+
+                if (index !== -1)
+                {
+                    resolve(true);
+                }
+                else
+                {
+                    reject(false);
+                }
+            }).catch((r) =>
+            {
+                reject(r);
+            });
+        });
+    }
+
+    /**
      * OpenInPlatform Opens a record in hte default browser
      */
     public OpenInPlatformRecord(record: ISysMetadata): void
@@ -203,7 +245,7 @@ export class Instance
      * @param record 
      * @returns new record object from instance. if failed undefined.
      */
-    public SaveRecord<T extends ISysMetadata>(record: T): Promise<ISysMetadataIWorkspaceConvertable> | undefined
+    public SaveRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Promise<ISysMetadataIWorkspaceConvertable> | undefined
     {
         return new Promise((resolve, reject) =>
         {
@@ -214,25 +256,7 @@ export class Instance
                 {
                     p.then((res) =>
                     {
-                        let r = new Record(res.data.result);
-                        switch (r.sys_class_name)
-                        {
-                            case "sys_script_include":
-                                resolve(new ScriptInclude(<ISysScriptInclude>res.data.result));
-                                break;
-                            case "sp_widget":
-                                resolve(new Widget(<ISpWidget>res.data.result));
-                                break;
-                            case "sp_theme":
-                                resolve(new Theme(<ISpTheme>res.data.result));
-                                break;
-                            case "sp_css":
-                                resolve(new StyleSheet(<ISpCss>res.data.result));
-                                break;
-                            default:
-                                console.warn(`SaveRecord: Record from ${r.sys_class_name} not recognized`);
-                                break;
-                        }
+                        resolve(Converter.CastSysMetaData(res.data.result));
                     }).catch((er) =>
                     {
                         reject(er);
@@ -241,6 +265,7 @@ export class Instance
             }
         });
     }
+
     /**
     * GetRecord retrieves full record from instance
     */
@@ -255,31 +280,11 @@ export class Instance
                 {
                     p.then((res) =>
                     {
-                        //add new record
-                        switch (res.data.result.sys_class_name)
-                        {
-                            case "sys_script_include":
-                                resolve(new ScriptInclude(<ISysScriptInclude>res.data.result));
-                                break;
-                            case "sp_widget":
-                                resolve(new Widget(<ISpWidget>res.data.result));
-                                break;
-                            case "sp_theme":
-                                resolve(new Theme(<ISpTheme>res.data.result));
-                                break;
-                            case "sp_css":
-                                resolve(new StyleSheet(<ISpCss>res.data.result));
-                                break;
-                            case "sys_ui_script":
-                                resolve(new UiScript(<ISysUiScript>res.data.result));
-                                break;
-                            default:
-                                console.warn(`GetRecord: Record ${res.data.result.sys_class_name} not recognized`);
-                                break;
-                        }
+                        resolve(Converter.CastSysMetaData(res.data.result));
                     }).catch((er) =>
                     {
                         console.error(er);
+                        reject(er);
                     });
                 }
             }
@@ -367,6 +372,28 @@ export class Instance
         });
     }
 
+
+    /**returns all cached widgets */
+    public GetHeadersAndFooters(): Promise<SpHeaderFooter[]>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this._wsm)
+            {
+                let wi = this._wsm.GetHeadersAndFooters();
+                if (wi)
+                {
+                    resolve(wi);
+                }
+            }
+            else
+            {
+                reject("No records found");
+            }
+        });
+    }
+
+
     /**returns all cached ui scripts */
     public GetUiScripts(): Promise<UiScript[]>
     {
@@ -386,6 +413,86 @@ export class Instance
             }
         });
     }
+
+    /**returns all cached mail scripts */
+    public GetMailScripts(): Promise<MailScript[]>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this._wsm)
+            {
+                let m = this._wsm.GetMailScript();
+                if (m)
+                {
+                    resolve(m);
+                }
+            }
+            else
+            {
+                reject("No records found");
+            }
+        });
+    }
+
+    /**returns all cached mail scripts */
+    public GetSriptedApiResources(): Promise<ScriptedRestAPIResource[]>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this._wsm)
+            {
+                let m = this._wsm.GetScriptedApiResource();
+                if (m)
+                {
+                    resolve(m);
+                }
+            }
+            else
+            {
+                reject("No records found");
+            }
+        });
+    }
+
+    /**returns all cached script actions */
+    public GetScriptActions(): Promise<ScriptAction[]>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this._wsm)
+            {
+                let m = this._wsm.GetScriptActions();
+                if (m)
+                {
+                    resolve(m);
+                }
+            }
+            else
+            {
+                reject("No records found");
+            }
+        });
+    }
+    /**returns all cached processors */
+    public GetProcessors(): Promise<Processor[]>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this._wsm)
+            {
+                let m = this._wsm.GetProcessor();
+                if (m)
+                {
+                    resolve(m);
+                }
+            }
+            else
+            {
+                reject("No records found");
+            }
+        });
+    }
+
 
 
     /**
@@ -524,6 +631,42 @@ export class Instance
         });
     }
 
+    private GetHeadersAndFootersUpStream(): Promise<Array<SpHeaderFooter>>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                var include = this.ApiProxy.GetHeadersAndFooters();
+
+                if (include)
+                {
+                    let result = new Array<SpHeaderFooter>();
+
+                    include.then((res) =>
+                    {
+                        if (res.data.result.length > 0)
+                        {
+                            res.data.result.forEach((element) =>
+                            {
+                                result.push(new SpHeaderFooter(<ISpHeaderFooter>element));
+                            });
+                            resolve(result);
+                        }
+                        else
+                        {
+                            reject("No elements Found");
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                        reject(er);
+                    });
+                }
+            }
+        });
+    }
+
     private GetThemesUpStream(): Promise<Array<Theme>>
     {
         return new Promise((resolve, reject) =>
@@ -582,6 +725,155 @@ export class Instance
                             res.data.result.forEach((element) =>
                             {
                                 result.push(new UiScript(<ISysUiScript>element));
+                            });
+                            resolve(result);
+                        }
+                        else
+                        {
+                            reject("No elements Found");
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                        reject(er);
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+ * get all ui elegible mail scripts
+ */
+    private GetMailScriptsUpStream(): Promise<Array<MailScript>>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                var include = this.ApiProxy.GetEmailScripts();
+
+                if (include)
+                {
+                    let result = new Array<MailScript>();
+
+                    include.then((res) =>
+                    {
+                        if (res.data.result.length > 0)
+                        {
+                            res.data.result.forEach((element) =>
+                            {
+                                result.push(new MailScript(<ISysMailScript>element));
+                            });
+                            resolve(result);
+                        }
+                        else
+                        {
+                            reject("No elements Found");
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                        reject(er);
+                    });
+                }
+            }
+        });
+    }
+
+    // Get Scripted API Resources
+    private GetScriptedApiResourcesUpStream(): Promise<Array<ScriptedRestAPIResource>>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                var include = this.ApiProxy.GetScriptedApiResources();
+
+                if (include)
+                {
+                    let result = new Array<ScriptedRestAPIResource>();
+
+                    include.then((res) =>
+                    {
+                        if (res.data.result.length > 0)
+                        {
+                            res.data.result.forEach((element) =>
+                            {
+                                result.push(new ScriptedRestAPIResource(<IScriptedRestAPIResource>element));
+                            });
+                            resolve(result);
+                        }
+                        else
+                        {
+                            reject("No elements Found");
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                        reject(er);
+                    });
+                }
+            }
+        });
+    }
+
+    // Get Scripted API Resources
+    private GetScriptActionUpStream(): Promise<Array<ScriptAction>>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                var include = this.ApiProxy.GetScriptActions();
+
+                if (include)
+                {
+                    let result = new Array<ScriptAction>();
+
+                    include.then((res) =>
+                    {
+                        if (res.data.result.length > 0)
+                        {
+                            res.data.result.forEach((element) =>
+                            {
+                                result.push(new ScriptAction(<ISysEventScriptAction>element));
+                            });
+                            resolve(result);
+                        }
+                        else
+                        {
+                            reject("No elements Found");
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                        reject(er);
+                    });
+                }
+            }
+        });
+    }
+
+    private GetScriptProcessorUpStream(): Promise<Array<Processor>>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                var include = this.ApiProxy.GetProcessors();
+
+                if (include)
+                {
+                    let result = new Array<Processor>();
+
+                    include.then((res) =>
+                    {
+                        if (res.data.result.length > 0)
+                        {
+                            res.data.result.forEach((element) =>
+                            {
+                                result.push(new Processor(<Processor>element));
                             });
                             resolve(result);
                         }
@@ -702,6 +994,68 @@ export class Instance
             {
                 console.error(er);
             });
+
+            let mailScripts = this.GetMailScriptsUpStream();
+            mailScripts.then((res) =>
+            {
+                if (this._wsm)
+                {
+                    this._wsm.SetMailScript(res);
+                }
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+
+            let scriptedApiResources = this.GetScriptedApiResourcesUpStream();
+            scriptedApiResources.then((res) =>
+            {
+                if (this._wsm)
+                {
+                    this._wsm.SetScriptedApiResource(res);
+                }
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+
+            let headersAndFooters = this.GetHeadersAndFootersUpStream();
+            headersAndFooters.then((res) =>
+            {
+                if (this._wsm)
+                {
+                    this._wsm.SetHeadersAndFooters(res);
+                }
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+
+            //GetScriptActionUpStream
+            let scriptActions = this.GetScriptActionUpStream();
+            scriptActions.then((res) =>
+            {
+                if (this._wsm)
+                {
+                    this._wsm.SetScriptActions(res);
+                }
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+
+            let processors = this.GetScriptProcessorUpStream();
+            processors.then((res) =>
+            {
+                if (this._wsm)
+                {
+                    this._wsm.SetProcessor(res);
+                }
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+
         }
     }
 
@@ -716,6 +1070,49 @@ export class Instance
         {
             return this.ApiProxy.SetUpdateSet(updateSet);
         }
+    }
+
+    /**
+     * Create Update Set
+     * Creates an update-set with the provided name.
+     * @param name name of the update set
+     * @returns the newly created updateset
+     */
+    public CreateUpdateSet(name: string, parent: string): Promise<UpdateSet> | undefined
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                let p = this.ApiProxy.CreateUpdateSet(name, parent);
+
+                if (p)
+                {
+                    p.then((res) =>
+                    {
+                        if (res.data.result)
+                        {
+                            let r = new UpdateSet(res.data.result);
+                            resolve(r);
+                        }
+                        else
+                        {
+                            reject(res.data);
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                    });
+                }
+                else
+                {
+                    reject("axios Promise is null or undefined");
+                }
+            } else
+            {
+                reject("API Proxy is null or undefined");
+            }
+        });
     }
 
     /**
@@ -756,6 +1153,190 @@ export class Instance
                 reject("API Proxy is null or undefined");
             }
         });
+    }
 
+    /**
+     * Create and add record to workspace
+     * @param type 
+     * @param name 
+     * @param template 
+     */
+    public CreateRecord(type: SupportedRecords, name: string): Promise<ISysMetadataIWorkspaceConvertable>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            //get template
+            let r = this.getTemplate(type, name);
+            //create record upstream and return converted class
+            if (r)
+            {
+                if (this.ApiProxy)
+                {
+                    let p = this.ApiProxy.CreateRecord(type, r);
+                    if (p)
+                    {
+                        p.then((res) =>
+                        {
+                            resolve(Converter.CastSysMetaData(res.data.result));
+                        }).catch((err) =>
+                        {
+                            console.error(err);
+                            reject(err);
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+    //returns an object for containing a template where applicable. 
+    private getTemplate(type: SupportedRecords, name: string): Object | undefined
+    {
+        switch (type)
+        {
+            case SupportedRecords["Script Include"]:
+                return {
+                    name: name,
+                    script:
+                        `
+var ${name} = Class.create();
+newinclude.prototype = {
+    initialize: function() {
+    },
+
+    type: '${name}'
+};`
+                };
+            case SupportedRecords["Header or Footer Widget"]:
+                return {
+                    name: name,
+                    script:
+                        `
+(function() {
+    /* populate the 'data' object */
+    /* e.g., data.table = $sp.getValue('table'); */
+    
+    })();`,
+                    css: ``,
+                    client_script:
+                        `
+/**
+ * @this {Controller}
+ * @param {$Scope} $scope 
+ */
+function($scope) {
+    /* widget controller */
+    var c = this;
+}`,
+                    template:
+                        `
+<div>
+<!-- your widget template -->
+</div>`
+                };
+            case SupportedRecords["Mail Script"]:
+                return {
+                    name: name,
+                    script:
+                        `
+(
+    /**
+    * @param {GlideRecord} current
+    * @param {TemplatePrinter} template
+    * @param {GlideEmailOutbound} email
+    * @param {GlideRecord} email_action
+    * @param {GlideRecord} event
+    */
+   function runMailScript(current, template, email, email_action, event) {
+
+        // Add your code here
+
+    }
+)(current, template, email, email_action, event);`
+                };
+            case SupportedRecords.Processor:
+                return {
+                    name: name,
+                    script:
+                        `
+(
+    /**
+     * @param {HttpServletRequest} g_request 
+     * @param {HttpServletResponse} g_response 
+     * @param {GlideScriptedProcessor} g_processor 
+     */
+    function process(g_request, g_response, g_processor)
+    {
+        // Add your code here
+    }
+)(g_request, g_response, g_processor);`
+
+                };
+            case SupportedRecords["Script Action"]:
+                return {
+                    name: name,
+                    script:
+                        `
+/**
+ * @type {GlideRecord} Event record
+ */
+var event = event;
+/**
+ * @type {GlideRecord} Record event is spawned for.
+ */
+var current = current;
+
+//add your code`
+                };
+            case SupportedRecords["Scripted Rest API"]:
+                return {
+                    name: name
+                };
+            case SupportedRecords["Stylesheet"]:
+                return {
+                    name: name,
+                    css: ``
+                };
+            case SupportedRecords.Theme:
+                return {
+                    name: name,
+                    css_variables: ``
+                };
+            case SupportedRecords["UI Script"]:
+                return {
+                    name: name,
+                    script: ``
+                };
+            case SupportedRecords.Widget:
+                return {
+                    name: name,
+                    script:
+                        `
+(function() {
+/* populate the 'data' object */
+/* e.g., data.table = $sp.getValue('table'); */
+
+})();`,
+                    css: ``,
+                    client_script:
+                        `
+/**
+* @this {Controller}
+* @param {$Scope} $scope 
+*/
+function($scope) {
+/* widget controller */
+var c = this;
+}`,
+                    template:
+                        `
+<div>
+<!-- your widget template -->
+</div>`
+                };
+            default:
+                console.error(`Supported record type: ${type} not recognize`);
+                break;
+        }
     }
 }

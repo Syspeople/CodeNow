@@ -1,27 +1,18 @@
-import { Record, ISysUiScript } from "./all";
+import { Record, ISysMailScript } from "./all";
 import { FileTypes } from "../Manager/all";
 
-export class UiScript extends Record implements ISysUiScript
+export class MailScript extends Record implements ISysMailScript
 {
 
-    constructor(u: ISysUiScript)
+    constructor(u: ISysMailScript)
     {
         super(u);
-        this.active = u.active;
-        this.description = u.description;
-        this.use_scoped_format = u.use_scoped_format;
-        this.global = u.global;
-        this.script_name = u.script_name;
         this.script = u.script;
         this.name = u.name;
-
+        this.description = "Mail Script";
     }
 
-    active: boolean;
     description: string;
-    use_scoped_format: boolean;
-    global: false;
-    script_name: string;
     script: string;
     name: string;
 

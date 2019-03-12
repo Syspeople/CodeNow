@@ -1,36 +1,39 @@
-import { Record, ISysUiScript } from "./all";
+import { Record, ISysEventScriptAction } from "./all";
+import { QuickPickItem } from "vscode";
 import { FileTypes } from "../Manager/all";
 
-export class UiScript extends Record implements ISysUiScript
+export class ScriptAction extends Record implements ISysEventScriptAction, QuickPickItem
 {
 
-    constructor(u: ISysUiScript)
+    constructor(u: ISysEventScriptAction)
     {
         super(u);
         this.active = u.active;
         this.description = u.description;
-        this.use_scoped_format = u.use_scoped_format;
-        this.global = u.global;
-        this.script_name = u.script_name;
         this.script = u.script;
         this.name = u.name;
-
+        this.order = u.order;
+        this.event_name = u.event_name;
+        this.condition_script = u.condition_script;
     }
 
     active: boolean;
     description: string;
-    use_scoped_format: boolean;
-    global: false;
-    script_name: string;
     script: string;
     name: string;
+    order: number;
+    event_name: string;
+    condition_script: string;
 
     public get label(): string
     {
         return this.name;
     }
 
-    detail?: string | undefined;
+    public get detail(): string
+    {
+        return this.event_name;
+    }
 
     SetAttribute(content: string, filetype: FileTypes): void
     {
@@ -39,6 +42,7 @@ export class UiScript extends Record implements ISysUiScript
             this.script = content;
         }
     }
+
     GetAttribute(filetype: FileTypes): string | undefined
     {
         if (filetype === FileTypes.serverScript)
