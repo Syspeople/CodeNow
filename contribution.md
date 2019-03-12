@@ -10,34 +10,36 @@ This guide will provide an overview of the steps needed to make a contribution t
     1. [Detailed Examples](#Detailed-Examples)
     
 
-# Add new record
+# Add new Record Type
+
+## import of Records
 **[Back to top](#table-of-contents)**
 
 
-## Step 1
+### Step 1
 Add Record Interface to the *ServiceNow* folder.
 
-## Step 2
+### Step 2
 Add the export of the record interface to **all.ts** in the *ServiceNow* folder.
 
 ```typescript
 export * from './ISysMailScript';
 ```
 
-## Step 3
+### Step 3
 Add Record that implements the interface to the *ServiceNow* folder
 
-## Step 4
+### Step 4
 Add the export of the implemented record class to **all.ts** in the *ServiceNow* folder.
 
 ```typescript
 export * from './MailScript';
 ```
 
-## Step 5
+### Step 5
 Add casting to actual class implementation in **Converter.ts** *ServiceNow* folder. 
 
-## Step 6
+### Step 6
 Add the class(record) to the **Api.ts** file in the *Api* folder.
 
 Create private variable: 
@@ -59,17 +61,17 @@ And the add function to return all records:
         }
     }
 ```
-## Step 7
+### Step 7
 Add the record to the **WorkspaceManager.ts** file in the *Manager* folder.
 The class should be added to the functions: 
 
 - createMetadata
 
-## Step 8
+### Step 8
 Add the records to the **StateKeys.ts** in *Manager* folder.
 
 
-## Step 9
+### Step 9
 Add getters and setters in **WorkspaceStateManager.ts** in *Manager* folder.
 
 ```typescript
@@ -83,7 +85,7 @@ Add getters and setters in **WorkspaceStateManager.ts** in *Manager* folder.
         return this._memCache.Get<Array<MailScript>>((StateKeys.MailScripts));
     }
 ```
-## Step 9
+### Step 9
 Add record to in **Instance.ts** in *ServiceNow* folder.
 
 Add Get function for record (cached)
@@ -92,13 +94,21 @@ Add Get Upstream function
 
 Add record to cache function.
 
-## Step 10
+### Step 10
 Add command to **package.json.**
 
-## Step 11
+### Step 11
 Add getter in **extension.ts**
 
-# Add class declarations
+## Create new Record.
+
+### Step 1
+Add record to the string enum in src/ServiceNow/SupportedRecords.ts, Key = Human Friendly name, Value = table name
+
+### Step 2
+Add a suitable template in the getTemplate function in src/ServiceNow/instance.ts.
+
+## Add class declarations
 **[Back to top](#table-of-contents)**
 
 Typescript declaration files and JsDoc is what drive the intellisense provided by this extenseion.
