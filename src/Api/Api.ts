@@ -1,5 +1,5 @@
 import * as Axios from "axios";
-import { Instance, ISysMetadata, ISysScriptInclude, ISpWidget, ISysProperty, SysProperty, ISpTheme, ISysUserSession, ISysUpdateSet, ISpCss, UpdateSet, IScriptedRestAPIResource } from "../ServiceNow/all";
+import { Instance, ISysMetadata, ISysScriptInclude, ISpWidget, ISysProperty, SysProperty, ISpTheme, ISysUserSession, ISysUpdateSet, ISpCss, UpdateSet, IScriptedRestAPIResource, ISysEventScriptAction } from "../ServiceNow/all";
 import { IServiceNowResponse, ICookie } from "./all";
 import * as qs from "querystring";
 import { ISysUiScript } from "../ServiceNow/ISysUiScript";
@@ -10,7 +10,7 @@ import { WSAEACCES } from "constants";
 
 export class Api
 {
-
+    private _HttpClient: Axios.AxiosInstance | undefined;
     private _SNHost: string = "";
     private _SNApiEndpoint = "/api";
     private _SNTableSuffix: string = `${this._SNApiEndpoint}/now/table`;
@@ -27,11 +27,9 @@ export class Api
     private _SNHeaderFooter: string = `${this._SNTableSuffix}/sp_header_footer`;
     private _SNSysEmailScript: string = `${this._SNTableSuffix}/sys_script_email`;
     private _SNScriptedRestApiResource: string = `${this._SNTableSuffix}/sys_ws_operation`;
-
-
+    private _SNSysEventScriptAction: string = `${this._SNTableSuffix}/sysevent_script_action`;
     private _SNXmlHttp: string = `xmlhttp.do`;
     private _Properties: Array<ISysProperty> = new Array<ISysProperty>();
-
     private _Cookies: Array<ICookie> = [];
 
     private get _session_store(): string | undefined
@@ -265,7 +263,6 @@ export class Api
         }
     }
 
-    private _HttpClient: Axios.AxiosInstance | undefined;
     public get HttpClient(): Axios.AxiosInstance | undefined
     {
         return this._HttpClient;
@@ -478,6 +475,20 @@ export class Api
         {
             //update sets in global and in progress
             let url = `${this._SNScriptedRestApiResource}?sys_policy=""`;
+            return this.HttpClient.get(url);
+        }
+    }
+
+    /**
+    * GetScriptActions
+    * 
+    */
+    public GetScriptActions(): Axios.AxiosPromise<IServiceNowResponse<Array<ISysEventScriptAction>>> | undefined
+    {
+        if (this.HttpClient)
+        {
+            //update sets in global and in progress
+            let url = `${this._SNSysEventScriptAction}?sys_policy=""`;
             return this.HttpClient.get(url);
         }
     }
