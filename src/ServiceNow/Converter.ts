@@ -1,4 +1,4 @@
-import { ISysMetadata, ScriptInclude, ISysScriptInclude, Widget, ISpWidget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, SpHeaderFooter, ISpHeaderFooter, MailScript, ISysMailScript, ScriptedRestAPIResource, IScriptedRestAPIResource } from "./all";
+import { ISysMetadata, ScriptInclude, ISysScriptInclude, Widget, ISpWidget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, SpHeaderFooter, ISpHeaderFooter, MailScript, ISysMailScript, ScriptedRestAPIResource, IScriptedRestAPIResource, ScriptAction, ISysEventScriptAction } from "./all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
 
 export class Converter
@@ -29,6 +29,8 @@ export class Converter
                 return new MailScript(<ISysMailScript>c);
             case "sys_ws_operation":
                 return new ScriptedRestAPIResource(<IScriptedRestAPIResource>c);
+            case "sysevent_script_action":
+                return new ScriptAction(<ISysEventScriptAction>c);
             default:
                 console.warn(`GetRecord: Record ${record.sys_class_name} not recognized`);
                 break;
