@@ -170,6 +170,11 @@
                 "command": "snsb.createUpdateSetAndSetAsCurrent",
                 "title": "Create Updateset and set as current",
                 "category": "snsb"
+            },
+            {
+                "command": "snsb.getScriptAction",
+                "title": "Add Script Action to Workspace",
+                "category": "snsb"
             }
         ]
     },

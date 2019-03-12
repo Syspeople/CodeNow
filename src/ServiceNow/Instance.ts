@@ -455,6 +455,27 @@ export class Instance
         });
     }
 
+    /**returns all cached script actions */
+    public GetScriptActions(): Promise<ScriptAction[]>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this._wsm)
+            {
+                let m = this._wsm.GetScriptActions();
+                if (m)
+                {
+                    resolve(m);
+                }
+            }
+            else
+            {
+                reject("No records found");
+            }
+        });
+    }
+
+
 
     /**
      * IsLatest 
