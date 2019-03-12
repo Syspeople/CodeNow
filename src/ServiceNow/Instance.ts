@@ -1,6 +1,6 @@
 import { URL } from "url";
 
-import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript, MailScript, ISysMailScript, SpHeaderFooter, ISpHeaderFooter, IScriptedRestAPIResource, ScriptedRestAPIResource, Converter } from "./all";
+import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript, MailScript, ISysMailScript, SpHeaderFooter, ISpHeaderFooter, IScriptedRestAPIResource, ScriptedRestAPIResource, Converter, SupportedRecords } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
@@ -1016,6 +1016,17 @@ export class Instance
                 reject("API Proxy is null or undefined");
             }
         });
+
+    }
+
+    /**
+     * Create and add record to workspace
+     * @param type 
+     * @param name 
+     * @param template 
+     */
+    public CreateRecord(type: SupportedRecords, name: string, template: string)
+    {
 
     }
 }

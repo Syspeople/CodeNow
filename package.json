@@ -34,10 +34,65 @@
                         "default": true,
                         "description": "On open automatically add record to workspace record if outdated",
                         "scope": "window"
+                    },
+                    "snsb.templates": {
+                        "type": "array",
+                        "description": "Define templates available when creating new records(Experimental)",
+                        "scope": "window",
+                        "items": {
+                            "definitions": {},
+                            "type": "object",
+                            "title": "Template Schema",
+                            "required": [
+                                "name",
+                                "class_name",
+                                "template"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "$id": "#/properties/name",
+                                    "type": "string",
+                                    "title": "The Name Schema",
+                                    "default": "",
+                                    "examples": [
+                                        "templateName"
+                                    ],
+                                    "pattern": "^(.*)$"
+                                },
+                                "class_name": {
+                                    "$id": "#/properties/class_name",
+                                    "type": "string",
+                                    "title": "The Class_name Schema",
+                                    "default": "",
+                                    "examples": [
+                                        "sys_script_include"
+                                    ],
+                                    "pattern": "^(.*)$"
+                                },
+                                "template": {
+                                    "$id": "#/properties/template",
+                                    "type": "string",
+                                    "title": "The Template Schema",
+                                    "default": "",
+                                    "examples": [
+                                        "code"
+                                    ],
+                                    "pattern": "^(.*)$"
+                                }
+                            }
+                        },
+                        "default": [
+                            {
+                                "name": "DisplayName",
+                                "class_name": "sys_script_include",
+                                "template": "Code"
+                            }
+                        ]
                     }
                 }
             }
         ],
+        "configurationDefaults": {},
         "menus": {
             "explorer/context": [
                 {
@@ -169,6 +224,11 @@
             {
                 "command": "snsb.createUpdateSetAndSetAsCurrent",
                 "title": "Create Updateset and set as current",
+                "category": "snsb"
+            },
+            {
+                "command": "snsb.createRecord",
+                "title": "Create Record",
                 "category": "snsb"
             }
         ]

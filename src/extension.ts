@@ -7,6 +7,7 @@ import { URL } from 'url';
 import * as ServiceNow from './ServiceNow/all';
 import * as Managers from './Manager/all';
 import { StatusBarManager, NotifationState } from './Manager/all';
+import { SupportedRecords } from './ServiceNow/all';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -539,6 +540,42 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    let createRecord = vscode.commands.registerCommand('snsb.createRecord', () =>
+    {
+        if (true /*instance.IsInitialized()*/)
+        {
+
+            let availableRecords = Object.keys(SupportedRecords);
+
+            let p = vscode.window.showQuickPick(availableRecords, { placeHolder: "Select Record" });
+
+            p.then((recordtype) =>
+            {
+                if (recordtype)
+                {
+                    //prompt for name
+                    let n = vscode.window.showInputBox({ prompt: "Name of the Record" });
+                    n.then((name) =>
+                    {
+                        console.log(`name: ${name}`);
+                        //@ts-ignore already null checked and string value can only be valid or undefined.
+                        console.log(`RecordType: ${SupportedRecords[recordtype]}`);
+
+                        //select template
+                        let templates = config.templates.find((element: object) =>
+                        {
+                            //@ts-ignore already null checked and string value can only be valid or undefined.
+                            return element.class_name === SupportedRecords[recordtype];
+                        });
+
+                        let t = vscode.window.showQuickPick(config.templates);
+                    });
+                }
+            });
+            //instance.CreateRecord(SupportedRecords[recordtype],name,template);
+        }
+    });
+
     let createUpdateSetAndSetAsCurrent = vscode.commands.registerCommand("snsb.createUpdateSetAndSetAsCurrent", () =>
     {
         if (instance.IsInitialized())
@@ -724,6 +761,7 @@ export function activate(context: vscode.ExtensionContext)
         config = vscode.workspace.getConfiguration("snsb");
     });
 
+
     context.subscriptions.push(openInPlatformRecord);
     context.subscriptions.push(openInPlatformList);
     context.subscriptions.push(setUpdateSet);
@@ -745,7 +783,7 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(listeneronDidChangeConfiguration);
     context.subscriptions.push(createUpdateSet);
     context.subscriptions.push(createUpdateSetAndSetAsCurrent);
-
+    context.subscriptions.push(createRecord);
 }
 // this method is called when your extension is deactivated
 export function deactivate(context: vscode.ExtensionContext)
