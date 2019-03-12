@@ -1,5 +1,5 @@
 import { URL } from "url";
-import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript, MailScript, ISysMailScript, SpHeaderFooter, ISpHeaderFooter, IScriptedRestAPIResource, ScriptedRestAPIResource, Converter, ScriptAction, ISysEventScriptAction, SupportedRecords } from "./all";
+import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript, MailScript, ISysMailScript, SpHeaderFooter, ISpHeaderFooter, IScriptedRestAPIResource, ScriptedRestAPIResource, Converter, ScriptAction, ISysEventScriptAction, SupportedRecords, Processor } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
@@ -473,6 +473,25 @@ export class Instance
             }
         });
     }
+    /**returns all cached processors */
+    public GetProcessors(): Promise<Processor[]>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this._wsm)
+            {
+                let m = this._wsm.GetProcessor();
+                if (m)
+                {
+                    resolve(m);
+                }
+            }
+            else
+            {
+                reject("No records found");
+            }
+        });
+    }
 
 
 
@@ -836,6 +855,42 @@ export class Instance
         });
     }
 
+    private GetScriptProcessorUpStream(): Promise<Array<Processor>>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                var include = this.ApiProxy.GetProcessors();
+
+                if (include)
+                {
+                    let result = new Array<Processor>();
+
+                    include.then((res) =>
+                    {
+                        if (res.data.result.length > 0)
+                        {
+                            res.data.result.forEach((element) =>
+                            {
+                                result.push(new Processor(<Processor>element));
+                            });
+                            resolve(result);
+                        }
+                        else
+                        {
+                            reject("No elements Found");
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                        reject(er);
+                    });
+                }
+            }
+        });
+    }
+
     /**
      * GetUpdateSets
      * 
@@ -989,6 +1044,18 @@ export class Instance
                 console.error(er);
             });
 
+            let processors = this.GetScriptProcessorUpStream();
+            processors.then((res) =>
+            {
+                if (this._wsm)
+                {
+                    this._wsm.SetProcessor(res);
+                }
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+
         }
     }
 
@@ -1004,7 +1071,6 @@ export class Instance
             return this.ApiProxy.SetUpdateSet(updateSet);
         }
     }
-
 
     /**
      * Create Update Set

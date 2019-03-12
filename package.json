@@ -235,6 +235,11 @@
                 "command": "snsb.getScriptAction",
                 "title": "Add Script Action to Workspace",
                 "category": "snsb"
+            },
+            {
+                "command": "snsb.getProcessor",
+                "title": "Add Processor to Workspace",
+                "category": "snsb"
             }
         ]
     },

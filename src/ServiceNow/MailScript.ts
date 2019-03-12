@@ -1,8 +1,7 @@
 import { Record, ISysMailScript } from "./all";
-import { QuickPickItem } from "vscode";
 import { FileTypes } from "../Manager/all";
 
-export class MailScript extends Record implements ISysMailScript, QuickPickItem
+export class MailScript extends Record implements ISysMailScript
 {
 
     constructor(u: ISysMailScript)

@@ -65,6 +65,7 @@ Records types currently supported.
 * Service Portal Headers and Footers.
 * Scripted Rest API.
 * Script Actions
+* Processors (scripted).
 
 ## Intellisense
 Currently there is intellisense for the following API's.
@@ -84,6 +85,9 @@ NB: Some API's are not fully documented (Publicly anyways). if you miss a method
 * GlideSysAttachment
 * GlideEmailOutbound
 * TemplatePrinter
+* GlideScriptedProcessor (g_processor)
+* HttpServletResponse (g_response)
+* HttpServletRequest (g_request)
 * sn_ws
   * GlideHttpHeader
   * RestMessageV2

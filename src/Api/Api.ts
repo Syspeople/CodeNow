@@ -1,5 +1,5 @@
 import * as Axios from "axios";
-import { Instance, ISysMetadata, ISysScriptInclude, ISpWidget, ISysProperty, SysProperty, ISpTheme, ISysUserSession, ISysUpdateSet, ISpCss, UpdateSet, IScriptedRestAPIResource, ISysEventScriptAction } from "../ServiceNow/all";
+import { Instance, ISysMetadata, ISysScriptInclude, ISpWidget, ISysProperty, SysProperty, ISpTheme, ISysUserSession, ISysUpdateSet, ISpCss, UpdateSet, IScriptedRestAPIResource, ISysEventScriptAction, ISysProcessor } from "../ServiceNow/all";
 import { IServiceNowResponse, ICookie } from "./all";
 import * as qs from "querystring";
 import { ISysUiScript } from "../ServiceNow/ISysUiScript";
@@ -27,6 +27,7 @@ export class Api
     private _SNSysEmailScript: string = `${this._SNTableSuffix}/sys_script_email`;
     private _SNScriptedRestApiResource: string = `${this._SNTableSuffix}/sys_ws_operation`;
     private _SNSysEventScriptAction: string = `${this._SNTableSuffix}/sysevent_script_action`;
+    private _SNProcessor: string = `${this._SNTableSuffix}/sys_processor`;
     private _SNXmlHttp: string = `xmlhttp.do`;
     private _Properties: Array<ISysProperty> = new Array<ISysProperty>();
     private _Cookies: Array<ICookie> = [];
@@ -486,7 +487,21 @@ export class Api
         if (this.HttpClient)
         {
             //update sets in global and in progress
-            let url = `${this._SNSysEventScriptAction}?sys_policy=""`;
+            let url = `${this._SNSysEventScriptAction}?sysparm_query=sys_policy=`;
+            return this.HttpClient.get(url);
+        }
+    }
+
+    /**
+    * processors
+    * 
+    */
+    public GetProcessors(): Axios.AxiosPromise<IServiceNowResponse<Array<ISysProcessor>>> | undefined
+    {
+        if (this.HttpClient)
+        {
+            //Processors that are not readonly and of the type === script.
+            let url = `${this._SNProcessor}?sysparm_query=sys_policy=^type=script`;
             return this.HttpClient.get(url);
         }
     }

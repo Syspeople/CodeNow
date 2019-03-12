@@ -29,3 +29,5 @@ export * from './converter';
 export * from './SupportedRecords';
 export * from './ISysEventScriptAction';
 export * from './ScriptAction';
+export * from './ISysProcessor';
+export * from './Processor';

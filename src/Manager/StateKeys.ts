@@ -16,5 +16,6 @@ export enum StateKeys
     MailScripts,
     ScriptedApiResources,
     metaData,
-    ScriptActions
+    ScriptActions,
+    Processor
 }
