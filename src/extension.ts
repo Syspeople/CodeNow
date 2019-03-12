@@ -403,6 +403,33 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    /**
+     * add scripted API to workspace
+     */
+    let getScriptAction = vscode.commands.registerCommand("snsb.getScriptAction", () =>
+    {
+        if (instance.IsInitialized())
+        {
+            let themes = instance.GetScriptActions();
+            themes.then((res) =>
+            {
+                vscode.window.showQuickPick(res).then((item) =>
+                {
+                    if (item)
+                    {
+                        wm.AddRecord(item, instance);
+                    }
+                });
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance");
+        }
+    });
 
     let saveRecord = vscode.commands.registerCommand("snsb.saveRecord", (uri) =>
     {
@@ -774,6 +801,7 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(getMailScript);
     context.subscriptions.push(getScriptedApiResource);
     context.subscriptions.push(getHeadersAndFooters);
+    context.subscriptions.push(getScriptAction);
     context.subscriptions.push(saveRecord);
     context.subscriptions.push(updateRecord);
     context.subscriptions.push(clearWorkState);

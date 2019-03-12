@@ -230,6 +230,11 @@
                 "command": "snsb.createRecord",
                 "title": "Create Record",
                 "category": "snsb"
+            },
+            {
+                "command": "snsb.getScriptAction",
+                "title": "Add Script Action to Workspace",
+                "category": "snsb"
             }
         ]
     },

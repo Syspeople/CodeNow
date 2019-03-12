@@ -64,6 +64,7 @@ Records types currently supported.
 * Mail Scripts.
 * Service Portal Headers and Footers.
 * Scripted Rest API.
+* Script Actions
 
 ## Intellisense
 Currently there is intellisense for the following API's.
@@ -142,25 +143,46 @@ spModal.open(opt).then(function (res)
 
 # Commands
 
-1. [Connect to ServiceNow](#connect-to-servicenow)
-1. [Change Update Set](#change-update-set)
-1. [Create Update Set](#create-update-set)
-1. [Create Update Set and set as Current](#Create-Update-Set-and-set-as-Current)
-1. [Add Script Include To Workspace](#Add-Script-Include-To-Workspace)
-1. [Add Widget to Workspace](#add-widget-to-workspace)
-1. [Add Theme to Workspace](#add-theme-to-worksace)
-1. [Add Mail Script to Workspace](#add-mail-script-to-workspace)
-1. [Add UI Script to Workspace](#add-ui-script-to-workspace)
-1. [Add Script Include to Workspace]()
-1. [Add Stylesheet to Workspace](#add-stylesheet-to-workspace)
-1. [Add Header | Footer Widget to Workspace](#add-header-|-footer-widget-to-workspace)
-1. [Open Record in platform](#open-record-in-platform)
-1. [Open list in platform](#open-list-in-platform)
-1. [Save](#save)
-1. [Update](#update)
-1. [Clear Instance](#clear-instance)
-1. [Refresh Records](#refresh-records)
-1. []()
+- [SNSB (ServiceNow Scripting Bridge)](#snsb-servicenow-scripting-bridge)
+  - [Which elements is added?](#which-elements-is-added)
+- [Features](#features)
+- [How to](#how-to)
+- [Try it](#try-it)
+  - [Vscode Debugger](#vscode-debugger)
+  - [Package and install](#package-and-install)
+- [Additional Extensions](#additional-extensions)
+  - [Supported Records](#supported-records)
+  - [Intellisense](#intellisense)
+    - [ServerSide API's](#serverside-apis)
+    - [Angular API's / ServicePortal](#angular-apis--serviceportal)
+    - [Additional](#additional)
+    - [ClientSide API's](#clientside-apis)
+  - [Manually Specify Types](#manually-specify-types)
+    - [Angular DI classes](#angular-di-classes)
+    - [Custom Objects created in code.](#custom-objects-created-in-code)
+- [Commands](#commands)
+  - [Connect to ServiceNow](#connect-to-servicenow)
+  - [Change Update Set](#change-update-set)
+  - [Create Update Set](#create-update-set)
+  - [Create Update Set and set as Current](#create-update-set-and-set-as-current)
+  - [Add Script Include To Workspace](#add-script-include-to-workspace)
+  - [Add Widget to Workspace](#add-widget-to-workspace)
+  - [Add Theme to Workspace](#add-theme-to-workspace)
+  - [Add Mail Script to Workspace](#add-mail-script-to-workspace)
+  - [Add UI Script to Workspace](#add-ui-script-to-workspace)
+  - [Add Script Include to Workspace](#add-script-include-to-workspace)
+  - [Add Stylesheet to Workspace](#add-stylesheet-to-workspace)
+  - [Add Header | Footer Widget to Workspace](#add-header--footer-widget-to-workspace)
+  - [Open Record in platform](#open-record-in-platform)
+  - [Open list in platform](#open-list-in-platform)
+  - [Save](#save)
+  - [Update](#update)
+  - [Clear Instance](#clear-instance)
+  - [Refresh Records](#refresh-records)
+- [Options](#options)
+  - [uploadOnSave](#uploadonsave)
+  - [addOnOpen](#addonopen)
+    - [Contributors](#contributors)
 
 
 

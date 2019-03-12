@@ -1,6 +1,5 @@
 import { URL } from "url";
-
-import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript, MailScript, ISysMailScript, SpHeaderFooter, ISpHeaderFooter, IScriptedRestAPIResource, ScriptedRestAPIResource, Converter, SupportedRecords } from "./all";
+import { ScriptInclude, ISysScriptInclude, Record, ISysMetadata, Widget, ISpWidget, Theme, ISpTheme, UpdateSet, ISpCss, StyleSheet, UiScript, ISysUiScript, MailScript, ISysMailScript, SpHeaderFooter, ISpHeaderFooter, IScriptedRestAPIResource, ScriptedRestAPIResource, Converter, ScriptAction, ISysEventScriptAction, SupportedRecords } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
@@ -455,6 +454,27 @@ export class Instance
         });
     }
 
+    /**returns all cached script actions */
+    public GetScriptActions(): Promise<ScriptAction[]>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this._wsm)
+            {
+                let m = this._wsm.GetScriptActions();
+                if (m)
+                {
+                    resolve(m);
+                }
+            }
+            else
+            {
+                reject("No records found");
+            }
+        });
+    }
+
+
 
     /**
      * IsLatest 
@@ -779,6 +799,43 @@ export class Instance
         });
     }
 
+    // Get Scripted API Resources
+    private GetScriptActionUpStream(): Promise<Array<ScriptAction>>
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                var include = this.ApiProxy.GetScriptActions();
+
+                if (include)
+                {
+                    let result = new Array<ScriptAction>();
+
+                    include.then((res) =>
+                    {
+                        if (res.data.result.length > 0)
+                        {
+                            res.data.result.forEach((element) =>
+                            {
+                                result.push(new ScriptAction(<ISysEventScriptAction>element));
+                            });
+                            resolve(result);
+                        }
+                        else
+                        {
+                            reject("No elements Found");
+                        }
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                        reject(er);
+                    });
+                }
+            }
+        });
+    }
+
     /**
      * GetUpdateSets
      * 
@@ -918,6 +975,20 @@ export class Instance
             {
                 console.error(er);
             });
+
+            //GetScriptActionUpStream
+            let scriptActions = this.GetScriptActionUpStream();
+            scriptActions.then((res) =>
+            {
+                if (this._wsm)
+                {
+                    this._wsm.SetScriptActions(res);
+                }
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+
         }
     }
 

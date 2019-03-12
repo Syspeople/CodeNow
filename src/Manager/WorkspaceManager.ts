@@ -1,5 +1,5 @@
 import * as fileSystem from 'fs';
-import { ISysMetadata, Instance, ISysScriptInclude, ISpWidget, ISpTheme, ISpCss, ISysUiScript, ISysMailScript, ISpHeaderFooter, IScriptedRestAPIResource, Converter } from '../ServiceNow/all';
+import { ISysMetadata, Instance, ISysScriptInclude, ISpWidget, ISpTheme, ISpCss, ISysUiScript, ISysMailScript, ISpHeaderFooter, IScriptedRestAPIResource, Converter, ISysEventScriptAction } from '../ServiceNow/all';
 import { MetaData, KeyValuePair, WorkspaceStateManager, FileTypes } from './all';
 import { Uri, ExtensionContext, window, WorkspaceFolder, workspace } from 'vscode';
 import { ISysMetadataIWorkspaceConvertable } from '../MixIns/all';
@@ -235,6 +235,12 @@ export class WorkspaceManager
                 break;
             case "sys_ws_operation":
                 recordName = (<IScriptedRestAPIResource>record).name;
+
+                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
+                meta = new MetaData(record, f, instanceName, recordName);
+                break;
+            case "sysevent_script_action":
+                recordName = (<ISysEventScriptAction>record).name;
 
                 f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
                 meta = new MetaData(record, f, instanceName, recordName);
