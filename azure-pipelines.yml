@@ -10,17 +10,13 @@ trigger:
 - master
 
 pool:
-  vmImage: 'Ubuntu-16.04'
+  vmImage: 'vs2017-win2016'
 
 steps:
 - task: NodeTool@0
   inputs:
     versionSpec: '8.x'
   displayName: 'Install Node.js'
-
-- script: |
-    echo "$(Build.BuildNumber)"
-  displayName: 'Echo variables'
 
 - script: |
     npm install
@@ -31,11 +27,27 @@ steps:
 #  displayName: 'test'
 
 - script: |
+    echo "$(Build.BuildNumber)"
+  displayName: 'Echo variables'
+
+- task: PowerShell@2
+  inputs:
+    targetType: inline
+    #filePath: # Required when targetType == FilePath
+    #arguments: # Optional
+    script: '##vso[task.setvariable variable=version](. .\buildfunctions.ps1; addBuildNumber -buildNumber $(Build.BuildNumber))' # Required when targetType == Inline
+    #errorActionPreference: 'stop' # Optional. Options: stop, continue, silentlyContinue
+    #failOnStderr: false # Optional
+    #ignoreLASTEXITCODE: false # Optional
+    #pwsh: false # Optional
+    #workingDirectory: # Optional
+
+- script: |
     npm install -g vsce
     vsce package
   displayName: 'Package'
 
 - task: PublishPipelineArtifact@0
   inputs:
-    artifactName: 'snsb-0.6.0.vsix'
-    targetPath: './snsb-0.6.0.vsix'
+    artifactName: 'snsb-$(version).vsix'
+    targetPath: './snsb-$(version).vsix'
