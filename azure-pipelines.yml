@@ -24,7 +24,7 @@ steps:
 #  displayName: 'test'
 
 - script: |
-    echo $BuildNumber
+    echo "$BuildNumber"
   displayName: 'Echo variables'
 
 - script: |
