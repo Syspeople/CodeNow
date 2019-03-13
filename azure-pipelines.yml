@@ -23,21 +23,24 @@ steps:
 #    npm run test
 #  displayName: 'test'
 
-- script: |
-    echo "$(Build.BuildNumber)"
-  displayName: 'Echo variables'
 
 - task: PowerShell@2
   inputs:
     targetType: inline
     #filePath: # Required when targetType == FilePath
     #arguments: # Optional
-    script: '##vso[task.setvariable variable=version](. .\buildfunctions.ps1; addBuildNumber -buildNumber $(Build.BuildNumber))' # Required when targetType == Inline
+    script: '. .\buildfunctions.ps1; $v = addBuildNumber -buildNumber $(Build.BuildNumber);write-host "##vso[task.setvariable variable=vsix]snbs-$v.vsix"' # Required when targetType == Inline
     #errorActionPreference: 'stop' # Optional. Options: stop, continue, silentlyContinue
     #failOnStderr: false # Optional
     #ignoreLASTEXITCODE: false # Optional
     #pwsh: false # Optional
     #workingDirectory: # Optional
+
+
+- script: |
+    echo "$(Build.BuildNumber)"
+    echo "$(vsix)"
+  displayName: 'Echo variables'
 
 - script: |
     npm install -g vsce
@@ -46,5 +49,5 @@ steps:
 
 - task: PublishPipelineArtifact@0
   inputs:
-    artifactName: 'snsb-$(version).vsix'
-    targetPath: './snsb-$(version).vsix'
+    artifactName: $(vsix)
+    targetPath: "./$vsix"
