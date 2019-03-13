@@ -41,6 +41,7 @@ steps:
     echo "$(vsix)"
   displayName: 'Echo variables'
 
+#package vsix
 - task: Bash@3
   inputs:
     targetType: inline
@@ -51,6 +52,7 @@ steps:
 #     vsce package -o ".\$(vsix)"
 #   displayName: 'Package'
 
+#publish vsix
 - task: PublishPipelineArtifact@0
   inputs:
     artifactName: "$(vsix)"
