@@ -25,6 +25,7 @@ steps:
 
 - script: |
     echo "$(Build.BuildNumber)"
+    echo "$(Date:MMddyy)$(Rev:rr)"
   displayName: 'Echo variables'
 
 - script: |
