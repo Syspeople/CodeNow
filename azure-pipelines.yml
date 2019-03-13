@@ -29,7 +29,7 @@ steps:
     targetType: inline
     #filePath: # Required when targetType == FilePath
     #arguments: # Optional
-    script: '. .\buildfunctions.ps1; $v = addBuildNumber -buildNumber $(Build.BuildNumber);write-host "##vso[task.setvariable variable=vsix]snbs-$v.vsix"' # Required when targetType == Inline
+    script: '. .\buildfunctions.ps1; $v = addBuildNumber -buildNumber $(Build.BuildNumber);write-host "##vso[task.setvariable variable=vsix]snsb-$v.vsix"' # Required when targetType == Inline
     #errorActionPreference: 'stop' # Optional. Options: stop, continue, silentlyContinue
     #failOnStderr: false # Optional
     #ignoreLASTEXITCODE: false # Optional
