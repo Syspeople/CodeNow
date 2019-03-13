@@ -49,4 +49,4 @@ steps:
 - task: PublishPipelineArtifact@0
   inputs:
     artifactName: "$(vsix)"
-    targetPath: "./$($vsix)"
+    targetPath: "./$(vsix)"
