@@ -24,6 +24,15 @@ steps:
 #  displayName: 'test'
 
 - script: |
+    echo $BuildNumber
+  displayName: 'Echo variables'
+
+- script: |
     npm install -g vsce
-    vsce package -o '$(Build.ArtifactStagingDirectory)'
+    vsce package
   displayName: 'Package'
+
+- task: PublishPipelineArtifact@0
+  inputs:
+    artifactName: 'snsb-0.6.0.vsix'
+    targetPath: './snsb-0.6.0.vsix'
