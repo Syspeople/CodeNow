@@ -25,5 +25,5 @@ steps:
 
 - script: |
     npm install -g vsce
-    vsce package -o $(Build.ArtifactStagingDirectory)
+    vsce package -o '$(Build.ArtifactStagingDirectory)'
   displayName: 'Package'
