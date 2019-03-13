@@ -1,5 +1,5 @@
 import * as Axios from "axios";
-import { Instance, ISysMetadata, ISysScriptInclude, ISpWidget, ISysProperty, SysProperty, ISpTheme, ISysUserSession, ISysUpdateSet, ISpCss, UpdateSet, IScriptedRestAPIResource } from "../ServiceNow/all";
+import { Instance, ISysMetadata, ISysScriptInclude, ISpWidget, ISysProperty, SysProperty, ISpTheme, ISysUserSession, ISysUpdateSet, ISpCss, UpdateSet, IScriptedRestAPIResource, ISysEventScriptAction, ISysProcessor, SupportedRecords } from "../ServiceNow/all";
 import { IServiceNowResponse, ICookie } from "./all";
 import * as qs from "querystring";
 import { ISysUiScript } from "../ServiceNow/ISysUiScript";
@@ -9,7 +9,7 @@ import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
 
 export class Api
 {
-
+    private _HttpClient: Axios.AxiosInstance | undefined;
     private _SNHost: string = "";
     private _SNApiEndpoint = "/api";
     private _SNTableSuffix: string = `${this._SNApiEndpoint}/now/table`;
@@ -26,12 +26,14 @@ export class Api
     private _SNHeaderFooter: string = `${this._SNTableSuffix}/sp_header_footer`;
     private _SNSysEmailScript: string = `${this._SNTableSuffix}/sys_script_email`;
     private _SNScriptedRestApiResource: string = `${this._SNTableSuffix}/sys_ws_operation`;
-
-
+    private _SNSysEventScriptAction: string = `${this._SNTableSuffix}/sysevent_script_action`;
+    private _SNProcessor: string = `${this._SNTableSuffix}/sys_processor`;
     private _SNXmlHttp: string = `xmlhttp.do`;
     private _Properties: Array<ISysProperty> = new Array<ISysProperty>();
-
     private _Cookies: Array<ICookie> = [];
+    private _csrfToken: string = "";
+    private _username: string = "";
+    private _password: string = "";
 
     private get _session_store(): string | undefined
     {
@@ -47,11 +49,6 @@ export class Api
             }
         }
     }
-
-    private _csrfToken: string = "";
-
-    private _username: string = "";
-    private _password: string = "";
 
     /**
          * Setup class, Currently only basic auth.
@@ -264,11 +261,11 @@ export class Api
         }
     }
 
-    private _HttpClient: Axios.AxiosInstance | undefined;
     public get HttpClient(): Axios.AxiosInstance | undefined
     {
         return this._HttpClient;
     }
+
     public set HttpClient(v: Axios.AxiosInstance | undefined)
     {
         this._HttpClient = v;
@@ -479,5 +476,74 @@ export class Api
             let url = `${this._SNScriptedRestApiResource}?sys_policy=""`;
             return this.HttpClient.get(url);
         }
+    }
+
+    /**
+    * GetScriptActions
+    * 
+    */
+    public GetScriptActions(): Axios.AxiosPromise<IServiceNowResponse<Array<ISysEventScriptAction>>> | undefined
+    {
+        if (this.HttpClient)
+        {
+            //update sets in global and in progress
+            let url = `${this._SNSysEventScriptAction}?sysparm_query=sys_policy=`;
+            return this.HttpClient.get(url);
+        }
+    }
+
+    /**
+    * processors
+    * 
+    */
+    public GetProcessors(): Axios.AxiosPromise<IServiceNowResponse<Array<ISysProcessor>>> | undefined
+    {
+        if (this.HttpClient)
+        {
+            //Processors that are not readonly and of the type === script.
+            let url = `${this._SNProcessor}?sysparm_query=sys_policy=^type=script`;
+            return this.HttpClient.get(url);
+        }
+    }
+
+    public CreateRecord(type: SupportedRecords, body: object): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>> | undefined
+    {
+        if (this.HttpClient)
+        {
+            let url = `${this._SNTableSuffix}/${type}`;
+            return this.HttpClient.post(url, body);
+        }
+    }
+
+    public CreateUpdateSet(name: string, parent: string): Axios.AxiosPromise<IServiceNowResponse<any>> | undefined
+    {
+        return new Promise((resolve, reject) =>
+        {
+            let url = `${this._SNSysUpdateSet}`;
+            var i = this.NewSession();
+
+            i.then((res) =>
+            {
+                if (this.HttpClient)
+                {
+                    this.HttpClient.post(url, {
+                        name: name,
+                        parent: parent
+                    })
+                        .then(function (response)
+                        {
+                            resolve(response);
+                        })
+                        .catch(function (error)
+                        {
+                            console.log(error);
+                        });
+                }
+            }).catch((er) =>
+            {
+                console.error(er);
+                reject(er);
+            });
+        });
     }
 }

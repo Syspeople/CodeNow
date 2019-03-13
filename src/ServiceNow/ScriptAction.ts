@@ -1,27 +1,39 @@
-import { Record, ISysMailScript } from "./all";
+import { Record, ISysEventScriptAction } from "./all";
+import { QuickPickItem } from "vscode";
 import { FileTypes } from "../Manager/all";
 
-export class MailScript extends Record implements ISysMailScript
+export class ScriptAction extends Record implements ISysEventScriptAction, QuickPickItem
 {
 
-    constructor(u: ISysMailScript)
+    constructor(u: ISysEventScriptAction)
     {
         super(u);
+        this.active = u.active;
+        this.description = u.description;
         this.script = u.script;
         this.name = u.name;
-        this.description = "Mail Script";
+        this.order = u.order;
+        this.event_name = u.event_name;
+        this.condition_script = u.condition_script;
     }
 
+    active: boolean;
     description: string;
     script: string;
     name: string;
+    order: number;
+    event_name: string;
+    condition_script: string;
 
     public get label(): string
     {
         return this.name;
     }
 
-    detail?: string | undefined;
+    public get detail(): string
+    {
+        return this.event_name;
+    }
 
     SetAttribute(content: string, filetype: FileTypes): void
     {
@@ -30,6 +42,7 @@ export class MailScript extends Record implements ISysMailScript
             this.script = content;
         }
     }
+
     GetAttribute(filetype: FileTypes): string | undefined
     {
         if (filetype === FileTypes.serverScript)

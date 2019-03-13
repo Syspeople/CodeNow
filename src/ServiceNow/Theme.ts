@@ -1,8 +1,7 @@
 import { Record, ISpTheme, Relation } from './all';
-import { QuickPickItem } from 'vscode';
 import { FileTypes } from '../Manager/all';
 
-export class Theme extends Record implements ISpTheme, QuickPickItem
+export class Theme extends Record implements ISpTheme
 {
     constructor(t: ISpTheme)
     {

@@ -1,4 +1,5 @@
 /*VsCode Stuff*/
+/*VsCode Stuff*/
 export enum StateKeys
 {
     instance,
@@ -14,5 +15,7 @@ export enum StateKeys
     HeadersAndFooters,
     MailScripts,
     ScriptedApiResources,
-    metaData
+    metaData,
+    ScriptActions,
+    Processor
 }

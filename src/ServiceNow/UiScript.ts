@@ -1,8 +1,7 @@
 import { Record, ISysUiScript } from "./all";
-import { QuickPickItem } from "vscode";
 import { FileTypes } from "../Manager/all";
 
-export class UiScript extends Record implements ISysUiScript, QuickPickItem
+export class UiScript extends Record implements ISysUiScript
 {
 
     constructor(u: ISysUiScript)

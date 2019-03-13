@@ -1,9 +1,8 @@
-import { QuickPickItem } from 'vscode';
 import { Record, } from "./all";
 import { FileTypes } from '../Manager/all';
 import { ISpHeaderFooter } from './ISpHeaderFooter';
 
-export class SpHeaderFooter extends Record implements ISpHeaderFooter, QuickPickItem
+export class SpHeaderFooter extends Record implements ISpHeaderFooter
 {
     constructor(w: ISpHeaderFooter)
     {
