@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/DevOpsSyspeople/ServiceNow%20Scripting%20Bridge/_apis/build/status/Syspeople.snsb?branchName=master)](https://dev.azure.com/DevOpsSyspeople/ServiceNow%20Scripting%20Bridge/_build/latest?definitionId=1&branchName=master)
+
 # SNSB (ServiceNow Scripting Bridge)
 The Visual Code Extension for developing on the ServiceNow platform.
 
