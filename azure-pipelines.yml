@@ -3,7 +3,7 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
-job:
+jobs:
  pool:
 
 trigger:
@@ -31,7 +31,6 @@ steps:
 #  displayName: 'test'
 
 - script: |
-    
     npm install -g vsce
     vsce package
   displayName: 'Package'
