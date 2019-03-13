@@ -42,8 +42,8 @@ steps:
   displayName: 'Echo variables'
 
 - script: |
-    npm install -g vsce
-    vsce package
+    echo npm install -g vsce
+    echo vsce package -o ".\$(vsix)"
   displayName: 'Package'
 
 - task: PublishPipelineArtifact@0
