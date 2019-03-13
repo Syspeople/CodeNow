@@ -23,7 +23,7 @@ steps:
 #    npm run test
 #  displayName: 'test'
 
-
+#set add build number to version
 - task: PowerShell@2
   inputs:
     targetType: inline
@@ -35,7 +35,6 @@ steps:
     #ignoreLASTEXITCODE: false # Optional
     #pwsh: false # Optional
     #workingDirectory: # Optional
-
 
 - script: |
     echo "$(Build.BuildNumber)"
@@ -49,5 +48,5 @@ steps:
 
 - task: PublishPipelineArtifact@0
   inputs:
-    artifactName: $(vsix)
-    targetPath: "./$vsix"
+    artifactName: "$(vsix)"
+    targetPath: "./$($vsix)"
