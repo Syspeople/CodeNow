@@ -27,7 +27,6 @@ steps:
 - task: PowerShell@2
   inputs:
     targetType: inline
-    #
     script: '. .\buildfunctions.ps1; $v = addBuildNumber -buildNumber $(Build.BuildNumber);write-host "##vso[task.setvariable variable=vsix]snsb-$v.vsix"' # Required when targetType == Inline
 
 - script: |
@@ -35,10 +34,15 @@ steps:
     echo "$(vsix)"
   displayName: 'Echo variables'
 
-- script: |
-    npm install -g vsce
-    run vsce package -o ".\$(vsix)"
-  displayName: 'Package'
+- task: Bash@3
+  inputs:
+    targetType: inline
+    script: 'npm install -g vsce && vsce package' # Required when targetType == Inline
+
+# - script: |
+#     npm install -g vsce
+#     vsce package -o ".\$(vsix)"
+#   displayName: 'Package'
 
 - task: PublishPipelineArtifact@0
   inputs:
