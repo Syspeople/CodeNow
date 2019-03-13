@@ -37,7 +37,7 @@ steps:
 
 - script: |
     npm install -g vsce
-    vsce package -o ".\$(vsix)"
+    run vsce package -o ".\$(vsix)"
   displayName: 'Package'
 
 - task: PublishPipelineArtifact@0
