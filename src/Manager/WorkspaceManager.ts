@@ -1,6 +1,6 @@
 import * as fileSystem from 'fs';
-import { ISysMetadata, Instance, ISysScriptInclude, ISpWidget, ISpTheme, ISpCss, ISysUiScript, ISysMailScript, ISpHeaderFooter, IScriptedRestAPIResource, Converter, ISysEventScriptAction, ISysProcessor } from '../ServiceNow/all';
-import { MetaData, KeyValuePair, WorkspaceStateManager, FileTypes } from './all';
+import { Instance, Converter } from '../ServiceNow/all';
+import { MetaData, WorkspaceStateManager, IWorkspaceConvertable } from './all';
 import { Uri, ExtensionContext, window, WorkspaceFolder, workspace } from 'vscode';
 import { ISysMetadataIWorkspaceConvertable } from '../MixIns/all';
 
@@ -166,95 +166,10 @@ export class WorkspaceManager
      * @param record 
      * @param instance 
      */
-    private createMetadata(record: ISysMetadata, instance: Instance): MetaData | undefined
+    private createMetadata(record: IWorkspaceConvertable, instance: Instance): MetaData | undefined
     {
-        let recordName: string;
-        let f = new Array<KeyValuePair<FileTypes, Uri>>();
-        let meta: MetaData | undefined;
-        let instanceName: string;
 
-        if (instance.Url)
-        {
-            instanceName = instance.Url.host;
-        }
-        else
-        {
-            throw new Error("Instance url undefined");
-        }
-
-        //add new records here
-        switch (record.sys_class_name)
-        {
-            case "sys_script_include":
-                recordName = (<ISysScriptInclude>record).name;
-
-                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            case "sp_widget":
-                recordName = (<ISpWidget>record).name;
-
-                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
-                f.push(new KeyValuePair(FileTypes.clientScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.clientScript)}`)));
-                f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
-                f.push(new KeyValuePair(FileTypes.html, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.html)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            case "sp_theme":
-                recordName = (<ISpTheme>record).name;
-
-                f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            case "sp_css":
-                recordName = (<ISpCss>record).name;
-
-                f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            case "sys_ui_script":
-                recordName = (<ISysUiScript>record).name;
-
-                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            case "sp_header_footer":
-                recordName = (<ISpHeaderFooter>record).name;
-
-                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
-                f.push(new KeyValuePair(FileTypes.clientScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.clientScript)}`)));
-                f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
-                f.push(new KeyValuePair(FileTypes.html, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.html)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            case "sys_script_email":
-                recordName = (<ISysMailScript>record).name;
-
-                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            case "sys_ws_operation":
-                recordName = (<IScriptedRestAPIResource>record).name;
-
-                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            case "sysevent_script_action":
-                recordName = (<ISysEventScriptAction>record).name;
-
-                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            case "sys_processor":
-                recordName = (<ISysProcessor>record).name;
-
-                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            default:
-                console.warn(`createMetadata: Record ${record.sys_class_name} not recognized`);
-                break;
-        }
+        let meta = record.GetMetadata(record, instance);
 
         if (meta)
         {
@@ -264,23 +179,6 @@ export class WorkspaceManager
         else
         {
             console.warn("Metadata undefined");
-        }
-    }
-
-    private getFileTypeExtension(type: FileTypes): string
-    {
-        switch (type)
-        {
-            case FileTypes.serverScript:
-                return "server_script.js";
-            case FileTypes.clientScript:
-                return "client_script.js";
-            case FileTypes.styleSheet:
-                return "scss";
-            case FileTypes.html:
-                return "html";
-            default:
-                throw new Error("FileType not recognized");
         }
     }
 

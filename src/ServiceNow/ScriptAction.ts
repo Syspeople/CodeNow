@@ -1,6 +1,6 @@
-import { Record, ISysEventScriptAction } from "./all";
-import { QuickPickItem } from "vscode";
-import { FileTypes } from "../Manager/all";
+import { Record, ISysEventScriptAction, Instance, Converter } from "./all";
+import { QuickPickItem, Uri } from "vscode";
+import { FileTypes, MetaData, KeyValuePair } from "../Manager/all";
 
 export class ScriptAction extends Record implements ISysEventScriptAction, QuickPickItem
 {
@@ -54,5 +54,16 @@ export class ScriptAction extends Record implements ISysEventScriptAction, Quick
     GetPatchable(): Object
     {
         return { script: this.script };
+    }
+
+    GetMetadata(record: ISysEventScriptAction, instance: Instance): MetaData
+    {
+        if (instance.IsInitialized() && instance.Url)
+        {
+            let f = new Array<KeyValuePair<FileTypes, Uri>>();
+            f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${record.name}.${Converter.getFileTypeExtension(FileTypes.serverScript)}`)));
+            return new MetaData(record, f, instance.Url.host, record.name);
+        }
+        throw new Error("Instance not initialized");
     }
 }
