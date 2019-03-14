@@ -185,7 +185,7 @@ export function activate(context: vscode.ExtensionContext)
         if (instance.IsInitialized())
         {
             console.log("get includes");
-            let includes = instance.GetScriptIncludes();
+            let includes = instance.GetRecords(SupportedRecords["Script Include"]);
             includes.then((res) =>
             {
                 vscode.window.showQuickPick(res).then((item) =>
@@ -214,7 +214,7 @@ export function activate(context: vscode.ExtensionContext)
         if (instance.IsInitialized())
         {
             console.log("Get Widgets");
-            let widgets = instance.GetWidgets();
+            let widgets = instance.GetRecords(SupportedRecords.Widget);
             widgets.then((res) =>
             {
                 vscode.window.showQuickPick(res).then((item) =>
@@ -242,7 +242,7 @@ export function activate(context: vscode.ExtensionContext)
     {
         if (instance.IsInitialized())
         {
-            let themes = instance.GetThemes();
+            let themes = instance.GetRecords(SupportedRecords.Theme);
             themes.then((res) =>
             {
                 vscode.window.showQuickPick(res).then((item) =>
@@ -270,7 +270,7 @@ export function activate(context: vscode.ExtensionContext)
     {
         if (instance.IsInitialized())
         {
-            let themes = instance.getStyleSheets();
+            let themes = instance.GetRecords(SupportedRecords["UI Script"]);
             themes.then((res) =>
             {
                 vscode.window.showQuickPick(res).then((item) =>
@@ -298,7 +298,7 @@ export function activate(context: vscode.ExtensionContext)
     {
         if (instance.IsInitialized())
         {
-            let themes = instance.GetUiScripts();
+            let themes = instance.GetRecords(SupportedRecords["UI Script"]);
             themes.then((res) =>
             {
                 vscode.window.showQuickPick(res).then((item) =>
@@ -326,7 +326,7 @@ export function activate(context: vscode.ExtensionContext)
     {
         if (instance.IsInitialized())
         {
-            let themes = instance.GetMailScripts();
+            let themes = instance.GetRecords(SupportedRecords["Mail Script"]);
             themes.then((res) =>
             {
                 vscode.window.showQuickPick(res).then((item) =>
@@ -354,7 +354,7 @@ export function activate(context: vscode.ExtensionContext)
     {
         if (instance.IsInitialized())
         {
-            let hf = instance.GetHeadersAndFooters();
+            let hf = instance.GetRecords(SupportedRecords["Header or Footer Widget"]);
             hf.then((res) =>
             {
                 vscode.window.showQuickPick(res).then((item) =>
@@ -382,7 +382,7 @@ export function activate(context: vscode.ExtensionContext)
     {
         if (instance.IsInitialized())
         {
-            let themes = instance.GetSriptedApiResources();
+            let themes = instance.GetRecords(SupportedRecords["Scripted Rest API"]);
             themes.then((res) =>
             {
                 vscode.window.showQuickPick(res).then((item) =>
@@ -410,7 +410,7 @@ export function activate(context: vscode.ExtensionContext)
     {
         if (instance.IsInitialized())
         {
-            let sa = instance.GetScriptActions();
+            let sa = instance.GetRecords(SupportedRecords["Script Action"]);
             sa.then((res) =>
             {
                 vscode.window.showQuickPick(res).then((item) =>
@@ -435,7 +435,7 @@ export function activate(context: vscode.ExtensionContext)
     {
         if (instance.IsInitialized())
         {
-            let proc = instance.GetProcessors();
+            let proc = instance.GetRecords(SupportedRecords.Processor);
             proc.then((res) =>
             {
                 vscode.window.showQuickPick(res).then((item) =>
