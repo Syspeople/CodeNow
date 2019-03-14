@@ -1,5 +1,6 @@
-import { Record, ISpCss } from "./all";
-import { FileTypes } from "../Manager/all";
+import { Record, ISpCss, Instance, Converter } from "./all";
+import { FileTypes, MetaData, KeyValuePair } from "../Manager/all";
+import { Uri } from "vscode";
 
 export class StyleSheet extends Record implements ISpCss
 {
@@ -53,5 +54,16 @@ export class StyleSheet extends Record implements ISpCss
         return {
             css: this.css
         };
+    }
+
+    GetMetadata(record: ISpCss, instance: Instance): MetaData
+    {
+        if (instance.IsInitialized() && instance.Url)
+        {
+            let f = new Array<KeyValuePair<FileTypes, Uri>>();
+            f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${record.name}.${Converter.getFileTypeExtension(FileTypes.styleSheet)}`)));
+            return new MetaData(record, f, instance.Url.host, record.name);
+        }
+        throw new Error("Instance not initialized");
     }
 }
