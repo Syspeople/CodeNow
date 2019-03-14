@@ -1,5 +1,6 @@
-import { Record, ISysScriptInclude } from "./all";
-import { FileTypes } from '../Manager/all';
+import { Record, ISysScriptInclude, Instance, Converter } from "./all";
+import { FileTypes, MetaData, KeyValuePair } from '../Manager/all';
+import { Uri } from "vscode";
 
 export class ScriptInclude extends Record implements ISysScriptInclude
 {
@@ -60,5 +61,16 @@ export class ScriptInclude extends Record implements ISysScriptInclude
     GetPatchable(): Object
     {
         return { script: this.script };
+    }
+
+    GetMetadata(record: ISysScriptInclude, instance: Instance): MetaData
+    {
+        if (instance.IsInitialized() && instance.Url)
+        {
+            let f = new Array<KeyValuePair<FileTypes, Uri>>();
+            f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${record.name}.${Converter.getFileTypeExtension(FileTypes.serverScript)}`)));
+            return new MetaData(record, f, instance.Url.host, record.name);
+        }
+        throw new Error("Instance not initialized");
     }
 }

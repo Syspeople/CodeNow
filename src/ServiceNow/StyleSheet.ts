@@ -36,6 +36,7 @@ export class StyleSheet extends Record implements ISpCss
                 break;
         }
     }
+
     GetAttribute(filetype: FileTypes): string | undefined
     {
         switch (filetype)
@@ -46,6 +47,7 @@ export class StyleSheet extends Record implements ISpCss
                 break;
         }
     }
+
     GetPatchable(): Object
     {
         return {

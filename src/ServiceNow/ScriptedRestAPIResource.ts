@@ -1,6 +1,6 @@
-import { Record, IScriptedRestAPIResource } from "./all";
-import { QuickPickItem } from "vscode";
-import { FileTypes } from "../Manager/all";
+import { Record, IScriptedRestAPIResource, Instance, Converter } from "./all";
+import { QuickPickItem, Uri } from "vscode";
+import { FileTypes, MetaData, KeyValuePair } from "../Manager/all";
 import { Relation } from "./Relation";
 
 
@@ -52,5 +52,16 @@ export class ScriptedRestAPIResource extends Record implements IScriptedRestAPIR
     GetPatchable(): Object
     {
         throw new Error("Method not implemented.");
+    }
+
+    GetMetadata(record: IScriptedRestAPIResource, instance: Instance): MetaData
+    {
+        if (instance.IsInitialized() && instance.Url)
+        {
+            let f = new Array<KeyValuePair<FileTypes, Uri>>();
+            f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${record.name}.${Converter.getFileTypeExtension(FileTypes.serverScript)}`)));
+            return new MetaData(record, f, instance.Url.host, record.name);
+        }
+        throw new Error("Instance not initialized");
     }
 }

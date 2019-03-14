@@ -1,5 +1,6 @@
-import { FileTypes } from "./all";
+import { FileTypes, MetaData } from "./all";
 import { IPatchable } from "../Api/all";
+import { Instance } from "../ServiceNow/all";
 
 /**
  * interface required to write and read records to and from workspace.
@@ -7,6 +8,7 @@ import { IPatchable } from "../Api/all";
 export interface IWorkspaceConvertable extends IPatchable
 {
     name: string;
+
     /**
      * Set value on object based on filetype. 
      * @param content content to be set on class
@@ -20,4 +22,6 @@ export interface IWorkspaceConvertable extends IPatchable
      * @param filetype 
      */
     GetAttribute(filetype: FileTypes): string | undefined;
+
+    GetMetadata(record: IWorkspaceConvertable, instance: Instance): MetaData;
 }
