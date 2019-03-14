@@ -1,6 +1,6 @@
 import { Uri, ExtensionContext } from 'vscode';
-import { StateKeys, MemCache, MetaData } from "./all";
-import { ScriptInclude, Widget, UpdateSet, StyleSheet, Theme, UiScript, MailScript, SpHeaderFooter, ScriptedRestAPIResource, Processor, ScriptAction } from "../ServiceNow/all";
+import { StateKeys, MemCache, MetaData, IWorkspaceConvertable } from "./all";
+import { UpdateSet, SupportedRecords, ISysMetadata } from "../ServiceNow/all";
 
 //get update and manage workpace state.
 export class WorkspaceStateManager
@@ -181,53 +181,6 @@ export class WorkspaceStateManager
         return;
     }
 
-    /**
-     * SetScriptIncludes
-     * Cache scriptIncludes in local storage
-     * overwrites existing
-     */
-    public SetScriptIncludes(scriptIncludes: Array<ScriptInclude>): void
-    {
-        // this._context.workspaceState.update(StateKeys.scriptIncludes.toString(), scriptIncludes);
-        this._memCache.Set(StateKeys.scriptIncludes, scriptIncludes);
-    }
-
-    /**
-     * GetScriptIncludes
-     */
-    public GetScriptIncludes(): Array<ScriptInclude> | undefined
-    {
-        // return this._context.workspaceState.get(StateKeys.scriptIncludes.toString());
-        return this._memCache.Get<Array<ScriptInclude>>((StateKeys.scriptIncludes));
-    }
-
-    /**
-     * SetWidgets
-     */
-    public SetWidgets(Widgets: Array<Widget>): void
-    {
-        // this._context.workspaceState.update(StateKeys.widget.toString(), Widgets);
-        this._memCache.Set(StateKeys.widget, Widgets);
-    }
-
-    /**
-     * GetWidgets
-     */
-    public GetWidgets(): Array<Widget> | undefined
-    {
-        return this._memCache.Get<Array<Widget>>((StateKeys.widget));
-    }
-
-    public SetThemes(themes: Array<Theme>): void
-    {
-        this._memCache.Set(StateKeys.theme, themes);
-    }
-
-    public GetThemes(): Array<Theme> | undefined
-    {
-        return this._memCache.Get<Array<Theme>>((StateKeys.theme));
-    }
-
     public SetUpdateSet(us: UpdateSet): void
     {
         this._context.workspaceState.update(StateKeys.updateSet.toString(), us);
@@ -238,72 +191,22 @@ export class WorkspaceStateManager
         return this._context.workspaceState.get(StateKeys.updateSet.toString());
     }
 
-    public SetStyleSheet(css: Array<StyleSheet>): void
+    /**
+     * Dynamically caches records from instance. overwrites existing elements.
+     * @param type 
+     * @param records 
+     */
+    public SetRecords(type: SupportedRecords, records: Array<IWorkspaceConvertable>): void
     {
-        this._memCache.Set(StateKeys.StyleSheets, css);
+        this._memCache.Set(type, records);
     }
 
-    public GetStyleSheet(): Array<StyleSheet> | undefined
+    /**
+     * dynamically retrieves cached records.
+     * @param type 
+     */
+    public GetRecords(type: SupportedRecords): Array<ISysMetadata> | undefined
     {
-        return this._memCache.Get<Array<StyleSheet>>((StateKeys.StyleSheets));
-    }
-
-    public SetUiScript(us: Array<UiScript>): void
-    {
-        this._memCache.Set(StateKeys.UiScripts, us);
-    }
-
-    public GetUiScript(): Array<UiScript> | undefined
-    {
-        return this._memCache.Get<Array<UiScript>>((StateKeys.UiScripts));
-    }
-
-    public SetMailScript(ms: Array<MailScript>): void
-    {
-        this._memCache.Set(StateKeys.MailScripts, ms);
-    }
-
-    public GetMailScript(): Array<MailScript> | undefined
-    {
-        return this._memCache.Get<Array<MailScript>>((StateKeys.MailScripts));
-    }
-
-    public SetScriptedApiResource(sr: Array<ScriptedRestAPIResource>): void
-    {
-        this._memCache.Set(StateKeys.ScriptedApiResources, sr);
-    }
-
-    public GetScriptedApiResource(): Array<ScriptedRestAPIResource> | undefined
-    {
-        return this._memCache.Get<Array<ScriptedRestAPIResource>>((StateKeys.ScriptedApiResources));
-    }
-
-    public SetHeadersAndFooters(HeadersAndFooters: Array<SpHeaderFooter>): void
-    {
-        this._memCache.Set(StateKeys.HeadersAndFooters, HeadersAndFooters);
-    }
-
-    public GetHeadersAndFooters(): Array<SpHeaderFooter> | undefined
-    {
-        return this._memCache.Get<Array<SpHeaderFooter>>((StateKeys.HeadersAndFooters));
-    }
-
-    public SetScriptActions(scriptActions: Array<ScriptAction>): void
-    {
-        this._memCache.Set(StateKeys.ScriptActions, scriptActions);
-    }
-
-    public GetScriptActions(): Array<ScriptAction> | undefined
-    {
-        return this._memCache.Get<Array<ScriptAction>>((StateKeys.ScriptActions));
-    }
-
-    public SetProcessor(processors: Array<Processor>): void
-    {
-        this._memCache.Set(StateKeys.Processor, processors);
-    }
-    public GetProcessor(): Array<Processor> | undefined
-    {
-        return this._memCache.Get<Array<Processor>>(StateKeys.Processor);
+        return this._memCache.Get<Array<ISysMetadata>>(type);
     }
 }

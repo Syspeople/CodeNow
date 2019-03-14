@@ -9,7 +9,7 @@ export class Converter
      * Converts a sysmetadata to the full class implementation.
      * @param record 
      */
-    static CastSysMetaData<T extends ISysMetadata>(record: T): ISysMetadataIWorkspaceConvertable | undefined
+    static CastSysMetaData<T extends ISysMetadata>(record: T): ISysMetadataIWorkspaceConvertable
     {
         let c = <unknown>record;
         //handle conversion
@@ -36,8 +36,9 @@ export class Converter
             case "sys_processor":
                 return new Processor(<ISysProcessor>c);
             default:
-                console.warn(`GetRecord: Record ${record.sys_class_name} not recognized`);
-                break;
+                let msg = `GetRecord: Record ${record.sys_class_name} not recognized`;
+                console.warn(msg);
+                throw new Error(msg);
         }
     }
 
