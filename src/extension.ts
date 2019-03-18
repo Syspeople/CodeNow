@@ -404,7 +404,7 @@ export function activate(context: vscode.ExtensionContext)
     });
 
     /**
-     * add scripted API to workspace
+     * add Script Actions to workspace
      */
     let getScriptAction = vscode.commands.registerCommand("snsb.getScriptAction", () =>
     {
@@ -455,6 +455,35 @@ export function activate(context: vscode.ExtensionContext)
             vscode.window.showErrorMessage("Connect to an instance");
         }
     });
+
+    /**
+     * add theme to workspace
+     */
+    let getAngularProvider = vscode.commands.registerCommand("snsb.getAngularProvider", () =>
+    {
+        if (instance.IsInitialized())
+        {
+            let themes = instance.GetRecords(SupportedRecords["Angular Provider"]);
+            themes.then((res) =>
+            {
+                vscode.window.showQuickPick(res).then((item) =>
+                {
+                    if (item)
+                    {
+                        wm.AddRecord(item, instance);
+                    }
+                });
+            }).catch((er) =>
+            {
+                console.error(er);
+            });
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance");
+        }
+    });
+
 
     let saveRecord = vscode.commands.registerCommand("snsb.saveRecord", (uri) =>
     {
@@ -834,6 +863,7 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(getHeadersAndFooters);
     context.subscriptions.push(getScriptAction);
     context.subscriptions.push(getProcessor);
+    context.subscriptions.push(getAngularProvider);
     context.subscriptions.push(listenerOnDidSave);
     context.subscriptions.push(listenerOnDidOpen);
     context.subscriptions.push(listeneronDidChangeConfiguration);

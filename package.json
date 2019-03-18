@@ -240,6 +240,11 @@
                 "command": "snsb.getProcessor",
                 "title": "Add Processor to Workspace",
                 "category": "snsb"
+            },
+            {
+                "command": "snsb.getAngularProvider",
+                "title": "Add Angular Provider to Workspace",
+                "category": "snsb"
             }
         ]
     },

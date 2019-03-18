@@ -717,6 +717,11 @@ var current = current;
                     name: name,
                     script: ``
                 };
+            case SupportedRecords["Angular Provider"]:
+                return {
+                    name: name,
+                    script: ``
+                };
             case SupportedRecords.Widget:
                 return {
                     name: name,
