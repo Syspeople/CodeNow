@@ -24,6 +24,8 @@ export function activate(context: vscode.ExtensionContext)
     if (wsm.HasInstanceInState)
     {
         instance = new ServiceNow.Instance();
+
+        vscode.window.showWarningMessage("Not connected to an instanse - Record synchronization disabled");
     }
 
     //Configure instance object
@@ -540,14 +542,6 @@ export function activate(context: vscode.ExtensionContext)
                     let n = vscode.window.showInputBox({ prompt: "Name of the Record" });
                     n.then((name) =>
                     {
-                        // //select template
-                        // let templates = config.templates.find((element: object) =>
-                        // {
-                        //     //@ts-ignore already null checked and string value can only be valid or undefined.
-                        //     return element.class_name === SupportedRecords[recordtype];
-                        // });
-                        // let t = vscode.window.showQuickPick(config.templates);
-
                         if (name)
                         {
                             //@ts-ignore already null checked
@@ -773,7 +767,7 @@ export function activate(context: vscode.ExtensionContext)
         }
         else
         {
-            vscode.window.showErrorMessage("Connect to an instance - File not saved to ServiceNow");
+            console.warn("Connect to an instance - File not saved to ServiceNow");
         }
     });
 
@@ -807,7 +801,7 @@ export function activate(context: vscode.ExtensionContext)
         }
         else
         {
-            vscode.window.showErrorMessage("Connect to an instance - File not updated");
+            console.warn("Connect to an instance - File not updated");
         }
     });
 
