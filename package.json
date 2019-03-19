@@ -167,8 +167,8 @@
                 "category": "snsb"
             },
             {
-                "command": "snsb.getWidget",
-                "title": "Add Widget to Workspace",
+                "command": "snsb.addRecord",
+                "title": "Add Record to Workspace",
                 "category": "snsb"
             },
             {
@@ -179,41 +179,6 @@
             {
                 "command": "snsb.updateRecord",
                 "title": "Update Record",
-                "category": "snsb"
-            },
-            {
-                "command": "snsb.getInclude",
-                "title": "Add Script Include to Workspace",
-                "category": "snsb"
-            },
-            {
-                "command": "snsb.getTheme",
-                "title": "Add Theme to Workspace",
-                "category": "snsb"
-            },
-            {
-                "command": "snsb.getStyleSheet",
-                "title": "Add StyleSheet to Workspace",
-                "category": "snsb"
-            },
-            {
-                "command": "snsb.getUiScript",
-                "title": "Add Ui Script to Workspace",
-                "category": "snsb"
-            },
-            {
-                "command": "snsb.getMailScript",
-                "title": "Add Mail Script to Workspace",
-                "category": "snsb"
-            },
-            {
-                "command": "snsb.getScriptedRestApiResource",
-                "title": "Add Scripted REST API Resource to Workspace",
-                "category": "snsb"
-            },
-            {
-                "command": "snsb.getHeadersAndFooters",
-                "title": "Add Header | Footer Widget to Workspace",
                 "category": "snsb"
             },
             {
@@ -229,16 +194,6 @@
             {
                 "command": "snsb.createRecord",
                 "title": "Create Record",
-                "category": "snsb"
-            },
-            {
-                "command": "snsb.getScriptAction",
-                "title": "Add Script Action to Workspace",
-                "category": "snsb"
-            },
-            {
-                "command": "snsb.getProcessor",
-                "title": "Add Processor to Workspace",
                 "category": "snsb"
             }
         ]
