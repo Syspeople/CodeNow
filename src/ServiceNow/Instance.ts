@@ -720,7 +720,8 @@ var current = current;
             case SupportedRecords["Angular Provider"]:
                 return {
                     name: name,
-                    script: ``
+                    script: ``,
+                    type: 'Service'
                 };
             case SupportedRecords.Widget:
                 return {

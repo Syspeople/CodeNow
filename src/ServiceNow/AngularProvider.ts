@@ -56,7 +56,7 @@ export class AngularProvider extends Record implements IAngularProvider
         return { script: this.script };
     }
 
-    GetMetadata(record: ISysScriptInclude, instance: Instance): MetaData
+    GetMetadata(record: IAngularProvider, instance: Instance): MetaData
     {
         if (instance.IsInitialized() && instance.Url)
         {
