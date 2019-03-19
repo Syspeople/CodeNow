@@ -24,6 +24,7 @@ This extension aims to provide ServiceNow developers a first class development e
   - [Manually Specify Types](#manually-specify-types)
     - [Angular DI classes](#angular-di-classes)
     - [Custom Objects created in code.](#custom-objects-created-in-code)
+    - [Custom object mappings](#custom-object-mappings)
 - [Commands](#commands)
   - [Connect to ServiceNow](#connect-to-servicenow)
   - [Change Update Set](#change-update-set)
@@ -187,6 +188,32 @@ spModal.open(opt).then(function (res)
 {
     console.log("modal end");
 });
+```
+
+### Custom object mappings
+You can use JsDoc to provide intellisense for custom objects mappings created by yourself or others. see param:arrVariables
+
+```javascript
+/**
+	 * 
+	 * @param {Array<{value:string,display_value:string}>} arrVariables 
+	 * @param {String} stringVarName 
+	 */
+	function getReqVarValue(arrVariables, stringVarName)
+	{
+		for (var index in arrVariables)
+		{
+			var variable = arrVariables[index];
+			if (variable.name === stringVarName)
+			{
+				return {
+					value: variable.value,
+					displayValue: variable.display_value
+				}
+			}
+		}
+	}
+
 ```
 
 # Commands
