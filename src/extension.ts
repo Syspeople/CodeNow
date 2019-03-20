@@ -304,6 +304,35 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
+    let deleteRecord = vscode.commands.registerCommand("snsb.deleteRecord", (uri) =>
+    {
+        if (instance.IsInitialized())
+        {
+            let record = wm.GetRecord(uri);
+
+            if (record)
+            {
+                let o = instance.DeleteRecord(record);
+                if (o)
+                {
+                    o.then((res) =>
+                    {
+                        vscode.window.showInformationMessage(`Saved`);
+
+                        wm.DeleteRecord(uri);
+                    }).catch((er) =>
+                    {
+                        vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
+                    });
+                }
+            }
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance");
+        }
+    });
+
     let clearWorkState = vscode.commands.registerCommand("snsb.clearWorkSpaceState", () =>
     {
         wsm.ClearState();
@@ -528,6 +557,7 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(addRecord);
     context.subscriptions.push(openInPlatformRecord);
     context.subscriptions.push(openInPlatformList);
+    context.subscriptions.push(deleteRecord);
     context.subscriptions.push(setUpdateSet);
     context.subscriptions.push(connect);
     context.subscriptions.push(createRecord);

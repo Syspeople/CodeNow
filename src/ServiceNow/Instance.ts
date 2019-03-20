@@ -266,6 +266,33 @@ export class Instance
     }
 
     /**
+     * Deletes the record to from instance and workspace
+     * @param record 
+     * @returns new record object from instance. if failed undefined.
+     */
+    public DeleteRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Promise<ISysMetadataIWorkspaceConvertable> | undefined
+    {
+        return new Promise((resolve, reject) =>
+        {
+            if (this.ApiProxy)
+            {
+                let p = this.ApiProxy.DeleteRecord(record);
+                if (p)
+                {
+                    p.then((res) =>
+                    {
+                        console.log("Succes");
+                    }).catch((er) =>
+                    {
+                        console.log("Not succes");
+                        reject(er);
+                    });
+                }
+            }
+        });
+    }
+
+    /**
     * GetRecord retrieves full record from instance
     */
     public GetRecord(record: ISysMetadata): Promise<ISysMetadataIWorkspaceConvertable>

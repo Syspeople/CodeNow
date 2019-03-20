@@ -161,6 +161,11 @@ export class WorkspaceManager
         }
     }
 
+    public DeleteRecord(uri: string): void
+    {
+        this.DeleteFile(uri);
+    }
+
     /**
      * Creates a metadata object for local reference from a record. 
      * @param record 
@@ -315,6 +320,25 @@ export class WorkspaceManager
         if (this.FileExist(path))
         {
             this.WriteFile(path, value);
+        }
+        else
+        {
+            console.warn(`File not found: ${path}`);
+        }
+    }
+
+    private DeleteFile(path: string): void
+    {
+        if (this.FileExist(path))
+        {
+            fileSystem.unlink(path, (res) =>
+            {
+                //only exceptions is parsed on callback 
+                if (res)
+                {
+                    window.showErrorMessage(res.message);
+                }
+            });
         }
         else
         {
