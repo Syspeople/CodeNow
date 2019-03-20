@@ -139,6 +139,7 @@ NB: Some API's are not fully documented (Publicly anyways). if you miss a method
 * $q
 * $location
 * spModal
+* spUtil
 * controller (angular controller class)
 
 ### Additional
