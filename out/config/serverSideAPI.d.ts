@@ -2430,6 +2430,77 @@ declare class SpModalOptions
     size: string;
 }
 
+/* CLIENT ANGULAR */
+
+/**
+ * Angular DI service
+ */
+
+declare var spUtil: SpUtil;
+
+declare class SpUtil
+{
+    /**
+    * @param message Error message to display.
+    */
+    addErrorMessage(message: string): void
+
+    /**
+     * 
+     * @param message Info message to display
+     */
+    addInfoMessage(message: string): void
+
+    /**
+     * 
+     * @param message Message to display.
+     */
+    addTrivialMessage(message: string): void
+
+    /**
+     * 
+     * @param template String template with values for substitution.
+     * @param data Object containing variables for substitution.
+     * @returns A formatted string.
+     * 
+     * @example spUtil.format('An error ocurred: {error} when loading {widget}', {error: '404', widget: 'sp-widget'})
+     */
+    format(template: string, data: Object): string
+
+    /**
+     * 
+     * @param widgetId Widget ID or sys_id of the widget to embed.
+     * @param data (Optional) Name/value pairs of parameters to pass to the widget model.
+     * @returns Model of the embedded widget.
+     */
+    get(widgetId: string, data?: Object): Object
+
+    /**
+     * 
+     * @param $Scope Scope of the data object updated by the callback function.
+     * @param table Watched table.
+     * @param filter Filter for fields to watch.
+     * @param callback Optional. Parameter to define the callback function.
+     * @returns Return value of the callback function.
+     */
+    recordWatch($Scope: Object, table: string, filter: string, callback?: Function): Promise<any>
+
+    /**
+     * 
+     * @param $Scope The scope defined for the update.
+     * @returns The updated options and data objects.
+     */
+    refresh($Scope: Object): Object
+
+    /**
+     * 
+     * @param $Scope The scope defined for the update.
+     * @returns The updated data object.
+     */
+    update($Scope: Object): Object
+}
+
+
 /**
  * Angular DI service
  */
