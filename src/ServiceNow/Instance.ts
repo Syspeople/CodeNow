@@ -568,15 +568,16 @@ export class Instance
     /**
      * Create and add record to workspace
      * @param type 
-     * @param name 
+     * @param record 
      * @param template 
      */
-    public CreateRecord(type: SupportedRecords, name: string): Promise<ISysMetadataIWorkspaceConvertable>
+    public CreateRecord(type: SupportedRecords, record: any): Promise<ISysMetadataIWorkspaceConvertable>
     {
         return new Promise((resolve, reject) =>
         {
             //get template
-            let r = this.getTemplate(type, name);
+            let r = this.getTemplate(type, record);
+
             //create record upstream and return converted class
             if (r)
             {
@@ -600,26 +601,26 @@ export class Instance
     }
 
     //returns an object for containing a template where applicable. 
-    private getTemplate(type: SupportedRecords, name: string): Object | undefined
+    private getTemplate(type: SupportedRecords, record: any): Object | undefined
     {
         switch (type)
         {
             case SupportedRecords["Script Include"]:
                 return {
-                    name: name,
+                    name: record.name,
                     script:
                         `
-var ${name} = Class.create();
+var ${record.name} = Class.create();
 newinclude.prototype = {
     initialize: function() {
     },
 
-    type: '${name}'
+    type: '${record.name}'
 };`
                 };
             case SupportedRecords["Header or Footer Widget"]:
                 return {
-                    name: name,
+                    name: record.name,
                     script:
                         `
 (function() {
@@ -646,7 +647,7 @@ function($scope) {
                 };
             case SupportedRecords["Mail Script"]:
                 return {
-                    name: name,
+                    name: record.name,
                     script:
                         `
 (
@@ -666,7 +667,7 @@ function($scope) {
                 };
             case SupportedRecords.Processor:
                 return {
-                    name: name,
+                    name: record.name,
                     script:
                         `
 (
@@ -684,7 +685,7 @@ function($scope) {
                 };
             case SupportedRecords["Script Action"]:
                 return {
-                    name: name,
+                    name: record.name,
                     script:
                         `
 /**
@@ -700,32 +701,32 @@ var current = current;
                 };
             case SupportedRecords["Scripted Rest API"]:
                 return {
-                    name: name
+                    name: record.name,
                 };
             case SupportedRecords["Stylesheet"]:
                 return {
-                    name: name,
+                    name: record.name,
                     css: ``
                 };
             case SupportedRecords.Theme:
                 return {
-                    name: name,
+                    name: record.name,
                     css_variables: ``
                 };
             case SupportedRecords["UI Script"]:
                 return {
-                    name: name,
+                    name: record.name,
                     script: ``
                 };
             case SupportedRecords["Angular Provider"]:
                 return {
-                    name: name,
+                    name: record.name,
                     script: ``,
-                    type: 'Service'
+                    type: record.type
                 };
             case SupportedRecords.Widget:
                 return {
-                    name: name,
+                    name: record.name,
                     script:
                         `
 (function() {

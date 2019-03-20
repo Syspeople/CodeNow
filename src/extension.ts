@@ -579,15 +579,45 @@ export function activate(context: vscode.ExtensionContext)
 
                         if (name)
                         {
-                            //@ts-ignore already null checked
-                            var r = instance.CreateRecord(SupportedRecords[recordtype], name);
-                            r.then((newRecord) =>
+                            switch (recordtype)
                             {
-                                wm.AddRecord(newRecord, instance);
-                            }).catch((err) =>
-                            {
-                                vscode.window.showErrorMessage(err);
-                            });
+                                case "Angular Provider": {
+                                    vscode.window.showQuickPick(["Directive", "Service", "Factory"], {
+                                        placeHolder: "Choose Type"
+                                    }).then((item) =>
+                                    {
+                                        let r = instance.CreateRecord(SupportedRecords[recordtype], {
+                                            'name': name,
+                                            'type': item
+                                        });
+
+                                        //@ts-ignore already null checked
+                                        r.then((newRecord) =>
+                                        {
+                                            wm.AddRecord(newRecord, instance);
+                                        }).catch((err) =>
+                                        {
+                                            vscode.window.showErrorMessage(err);
+                                        });
+                                    });
+                                    break;
+                                }
+                                default: {
+                                    let r = instance.CreateRecord(SupportedRecords[recordtype], {
+                                        'name': name
+                                    });
+                                    //@ts-ignore already null checked
+
+                                    r.then((newRecord) =>
+                                    {
+                                        wm.AddRecord(newRecord, instance);
+                                    }).catch((err) =>
+                                    {
+                                        vscode.window.showErrorMessage(err);
+                                    });
+                                    break;
+                                }
+                            }
                         }
                     });
                 }
