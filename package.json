@@ -187,11 +187,6 @@
                 "category": "snsb"
             },
             {
-                "command": "snsb.createUpdateSetAndSetAsCurrent",
-                "title": "Create Updateset and set as current",
-                "category": "snsb"
-            },
-            {
                 "command": "snsb.createRecord",
                 "title": "Create Record",
                 "category": "snsb"
