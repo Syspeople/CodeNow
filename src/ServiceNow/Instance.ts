@@ -270,7 +270,7 @@ export class Instance
      * @param record 
      * @returns new record object from instance. if failed undefined.
      */
-    public DeleteRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Promise<ISysMetadataIWorkspaceConvertable> | undefined
+    public DeleteRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Promise<any> | undefined
     {
         return new Promise((resolve, reject) =>
         {
@@ -281,10 +281,9 @@ export class Instance
                 {
                     p.then((res) =>
                     {
-                        console.log("Succes");
+                        resolve(true);
                     }).catch((er) =>
                     {
-                        console.log("Not succes");
                         reject(er);
                     });
                 }

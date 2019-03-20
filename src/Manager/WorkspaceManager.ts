@@ -1,4 +1,6 @@
 import * as fileSystem from 'fs';
+import * as path from 'path';
+
 import { Instance, Converter } from '../ServiceNow/all';
 import { MetaData, WorkspaceStateManager, IWorkspaceConvertable } from './all';
 import { Uri, ExtensionContext, window, WorkspaceFolder, workspace } from 'vscode';
@@ -164,6 +166,7 @@ export class WorkspaceManager
     public DeleteRecord(uri: string): void
     {
         this.DeleteFile(uri);
+        this.DeleteFolder(path.dirname(uri));
     }
 
     /**
@@ -288,6 +291,24 @@ export class WorkspaceManager
             if (!this.FolderExist(path))
             {
                 fileSystem.mkdir(path, (res) =>
+                {
+                    //only exceptions is parsed on callback 
+                    if (res)
+                    {
+                        window.showErrorMessage(res.message);
+                    }
+                });
+            }
+        }
+    }
+
+    private DeleteFolder(path: string)
+    {
+        if (typeof String)
+        {
+            if (this.FolderExist(path))
+            {
+                fileSystem.rmdir(path, (res) =>
                 {
                     //only exceptions is parsed on callback 
                     if (res)

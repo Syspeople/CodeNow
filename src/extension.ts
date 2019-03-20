@@ -317,12 +317,12 @@ export function activate(context: vscode.ExtensionContext)
                 {
                     o.then((res) =>
                     {
-                        vscode.window.showInformationMessage(`Saved`);
+                        vscode.window.showInformationMessage(`Record Deleted`);
 
-                        wm.DeleteRecord(uri);
+                        wm.DeleteRecord(uri.fsPath);
                     }).catch((er) =>
                     {
-                        vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
+                        vscode.window.showErrorMessage(`Delete Failed: ${er.error.message}`);
                     });
                 }
             }
