@@ -10,4 +10,5 @@ export enum SupportedRecords
     "Theme" = "sp_theme",
     "UI Script" = "sys_ui_script",
     "Widget" = "sp_widget",
+    "Angular Provider" = "sp_angular_provider"
 }

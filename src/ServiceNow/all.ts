@@ -31,3 +31,6 @@ export * from './ISysEventScriptAction';
 export * from './ScriptAction';
 export * from './ISysProcessor';
 export * from './Processor';
+export * from './IAngularProvider'
+export * from './AngularProvider'
+

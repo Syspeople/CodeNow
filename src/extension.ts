@@ -194,18 +194,13 @@ export function activate(context: vscode.ExtensionContext)
                     let records = instance.GetRecords(SupportedRecords[res]);
                     records.then((res) =>
                     {
-                        vscode.window.showQuickPick(res).then((item) =>
-                        {
-                            if (item)
-                            {
-                                wm.AddRecord(item, instance);
-                            }
-                        });
-                    }).catch((er) =>
-                    {
-                        console.error(er);
-                    });
-                }
+
+                        wm.AddRecord(item, instance);
+                    }
+                });
+            }).catch((er) =>
+            {
+                console.error(er);
             });
         }
         else
@@ -214,7 +209,7 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-    let createRecord = vscode.commands.registerCommand('snsb.createRecord', () =>
+   let createRecord = vscode.commands.registerCommand('snsb.createRecord', () =>
     {
         if (instance.IsInitialized())
         {
@@ -227,17 +222,55 @@ export function activate(context: vscode.ExtensionContext)
                     let n = vscode.window.showInputBox({ prompt: "Name of the Record" });
                     n.then((name) =>
                     {
+                        // //select template
+                        // let templates = config.templates.find((element: object) =>
+                        // {
+                        //     //@ts-ignore already null checked and string value can only be valid or undefined.
+                        //     return element.class_name === SupportedRecords[recordtype];
+                        // });
+                        // let t = vscode.window.showQuickPick(config.templates);
+
                         if (name)
                         {
-                            //@ts-ignore already null checked
-                            var r = instance.CreateRecord(SupportedRecords[recordtype], name);
-                            r.then((newRecord) =>
+                            switch (recordtype)
                             {
-                                wm.AddRecord(newRecord, instance);
-                            }).catch((err) =>
-                            {
-                                vscode.window.showErrorMessage(err);
-                            });
+                                case "Angular Provider": {
+                                    vscode.window.showQuickPick(["Directive", "Service", "Factory"], {
+                                        placeHolder: "Choose Type"
+                                    }).then((item) =>
+                                    {
+                                        let r = instance.CreateRecord(SupportedRecords[recordtype], {
+                                            'name': name,
+                                            'type': item
+                                        });
+
+                                        //@ts-ignore already null checked
+                                        r.then((newRecord) =>
+                                        {
+                                            wm.AddRecord(newRecord, instance);
+                                        }).catch((err) =>
+                                        {
+                                            vscode.window.showErrorMessage(err);
+                                        });
+                                    });
+                                    break;
+                                }
+                                default: {
+                                    let r = instance.CreateRecord(SupportedRecords[recordtype], {
+                                        'name': name
+                                    });
+                                    //@ts-ignore already null checked
+
+                                    r.then((newRecord) =>
+                                    {
+                                        wm.AddRecord(newRecord, instance);
+                                    }).catch((err) =>
+                                    {
+                                        vscode.window.showErrorMessage(err);
+                                    });
+                                    break;
+                                }
+                            }
                         }
                     });
                 }
