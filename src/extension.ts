@@ -194,13 +194,18 @@ export function activate(context: vscode.ExtensionContext)
                     let records = instance.GetRecords(SupportedRecords[res]);
                     records.then((res) =>
                     {
-
-                        wm.AddRecord(item, instance);
-                    }
-                });
-            }).catch((er) =>
-            {
-                console.error(er);
+                        vscode.window.showQuickPick(res).then((item) =>
+                        {
+                            if (item)
+                            {
+                                wm.AddRecord(item, instance);
+                            }
+                        });
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                    });
+                }
             });
         }
         else
@@ -209,7 +214,7 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-   let createRecord = vscode.commands.registerCommand('snsb.createRecord', () =>
+    let createRecord = vscode.commands.registerCommand('snsb.createRecord', () =>
     {
         if (instance.IsInitialized())
         {
@@ -256,6 +261,7 @@ export function activate(context: vscode.ExtensionContext)
                                     break;
                                 }
                                 default: {
+                                    //@ts-ignore index error false
                                     let r = instance.CreateRecord(SupportedRecords[recordtype], {
                                         'name': name
                                     });
