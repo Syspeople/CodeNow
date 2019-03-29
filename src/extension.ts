@@ -227,14 +227,6 @@ export function activate(context: vscode.ExtensionContext)
                     let n = vscode.window.showInputBox({ prompt: "Name of the Record" });
                     n.then((name) =>
                     {
-                        // //select template
-                        // let templates = config.templates.find((element: object) =>
-                        // {
-                        //     //@ts-ignore already null checked and string value can only be valid or undefined.
-                        //     return element.class_name === SupportedRecords[recordtype];
-                        // });
-                        // let t = vscode.window.showQuickPick(config.templates);
-
                         if (name)
                         {
                             switch (recordtype)
