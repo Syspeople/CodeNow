@@ -727,6 +727,7 @@ var current = current;
             case SupportedRecords.Widget:
                 return {
                     name: record.name,
+                    id: record.name.toLowerCase().replace(' ', '-'),
                     script:
                         `
 (function() {
