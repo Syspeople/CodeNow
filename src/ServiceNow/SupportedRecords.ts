@@ -9,6 +9,7 @@ export enum SupportedRecords
     "Scripted Rest API" = "sys_ws_operation",
     "Stylesheet" = "sp_css",
     "Theme" = "sp_theme",
+    "UI Page" = "sys_ui_page",
     "UI Script" = "sys_ui_script",
     "Widget" = "sp_widget"
 }

@@ -3,6 +3,8 @@ import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
 import { FileTypes } from "../Manager/all";
 import { IAngularProvider } from "./IAngularProvider";
 import { AngularProvider } from "./AngularProvider";
+import { UiPage } from "./UiPage";
+import { IUiPage } from "./IUiPage";
 
 
 export class Converter
@@ -39,6 +41,8 @@ export class Converter
                 return new Processor(<ISysProcessor>c);
             case "sp_angular_provider":
                 return new AngularProvider(<IAngularProvider>c);
+            case "sys_ui_page":
+                return new UiPage(<IUiPage>c);
             default:
                 let msg = `GetRecord: Record ${record.sys_class_name} not recognized`;
                 console.warn(msg);
@@ -58,6 +62,8 @@ export class Converter
                 return "server_script.js";
             case FileTypes.clientScript:
                 return "client_script.js";
+            case FileTypes.processingScript:
+                return "processing_script.js";
             case FileTypes.styleSheet:
                 return "scss";
             case FileTypes.html:
