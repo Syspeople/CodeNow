@@ -19,6 +19,12 @@
     ],
     "main": "./out/extension",
     "contributes": {
+        "snippets": [
+            {
+                "language": "javascript",
+                "path": "./snippets.json"
+            }
+        ],
         "configuration": [
             {
                 "title": "ServiceNow Scripting Bridge",
