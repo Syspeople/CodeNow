@@ -724,6 +724,14 @@ var current = current;
                     script: ``,
                     type: record.type
                 };
+            case SupportedRecords["UI Page"]:
+                return {
+                    name: record.name,
+                    client_script: ``,
+                    processing_script: ``,
+                    html: ``,
+                    category: record.category
+                };
             case SupportedRecords.Widget:
                 return {
                     name: record.name,

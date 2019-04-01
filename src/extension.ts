@@ -253,7 +253,7 @@ export function activate(context: vscode.ExtensionContext)
                                     break;
                                 }
                                 case "UI Page": {
-                                    vscode.window.showQuickPick(["Content Management", "General", "Home Pages"], {
+                                    vscode.window.showQuickPick(["Content Management", "General", "Home Pages", "HTML Editor", "Knowledge Base", "Service Catalog"], {
                                         placeHolder: "Choose Category"
                                     }).then((item) =>
                                     {
