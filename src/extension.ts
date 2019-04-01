@@ -252,6 +252,27 @@ export function activate(context: vscode.ExtensionContext)
                                     });
                                     break;
                                 }
+                                case "UI Page": {
+                                    vscode.window.showQuickPick(["Content Management", "General", "Home Pages", "HTML Editor", "Knowledge Base", "Service Catalog"], {
+                                        placeHolder: "Choose Category"
+                                    }).then((item) =>
+                                    {
+                                        let r = instance.CreateRecord(SupportedRecords[recordtype], {
+                                            'name': name,
+                                            'category': item
+                                        });
+
+                                        //@ts-ignore already null checked
+                                        r.then((newRecord) =>
+                                        {
+                                            wm.AddRecord(newRecord, instance);
+                                        }).catch((err) =>
+                                        {
+                                            vscode.window.showErrorMessage(err);
+                                        });
+                                    });
+                                    break;
+                                }
                                 default: {
                                     //@ts-ignore index error false
                                     let r = instance.CreateRecord(SupportedRecords[recordtype], {

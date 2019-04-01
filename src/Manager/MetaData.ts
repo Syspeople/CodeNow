@@ -106,7 +106,7 @@ export class MetaData extends Record implements ILocalMetaData
     */
     public static getFileTypes()
     {
-        return [FileTypes.clientScript, FileTypes.html, FileTypes.serverScript, FileTypes.styleSheet];
+        return [FileTypes.clientScript, FileTypes.html, FileTypes.serverScript, FileTypes.styleSheet, FileTypes.processingScript];
     }
 
     /**
