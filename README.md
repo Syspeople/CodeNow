@@ -21,6 +21,8 @@ This extension aims to provide ServiceNow developers a first class development e
     - [Angular API's / ServicePortal](#angular-apis--serviceportal)
     - [Additional](#additional)
     - [ClientSide API's](#clientside-apis)
+    - [Snippets](#Snippets)
+
   - [Manually Specify Types](#manually-specify-types)
     - [Angular DI classes](#angular-di-classes)
     - [Custom Objects created in code.](#custom-objects-created-in-code)
@@ -185,6 +187,117 @@ spModal.open(opt).then(function (res)
     console.log("modal end");
 });
 ```
+
+## Snippets
+Snippest are code fragments that can be imported, the following can be used: 
+
+### General Queries
+| Command  | Description |
+| ------------- | ------------- |
+`sn_query`      | A standard GlideRecord query follows this format. Can also be used in Client scripts and UI policies
+| `sn_query_with_Or_condition`  | Basic query with chained or condition to filter results |
+| `sn_query_with_encoded`  | Basic query with encoded filters  |
+| `sn_query_aggregate`  | Query aggregate data. ( Count, SUM, MIN, MAX, AVG )  |
+|`sn_query_orderBy` | Query with order by|
+| `sn_query_(not)null`  | Query to find where a field is null or not null  |
+| `sn_query_rowcount_serverscript`  | Query to find the row count on a server side script  |
+| `sn_query_rowcount_clientscript`  | Query to find the row count on a client side script |
+| `sn_query_with_resultLimit`  |  "Specify a limit for the result count. |
+| `sn_query_with_resultLimit_chooseWindow`  |  The chooseWindow(first,last) method lets you set the first and last row number that you want to retrieve and is typical for chunking-type operations. The rows for any given query result are numbered 0..(n-1), where there are n rows. The first parameter is the row number of the first result you’ll get. The second parameter is the number of the row after the last row to be returned. In the example below, the parameters (10, 20) will cause 10 rows to be returned: rows 10..19, inclusive. |
+
+
+### QUERY SINGLE
+| Command  | Description |
+| ------------- | ------------- |
+| `sn_query_single`  | Get a specfic record  |
+| `sn_query_single_by_field/val`  | Get the first record matching the field value pair  |
+| `sn_query_single_ref_record`  | Get the first record matching the field value pair.  |
+| `sn_delete`  | How to delete a records.   |
+| `sn_delete_ALL`  | How to delete all the records in a result set.  |
+
+
+### INSERT
+| Command  | Description |
+| ------------- | ------------- |
+| `sn_insert`  |  How to insert a new record |
+
+
+### UPDATE
+| Command  | Description |
+| ------------- | ------------- |
+| `sn_update`  |  How to update a record. |
+| `sn_update_setWorkflow`  |  `setWorkflow` is used to enable/disable the running of any business rules that may be triggered by a particular update. |
+| `sn_update_autoSysFields`  | `autoSysFields` is used to disable the update of ‘sys’ fields (Updated, Created, etc.) for a particular update. This really is only used in special situations. The primary example is when you need to perform a mass update of records to true up some of the data but want to retain the original update timestamps, etc.  |
+| `sn_update_setForceUpdate`  |  `setForceUpdate` is used to update records without having to change a value on that record to get the update to execute. |
+
+### ServiceNow Operators
+| Command  | Description |
+| ------------- | ------------- |
+| `sn_addquery_startswith`  | Filter results that start with specified value.  |
+| `sn_addquery_endswith`  | Filter results that end with specified value.  |
+| `sn_addquery_contains`  | Filter results that contains specified value.  |
+| `sn_addquery_does_not_contain`  | Filter results that does not contain specified value.  |
+| `sn_addquery_in`  | Field must contain the value supplied anywhere in the string provided.  |
+
+
+
+### Service now Alerts Client/Server
+| Command  | Description |
+| ------------- | ------------- |
+| `sn_alert_server_belowField`  | Business rule and other general use. Alert below field.  |
+| `sn_alert_server_topscreen`  |  Business rule and other general use. Alert top screen. |
+| `sn_alert_server_write_to_textlog`  | Business rule and other general use. Write to text log. |
+| `sn_alert_server_log`  |  Business rule and other general use. Will write to the database and the log file. Too much of this can adversely affect performance |
+| `sn_alert_client_popup`  |  Client Script - Will pop up a window with message and an 'OK' button. |
+| `sn_alert_client_confirm`  | Client Script - Will pop up a window with message and a 'Ok' and 'Cancel' buttons.  |
+| `sn_alert_client_errorNextToField`  | Client Script - Will put an error message below the specified field.   |
+| `sn_alert_client_hide_errorNextToField`  | Client Script - Will hide error message next the specified field  |
+
+### Service Now Glide User Object SERVER (Service Now Objects)
+| Command  | Description |
+| ------------- | ------------- |
+| `sn_user_server_get_UserByID`  |  Returns a reference to the user object for the user ID (or sys_id) provided. |
+| `sn_user_server_getCurrent_User`  | Returns a reference to the user object for the currently logged-in user  |
+| `sn_user_server_getCurrent_UserName`  | Returns the User ID (user_name) for the currently logged-in user.e.g. `employee`  |
+| `sn_user_server_getCurrent_DisplayName`  | Returns the display value for the currently logged-in user.e.g. `Joe Employe`  |
+| `sn_user_server_getCurrent_ID`  | Returns the sys_id string value for the currently logged-in user. |
+| `sn_user_server_getCurrent_FName`  | Returns the first name of the currently logged-in user.  |
+| `sn_user_server_getCurrent_LName`  | Returns the last name of the currently logged-in user.  |
+| `sn_user_server_getCurrent_Email`  | Returns the email of the currently logged-in user.  |
+| `sn_user_server_getCurrent_departmentID`  | Returns the department id of the currently logged-in user.  |
+| `sn_user_server_getCurrent_companyID`  |  Returns the company GlideRecord of the currently logged-in user. |
+| `sn_user_server_getCurrent_listOfGroups`  |  Returns a list of all groups that the currently logged-in user is a member of. |
+| `sn_user_server_getCurrent_isMemberOF`  |  Returns true if the user is a member of the given group, false otherwise. |
+
+
+### Service Now Glide User Object CLIENT (Service Now Objects)
+| Command  | Description |
+| ------------- | ------------- |
+| `sn_user_client_getCurrent_userName`  |  User name of the current user e.g. employee |
+| `sn_user_client_getCurrent_FName`  |  First name of the current user e.g. Joe |
+| `sn_user_client_getCurrent_LName`  |Last name of the current user e.g. Employee  |
+| `sn_user_client_getCurrent_userID`  | sys_id of the current user e.g. 681ccaf9c0a8016400b98a06818d57c7  |
+| `sn_user_client_getCurrent_hasRole`  |  True if the current user has the exact role specified, false otherwise, regardless of 'admin' role. Usage: g_user.hasRoleExactly('itil') |
+| `sn_user_client_getCurrent_hasRoles`  |  True if the current user has at least one role specified, false otherwise. |
+
+
+### Service Now Glide Form Object CLIENT
+| Command  | Description |
+| ------------- | ------------- |
+| `sn_form_addDecoration`  | Adds an icon on a field’s label.  |
+| `sn_form_flashColor`  |  Flashes the specified color the specified number of times. Used to draw attention to a particular field. |
+| `sn_form_getLabelOf`  |  Gets the plain text value of the field label. |
+| `sn_form_setVisibility`  | Toggles visiblity of a field in a form. |
+| `sn_form_getFieldValue`  | Gets the value of a field on a form. |
+| `sn_form_setFieldValue`  | Sets the value of a field on a form.|
+| `sn_form_setMandatory`  |  Sets the Mandatory of a field on a form. |
+| `sn_form_getMandatory`  |  Gets bool if field is mandatory.|
+| `sn_form_clearField`  | Clears the value of a field  |
+| `sn_form_setDisabled`  |  Enable/Disable a field. |
+| `sn_form_setReadOnly`  |  Toggle read only on a field. Best Practice: Use UI Policy rather than this method whenever possible. |
+| `sn_form_getIsNew`  |  Tells if this is a new record. |
+| `sn_form_saveNstay`  | Saves the record and stays  |
+| `sn_form_submit_gotoprevious`  | Submits and returns user to previous screen.  |
 
 ### Custom object mappings
 You can use JsDoc to provide intellisense for custom objects mappings created by yourself or others. see param:arrVariables
