@@ -52,7 +52,7 @@ Low code elements might get added, but _none_ is planned.
 No code elements will not added to the extension in a way that will allow you to configure them directly from VsCode.
 
 # Features
-* Work with multiple ServicNow record.
+* Work with multiple ServicNow records.
 * Create new ServiceNow Records.
 * Automatically saves to your instance.
 * Automatically updates from your instance.
@@ -95,16 +95,18 @@ Extensions that go very well with this extension
 ## Supported Records
 Records types currently supported. 
 
+* Angular Providers.
+* Mail Scripts.
+* Processors (scripted).
+* Script Actions
 * Script Includes.
+* Scripted Rest API.
+* Service Portal Headers and Footers.
 * Service Portal Themes.
 * Service Portal Widgets.
 * StyleSheets.
 * UI Scripts.
-* Mail Scripts.
-* Service Portal Headers and Footers.
-* Scripted Rest API.
-* Script Actions
-* Processors (scripted).
+* UI Page.
 
 ## Intellisense
 Currently there is intellisense for the following API's.
