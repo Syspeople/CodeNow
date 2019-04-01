@@ -8,19 +8,27 @@ import * as ServiceNow from './ServiceNow/all';
 import * as Managers from './Manager/all';
 import { StatusBarManager, NotifationState } from './Manager/all';
 import { SupportedRecords } from './ServiceNow/all';
+import * as mixpanel from 'mixpanel';
+
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext)
 {
-    console.info("SNSB Activated");
-
     const wsm = new Managers.WorkspaceStateManager(context);
     const wm = new Managers.WorkspaceManager(wsm);
     const nm = new StatusBarManager();
-    let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration("snsb");
-
     let instance: ServiceNow.Instance;
+    let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration("snsb");
+    const mp = mixpanel.init('dd31fdbf95e8a0bfb560cb8219b672f2');
+
+    //vscode.env.machineId "someValue.machineId" means dev host.
+    mp.track("snsb.activated", {
+        distinct_id: vscode.env.machineId,
+        lang: vscode.env.language,
+        session: vscode.env.sessionId
+    });
+
     if (wsm.HasInstanceInState)
     {
         instance = new ServiceNow.Instance();
@@ -56,10 +64,14 @@ export function activate(context: vscode.ExtensionContext)
                         {
                             wm.AddInstanceFolder(instance);
                             nm.SetNotificationState(NotifationState.Connected);
+                            // mixpanel.track("snsb.extension.success.connect");
                         }).catch((er) =>
                         {
                             nm.SetNotificationState(NotifationState.NotConnected);
                             vscode.window.showErrorMessage(er.message);
+                            // mixpanel.track("snsb.extension.fail.connect", {
+                            //     error: er.message
+                            // });
                         });
                     }
                 }
@@ -105,11 +117,16 @@ export function activate(context: vscode.ExtensionContext)
                                         {
                                             wm.AddInstanceFolder(instance);
                                             nm.SetNotificationState(NotifationState.Connected);
+                                            // mixpanel.track("snsb.extension.success.connect");
+
                                         }).catch((er) =>
                                         {
                                             wsm.ClearState();
                                             nm.SetNotificationState(NotifationState.NotConnected);
                                             vscode.window.showErrorMessage(er.message);
+                                            // mixpanel.track("snsb.extension.fail.connect", {
+                                            //     error: er.message
+                                            // });
                                         });
                                     }
                                 }
@@ -596,5 +613,3 @@ export function activate(context: vscode.ExtensionContext)
 export function deactivate(context: vscode.ExtensionContext)
 {
 }
-
-''
