@@ -22,7 +22,6 @@ This extension aims to provide ServiceNow developers a first class development e
     - [Additional](#additional)
     - [ClientSide API's](#clientside-apis)
     - [Snippets](#Snippets)
-
   - [Manually Specify Types](#manually-specify-types)
     - [Angular DI classes](#angular-di-classes)
     - [Custom Objects created in code.](#custom-objects-created-in-code)
