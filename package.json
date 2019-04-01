@@ -23,6 +23,10 @@
             {
                 "language": "javascript",
                 "path": "./snippets.json"
+            },
+            {
+                "language": "html",
+                "path": "./html_snippets.json"
             }
         ],
         "configuration": [
