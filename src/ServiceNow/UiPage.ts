@@ -1,4 +1,4 @@
-import { Record, IUiPage, ISysScriptInclude, Instance, Converter } from "./all";
+import { Record, IUiPage, Instance, Converter } from "./all";
 import { FileTypes, MetaData, KeyValuePair } from "../Manager/all";
 import { Uri } from "vscode";
 
