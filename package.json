@@ -220,6 +220,7 @@
     "dependencies": {
         "@types/opn": "^5.1.0",
         "axios": "^0.18.0",
+        "mixpanel": "^0.10.2",
         "opn": "^5.4.0"
     }
 }
