@@ -121,10 +121,9 @@ export class Api
      * configures a persistent session for the api client. 
      * 
      * Required for cookie based authentication. persistent Session is used for all subsequent request. 
-     * 
-     * use ClearSessionCookies() to stop using persistent session. 
+     * Remember to clear session afterwards.
      */
-    public NewSession(): Promise<boolean>
+    private NewSession(): Promise<void>
     {
         return new Promise((resolve, reject) =>
         {
@@ -147,7 +146,7 @@ export class Api
                                 {
                                     this.UpdateSessionCookies(<Array<string>>res.headers["set-cookie"]);
                                     this._csrfToken = resToken.data.result[0].csrf_token;
-                                    resolve(true);
+                                    resolve();
                                 }).catch((er) =>
                                 {
                                     console.error(er);
@@ -399,33 +398,32 @@ export class Api
 
     public CreateUpdateSet(name: string, parent: string): Axios.AxiosPromise<IServiceNowResponse<any>> | undefined
     {
-        return new Promise((resolve, reject) =>
+        return new Promise(async (resolve, reject) =>
         {
-            let url = `${this._SNSysUpdateSet}`;
-            var i = this.NewSession();
-
-            i.then((res) =>
+            try
             {
+                let url = `${this._SNSysUpdateSet}`;
                 if (this.HttpClient)
                 {
-                    this.HttpClient.post(url, {
+                    await this.NewSession();
+
+                    //@ts-ignore already null checked
+                    let response = await this.HttpClient.post(url, {
                         name: name,
                         parent: parent
-                    })
-                        .then(function (response)
-                        {
-                            resolve(response);
-                        })
-                        .catch(function (error)
-                        {
-                            console.log(error);
-                        });
+                    });
+
+                    resolve(response);
+                    this.ClearSessionCookies();
                 }
-            }).catch((er) =>
+                else
+                {
+                    throw new Error("Http client undefined");
+                }
+            } catch (error)
             {
-                console.error(er);
-                reject(er);
-            });
+                reject(error);
+            }
         });
     }
 }

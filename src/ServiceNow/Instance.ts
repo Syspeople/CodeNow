@@ -488,7 +488,7 @@ export class Instance
      * @param name name of the update set
      * @returns the newly created updateset
      */
-    public CreateUpdateSet(name: string, parent: string): Promise<UpdateSet> | undefined
+    public CreateUpdateSet(name: string, parent: string): Promise<UpdateSet>
     {
         return new Promise((resolve, reject) =>
         {
