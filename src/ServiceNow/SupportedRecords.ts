@@ -11,5 +11,6 @@ export enum SupportedRecords
     "Theme" = "sp_theme",
     "UI Page" = "sys_ui_page",
     "UI Script" = "sys_ui_script",
+    "UI Action" = "sys_ui_action",
     "Widget" = "sp_widget"
 }

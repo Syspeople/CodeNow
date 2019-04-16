@@ -760,6 +760,11 @@ var c = this;
 <!-- your widget template -->
 </div>`
                 };
+            case SupportedRecords["UI Action"]:
+                return {
+                    name: record.name,
+                    script: "//Open in platform for final configuration"
+                };
             default:
                 console.error(`Supported record type: ${type} not recognize`);
                 break;
