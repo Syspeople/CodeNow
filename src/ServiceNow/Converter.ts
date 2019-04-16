@@ -1,4 +1,4 @@
-import { ISysMetadata, ScriptInclude, ISysScriptInclude, Widget, ISpWidget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, SpHeaderFooter, ISpHeaderFooter, MailScript, ISysMailScript, ScriptedRestAPIResource, IScriptedRestAPIResource, ScriptAction, ISysEventScriptAction, Processor, ISysProcessor } from "./all";
+import { ISysMetadata, ScriptInclude, ISysScriptInclude, Widget, ISpWidget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, SpHeaderFooter, ISpHeaderFooter, MailScript, ISysMailScript, ScriptedRestAPIResource, IScriptedRestAPIResource, ScriptAction, ISysEventScriptAction, Processor, ISysProcessor, UiAction, ISysUiAction } from "./all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
 import { FileTypes } from "../Manager/all";
 import { IAngularProvider } from "./IAngularProvider";
@@ -43,6 +43,8 @@ export class Converter
                 return new AngularProvider(<IAngularProvider>c);
             case "sys_ui_page":
                 return new UiPage(<IUiPage>c);
+            case "sys_ui_action":
+                return new UiAction(<ISysUiAction>c);
             default:
                 let msg = `GetRecord: Record ${record.sys_class_name} not recognized`;
                 console.warn(msg);

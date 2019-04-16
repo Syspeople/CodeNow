@@ -41,14 +41,14 @@ export * from './MailScript';
 ### Step 7
 Add casting to actual class implementation in **Converter.ts** *ServiceNow* folder. 
 
-### Step 8
+### Step 8 Add Template 
+Add a template for record creation in extension.ts method:getTemplate.
+
+### Step 8 Optional
 specific query parameters for record type. only if required. in **Api.ts**
 
-### Step 9
-Add command to **package.json.**
-
-### Step 10
-Add getter in **extension.ts**
+### Step 9 Optional
+Add custom handling of cration if required.
 
 
 ## Add class declarations

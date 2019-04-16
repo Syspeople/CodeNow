@@ -35,4 +35,5 @@ export * from './IAngularProvider';
 export * from './AngularProvider';
 export * from './IUiPage';
 export * from './UiPage';
-
+export * from './ISysUiAction';
+export * from './UiAction';
