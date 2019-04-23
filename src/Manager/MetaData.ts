@@ -1,4 +1,4 @@
-import { Record, ISysMetadata } from "../ServiceNow/all";
+import { Record, ISysMetadata, SupportedRecords } from "../ServiceNow/all";
 import { KeyValuePair, ILocalMetaData } from "./all";
 import { Uri, workspace } from "vscode";
 import { FileTypes } from "./FileTypes";
@@ -70,7 +70,10 @@ export class MetaData extends Record implements ILocalMetaData
      */
     public getSysClassUri(): Uri
     {
-        return Uri.parse(`${this.basePath}/${this.sys_class_name}`);
+        //        return Uri.parse(`${this.basePath}/${this.sys_class_name}`);
+        var displayValue = this.getClassDisplayValue(this.sys_class_name);
+        return Uri.parse(`${this.basePath}/${displayValue}`);
+
     }
 
     /**
@@ -78,7 +81,8 @@ export class MetaData extends Record implements ILocalMetaData
      */
     public getRecordUri(): Uri
     {
-        return Uri.parse(`${this.basePath}/${this.sys_class_name}/${this.RecordName}`);
+        var displayValue = this.getClassDisplayValue(this.sys_class_name);
+        return Uri.parse(`${this.basePath}/${displayValue}/${this.RecordName}`);
     }
 
     /**
@@ -122,5 +126,11 @@ export class MetaData extends Record implements ILocalMetaData
         });
 
         return new MetaData(m, files, m.instanceName, m.RecordName);
+    }
+
+    public getClassDisplayValue(path: String): any
+    {
+        const classDisplayValue = Object.keys(SupportedRecords).find(key => SupportedRecords[key] === path);
+        return classDisplayValue;
     }
 }
