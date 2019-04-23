@@ -70,7 +70,6 @@ export class MetaData extends Record implements ILocalMetaData
      */
     public getSysClassUri(): Uri
     {
-        //        return Uri.parse(`${this.basePath}/${this.sys_class_name}`);
         var displayValue = this.getClassDisplayValue(this.sys_class_name);
         return Uri.parse(`${this.basePath}/${displayValue}`);
 
