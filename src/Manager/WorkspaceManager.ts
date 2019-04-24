@@ -416,8 +416,9 @@ export class WorkspaceManager
     }
 
     // Get all files from directory and sub-directories.
-    private getFiles(dir: string, files_?: []): []
+    private getFiles(dir: string, files_?: Array<string>): Array<string>
     {
+
         files_ = files_ || [];
         var files = fileSystem.readdirSync(dir);
         for (var i in files)

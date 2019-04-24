@@ -129,6 +129,7 @@ export class MetaData extends Record implements ILocalMetaData
 
     public getClassDisplayValue(path: String): any
     {
+        //@ts-ignore
         const classDisplayValue = Object.keys(SupportedRecords).find(key => SupportedRecords[key] === path);
         return classDisplayValue;
     }
