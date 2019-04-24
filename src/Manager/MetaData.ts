@@ -127,10 +127,10 @@ export class MetaData extends Record implements ILocalMetaData
         return new MetaData(m, files, m.instanceName, m.RecordName);
     }
 
-    public getClassDisplayValue(path: String): any
+    public getClassDisplayValue(): string | undefined
     {
-        //@ts-ignore
-        const classDisplayValue = Object.keys(SupportedRecords).find(key => SupportedRecords[key] === path);
+        //@ts-ignore index
+        const classDisplayValue = Object.keys(SupportedRecords).find(key => SupportedRecords[key] === this.sys_class_name);
         return classDisplayValue;
     }
 }
