@@ -123,6 +123,30 @@ export class WorkspaceManager
         }
     }
 
+    public RefreshRecords(i: Instance): void
+    {
+        var pathIns = this.GetPathInstance(i);
+        var allFiles = this.getFiles(pathIns);
+
+        allFiles.forEach(filePath =>
+        {
+            console.log(filePath)
+            var uri = Uri.parse(filePath);
+
+            var recordLocal = this.GetRecord(uri);
+            if (recordLocal)
+            {
+                let r = i.GetRecord(recordLocal);
+                r.then((res) =>
+                {
+                    this.UpdateRecord(res, uri);
+                }).catch((er) =>
+                {
+                    console.error(er);
+                });
+            }
+        });
+    }
     /**
      * AddRecord a new record. 
      */
@@ -330,15 +354,40 @@ export class WorkspaceManager
         }
     }
 
+    // Get all files from directory and sub-directories.
+    private getFiles(dir: string, files_: []): []
+    {
+        files_ = files_ || [];
+        var files = fileSystem.readdirSync(dir);
+        for (var i in files)
+        {
+            var name = dir + '/' + files[i];
+            if (fileSystem.statSync(name).isDirectory())
+            {
+                this.getFiles(name, files_);
+            } else
+            {
+                files_.push(name);
+            }
+        }
+        return files_;
+    }
+
     private WriteFile(path: string, value: string): void
     {
         try
         {//message is null
-            fileSystem.writeFile(path, value, 'utf8', (err) => { if (err) { console.error(err); } });
+            fileSystem.writeFile(path, value, 'utf8', (err) =>
+            {
+                if (err) 
+                {
+                    console.error(err);
+                }
+            });
         }
-        catch (e)
+        catch (error)
         {
-            console.error(e);
+            console.error(error);
         }
     }
 

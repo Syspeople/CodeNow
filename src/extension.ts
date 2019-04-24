@@ -70,6 +70,7 @@ export function activate(context: vscode.ExtensionContext)
                         {
                             wm.AddInstanceFolder(instance);
                             nm.SetNotificationState(NotifationState.Connected);
+                            wm.RefreshRecords(instance);
                             mixpanel.track("snsb.extension.command.connect.success", {
                                 username: instance.UserName,
                                 instance: instance.Url,
