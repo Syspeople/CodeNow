@@ -128,26 +128,34 @@ export class WorkspaceManager
     public RefreshRecords(i: Instance): void
     {
         var pathIns = this.GetPathInstance(i);
-        var allFiles = this.getFiles(pathIns);
 
-        allFiles.forEach(filePath =>
+
+        if (pathIns)
         {
-            console.log(filePath)
-            var uri = Uri.parse(filePath);
+            var allFiles = this.getFiles(pathIns.toString());
 
-            var recordLocal = this.GetRecord(uri);
-            if (recordLocal)
+
+            allFiles.forEach(filePath =>
             {
-                let r = i.GetRecord(recordLocal);
-                r.then((res) =>
+                console.log(filePath);
+                var uri = Uri.parse(filePath);
+
+                var recordLocal = this.GetRecord(uri);
+                if (recordLocal)
                 {
-                    this.UpdateRecord(res, uri);
-                }).catch((er) =>
-                {
-                    console.error(er);
-                });
-            }
-        });
+                    let r = i.GetRecord(recordLocal);
+                    r.then((res) =>
+                    {
+                        this.UpdateRecord(res, uri);
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                    });
+                }
+            });
+
+        }
+
     }
     /**
      * AddRecord a new record. 
@@ -408,7 +416,7 @@ export class WorkspaceManager
     }
 
     // Get all files from directory and sub-directories.
-    private getFiles(dir: string, files_: []): []
+    private getFiles(dir: string, files_?: []): []
     {
         files_ = files_ || [];
         var files = fileSystem.readdirSync(dir);
