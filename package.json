@@ -124,6 +124,11 @@
                     "group": "snsb",
                     "command": "snsb.openInPlatformList",
                     "when": "resourceScheme == file"
+                },
+                {
+                    "group": "snsb",
+                    "command": "snsb.deleteRecord",
+                    "when": "resourceScheme == file"
                 }
             ],
             "commandPalette": [
@@ -141,6 +146,10 @@
                 },
                 {
                     "command": "snsb.openInPlatformList",
+                    "when": "false"
+                },
+                {
+                    "command": "snsb.deleteRecord",
                     "when": "false"
                 }
             ]
@@ -199,6 +208,11 @@
             {
                 "command": "snsb.createRecord",
                 "title": "Create Record",
+                "category": "snsb"
+            },
+            {
+                "command": "snsb.deleteRecord",
+                "title": "Delete Record",
                 "category": "snsb"
             }
         ]

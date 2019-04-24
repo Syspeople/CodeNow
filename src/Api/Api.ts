@@ -328,6 +328,16 @@ export class Api
     }
 
     /**
+    */
+    public DeleteRecord<T extends ISysMetadata>(record: ISysMetadata): Axios.AxiosPromise<IServiceNowResponse<T>> | undefined
+    {
+        if (this.HttpClient)
+        {
+            return this.HttpClient.delete(`${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`);
+        }
+    }
+
+    /**
      * GetRecord, returns record from sys_metadata
      */
     public GetRecordMetadata(record: ISysMetadata): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>> | undefined

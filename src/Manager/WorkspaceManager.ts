@@ -1,4 +1,6 @@
 import * as fileSystem from 'fs';
+import * as path from 'path';
+
 import { Instance, Converter } from '../ServiceNow/all';
 import { MetaData, WorkspaceStateManager, IWorkspaceConvertable } from './all';
 import { Uri, ExtensionContext, window, WorkspaceFolder, workspace } from 'vscode';
@@ -185,6 +187,12 @@ export class WorkspaceManager
         }
     }
 
+    public DeleteRecord(uri: string): void
+    {
+        this.DeleteFile(uri);
+        this.DeleteFolder(path.dirname(uri));
+    }
+
     /**
      * Creates a metadata object for local reference from a record. 
      * @param record 
@@ -318,6 +326,24 @@ export class WorkspaceManager
         }
     }
 
+    private DeleteFolder(path: string)
+    {
+        if (typeof String)
+        {
+            if (this.FolderExist(path))
+            {
+                fileSystem.rmdir(path, (res) =>
+                {
+                    //only exceptions is parsed on callback 
+                    if (res)
+                    {
+                        window.showErrorMessage(res.message);
+                    }
+                });
+            }
+        }
+    }
+
     private FolderExist(path: string): boolean
     {
         try
@@ -339,6 +365,25 @@ export class WorkspaceManager
         if (this.FileExist(path))
         {
             this.WriteFile(path, value);
+        }
+        else
+        {
+            console.warn(`File not found: ${path}`);
+        }
+    }
+
+    private DeleteFile(path: string): void
+    {
+        if (this.FileExist(path))
+        {
+            fileSystem.unlink(path, (res) =>
+            {
+                //only exceptions is parsed on callback 
+                if (res)
+                {
+                    window.showErrorMessage(res.message);
+                }
+            });
         }
         else
         {
