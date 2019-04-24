@@ -189,7 +189,15 @@ export class WorkspaceManager
 
     public DeleteRecord(uri: string): void
     {
-        this.DeleteFile(uri);
+        var parentFolder = path.dirname(uri);
+        var allFiles = this.getFiles(parentFolder);
+
+
+        allFiles.forEach(filePath =>
+        {
+            this.DeleteFile(filePath);
+        });
+
         this.DeleteFolder(path.dirname(uri));
     }
 
