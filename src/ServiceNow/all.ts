@@ -39,3 +39,5 @@ export * from './ISysUiAction';
 export * from './UiAction';
 export * from './IFixScript';
 export * from './FixScript';
+export * from './ValidationScript'
+export * from './IValidationScript'

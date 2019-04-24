@@ -7,6 +7,8 @@ import { UiPage } from "./UiPage";
 import { IUiPage } from "./IUiPage";
 import { FixScript } from "./FixScript";
 import { IFixScript } from "./IFixScript";
+import { ValidationScript } from "./ValidationScript";
+import { IValidationScript } from "./IValidationScript";
 
 
 export class Converter
@@ -49,6 +51,8 @@ export class Converter
                 return new UiAction(<ISysUiAction>c);
             case "sys_script_fix":
                 return new FixScript(<IFixScript>c);
+            case "sys_script_validator":
+                return new ValidationScript(<IValidationScript>c);
             default:
                 let msg = `GetRecord: Record ${record.sys_class_name} not recognized`;
                 console.warn(msg);

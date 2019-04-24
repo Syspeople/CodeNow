@@ -755,6 +755,13 @@ var current = current;
                     script: ``,
                     type: record.type
                 };
+            case SupportedRecords["Validation Script"]:
+                return {
+                    description: record.description,
+                    script: ``,
+                    internal_type: record.internal_type,
+                    ui_type: record.ui_type,
+                };
             case SupportedRecords["UI Page"]:
                 return {
                     name: record.name,
