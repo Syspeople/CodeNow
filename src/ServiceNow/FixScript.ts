@@ -1,7 +1,6 @@
-import { Record, ISysUiScript, ISysScriptInclude, Instance, Converter } from "./all";
+import { Record, IFixScript, ISysScriptInclude, Instance, Converter } from "./all";
 import { FileTypes, MetaData, KeyValuePair } from "../Manager/all";
 import { Uri } from "vscode";
-import { IFixScript } from "./IFixScript";
 
 export class FixScript extends Record implements IFixScript
 {

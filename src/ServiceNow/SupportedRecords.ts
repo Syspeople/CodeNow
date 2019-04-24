@@ -13,5 +13,6 @@ export enum SupportedRecords
     "UI Page" = "sys_ui_page",
     "UI Script" = "sys_ui_script",
     "UI Action" = "sys_ui_action",
+    "Validation Script" = "sys_script_validator",
     "Widget" = "sp_widget"
 }
