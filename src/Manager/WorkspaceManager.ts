@@ -123,25 +123,6 @@ export class WorkspaceManager
         }
     }
 
-
-    public getFiles(dir: string, files_: []): []
-    {
-        files_ = files_ || [];
-        var files = fileSystem.readdirSync(dir);
-        for (var i in files)
-        {
-            var name = dir + '/' + files[i];
-            if (fileSystem.statSync(name).isDirectory())
-            {
-                this.getFiles(name, files_);
-            } else
-            {
-                files_.push(name);
-            }
-        }
-        return files_;
-    }
-
     public RefreshRecords(i: Instance): void
     {
         var pathIns = this.GetPathInstance(i);
@@ -373,15 +354,42 @@ export class WorkspaceManager
         }
     }
 
+    private getFiles(dir: string, files_: []): []
+    {
+        files_ = files_ || [];
+        var files = fileSystem.readdirSync(dir);
+        for (var i in files)
+        {
+            var name = dir + '/' + files[i];
+            if (fileSystem.statSync(name).isDirectory())
+            {
+                this.getFiles(name, files_);
+            } else
+            {
+                files_.push(name);
+            }
+        }
+        return files_;
+    }
+
     private WriteFile(path: string, value: string): void
     {
+
+
+
         try
         {//message is null
-            fileSystem.writeFile(path, value, 'utf8', (err) => { if (err) { console.error(err); } });
+            fileSystem.writeFile(path, value, 'utf8', (err) =>
+            {
+                if (err) 
+                {
+                    console.error(err);
+                }
+            });
         }
-        catch (e)
+        catch (error)
         {
-            console.error(e);
+            console.error(error);
         }
     }
 
