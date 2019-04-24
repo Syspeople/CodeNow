@@ -12,7 +12,7 @@
 			"$0",
 			"}"
 		],
-		"description": ""
+		"description": "Modify Records"
 	},
 	"GlideRecord Get": {
 		"prefix": "grGet",
@@ -24,7 +24,7 @@
 			"$0",
 			"}"
 		],
-		"description": ""
+		"description": "Modify Single Record"
 	},
 	"GlideRecord Insert ": {
 		"prefix": "grInsert",
@@ -36,6 +36,6 @@
 			"",
 			"$0gr${1}.insert();"
 		],
-		"description": "How to insert a new record"
+		"description": "New record"
 	}
 }
