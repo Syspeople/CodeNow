@@ -744,6 +744,11 @@ var current = current;
                     name: record.name,
                     script: ``
                 };
+            case SupportedRecords["Fix Script"]:
+                return {
+                    name: record.name,
+                    script: ``
+                };
             case SupportedRecords["Angular Provider"]:
                 return {
                     name: record.name,
