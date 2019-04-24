@@ -354,6 +354,7 @@ export class WorkspaceManager
         }
     }
 
+    // Get all files from directory and sub-directories.
     private getFiles(dir: string, files_: []): []
     {
         files_ = files_ || [];
@@ -374,9 +375,6 @@ export class WorkspaceManager
 
     private WriteFile(path: string, value: string): void
     {
-
-
-
         try
         {//message is null
             fileSystem.writeFile(path, value, 'utf8', (err) =>
