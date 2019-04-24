@@ -97,17 +97,21 @@ Extensions that go very well with this extension
 Records types currently supported. 
 
 * Angular Providers.
+* Fix Scripts.
 * Mail Scripts.
 * Processors (scripted).
-* Script Actions
+* Script Actions.
 * Script Includes.
 * Scripted Rest API.
 * Service Portal Headers and Footers.
 * Service Portal Themes.
 * Service Portal Widgets.
 * StyleSheets.
+* UI Action
 * UI Scripts.
 * UI Page.
+* Validation Scripts.
+
 
 ## Intellisense
 Currently there is intellisense for the following API's.
