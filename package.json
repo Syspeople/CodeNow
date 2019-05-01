@@ -2,7 +2,7 @@
     "name": "snsb",
     "displayName": "ServiceNow Script Bridge",
     "description": "Work with ServiceNow Ressource straight from Vs Code.",
-    "version": "0.6.0",
+    "version": "0.7.0",
     "publisher": "ambs",
     "repository": {
         "type": "git",
@@ -19,6 +19,16 @@
     ],
     "main": "./out/extension",
     "contributes": {
+        "snippets": [
+            {
+                "language": "javascript",
+                "path": "./snippets.json"
+            },
+            {
+                "language": "html",
+                "path": "./html_snippets.json"
+            }
+        ],
         "configuration": [
             {
                 "title": "ServiceNow Scripting Bridge",
@@ -114,6 +124,11 @@
                     "group": "snsb",
                     "command": "snsb.openInPlatformList",
                     "when": "resourceScheme == file"
+                },
+                {
+                    "group": "snsb",
+                    "command": "snsb.deleteRecord",
+                    "when": "resourceScheme == file"
                 }
             ],
             "commandPalette": [
@@ -131,6 +146,10 @@
                 },
                 {
                     "command": "snsb.openInPlatformList",
+                    "when": "false"
+                },
+                {
+                    "command": "snsb.deleteRecord",
                     "when": "false"
                 }
             ]
@@ -167,8 +186,8 @@
                 "category": "snsb"
             },
             {
-                "command": "snsb.getWidget",
-                "title": "Add Widget to Workspace",
+                "command": "snsb.addRecord",
+                "title": "Add Record to Workspace",
                 "category": "snsb"
             },
             {
@@ -182,48 +201,8 @@
                 "category": "snsb"
             },
             {
-                "command": "snsb.getInclude",
-                "title": "Add Script Include to Workspace",
-                "category": "snsb"
-            },
-            {
-                "command": "snsb.getTheme",
-                "title": "Add Theme to Workspace",
-                "category": "snsb"
-            },
-            {
-                "command": "snsb.getStyleSheet",
-                "title": "Add StyleSheet to Workspace",
-                "category": "snsb"
-            },
-            {
-                "command": "snsb.getUiScript",
-                "title": "Add Ui Script to Workspace",
-                "category": "snsb"
-            },
-            {
-                "command": "snsb.getMailScript",
-                "title": "Add Mail Script to Workspace",
-                "category": "snsb"
-            },
-            {
-                "command": "snsb.getScriptedRestApiResource",
-                "title": "Add Scripted REST API Resource to Workspace",
-                "category": "snsb"
-            },
-            {
-                "command": "snsb.getHeadersAndFooters",
-                "title": "Add Header | Footer Widget to Workspace",
-                "category": "snsb"
-            },
-            {
                 "command": "snsb.createUpdateSet",
                 "title": "Create Updateset",
-                "category": "snsb"
-            },
-            {
-                "command": "snsb.createUpdateSetAndSetAsCurrent",
-                "title": "Create Updateset and set as current",
                 "category": "snsb"
             },
             {
@@ -232,13 +211,8 @@
                 "category": "snsb"
             },
             {
-                "command": "snsb.getScriptAction",
-                "title": "Add Script Action to Workspace",
-                "category": "snsb"
-            },
-            {
-                "command": "snsb.getProcessor",
-                "title": "Add Processor to Workspace",
+                "command": "snsb.deleteRecord",
+                "title": "Delete Record",
                 "category": "snsb"
             }
         ]
@@ -260,6 +234,7 @@
     "dependencies": {
         "@types/opn": "^5.1.0",
         "axios": "^0.18.0",
+        "mixpanel": "^0.10.2",
         "opn": "^5.4.0"
     }
 }

@@ -1,6 +1,7 @@
-import { Record, } from "./all";
-import { FileTypes } from '../Manager/all';
+import { Record, Instance, Converter, } from "./all";
+import { FileTypes, MetaData, KeyValuePair } from '../Manager/all';
 import { ISpHeaderFooter } from './ISpHeaderFooter';
+import { Uri } from "vscode";
 
 export class SpHeaderFooter extends Record implements ISpHeaderFooter
 {
@@ -105,5 +106,19 @@ export class SpHeaderFooter extends Record implements ISpHeaderFooter
             client_script: this.client_script,
             template: this.template
         };
+    }
+
+    GetMetadata(record: ISpHeaderFooter, instance: Instance): MetaData
+    {
+        if (instance.IsInitialized() && instance.Url)
+        {
+            let f = new Array<KeyValuePair<FileTypes, Uri>>();
+            f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${record.name}.${Converter.getFileTypeExtension(FileTypes.serverScript)}`)));
+            f.push(new KeyValuePair(FileTypes.clientScript, Uri.parse(`/${record.name}.${Converter.getFileTypeExtension(FileTypes.clientScript)}`)));
+            f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${record.name}.${Converter.getFileTypeExtension(FileTypes.styleSheet)}`)));
+            f.push(new KeyValuePair(FileTypes.html, Uri.parse(`/${record.name}.${Converter.getFileTypeExtension(FileTypes.html)}`)));
+            return new MetaData(record, f, instance.Url.host, record.name);
+        }
+        throw new Error("Instance not initialized");
     }
 }

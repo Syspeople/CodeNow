@@ -9,21 +9,37 @@ import * as Managers from './Manager/all';
 import { StatusBarManager, NotifationState } from './Manager/all';
 import { SupportedRecords } from './ServiceNow/all';
 
+let token;
+if (vscode.env.machineId === "someValue.machineId")
+{
+    //dev
+    token = '48ec45ce7cb17e257d933d9cab2e0665';
+}
+else
+{
+    //prod
+    token = 'dd31fdbf95e8a0bfb560cb8219b672f2';
+}
+const mixpanel = new Managers.Mixpanel(token);
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext)
 {
-    console.info("SNSB Activated");
-
     const wsm = new Managers.WorkspaceStateManager(context);
     const wm = new Managers.WorkspaceManager(wsm);
     const nm = new StatusBarManager();
+    let instance: ServiceNow.Instance;
     let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration("snsb");
 
-    let instance: ServiceNow.Instance;
+    //vscode.env.machineId "someValue.machineId" means dev host.
+    mixpanel.track("snsb.extension.activated");
+
     if (wsm.HasInstanceInState)
     {
         instance = new ServiceNow.Instance();
+
+        vscode.window.showWarningMessage("Not connected to an instanse - Record synchronization disabled");
     }
 
     //Configure instance object
@@ -54,10 +70,19 @@ export function activate(context: vscode.ExtensionContext)
                         {
                             wm.AddInstanceFolder(instance);
                             nm.SetNotificationState(NotifationState.Connected);
+                            wm.RefreshRecords(instance);
+                            mixpanel.track("snsb.extension.command.connect.success", {
+                                username: instance.UserName,
+                                instance: instance.Url,
+                                newWorkspace: false
+                            });
                         }).catch((er) =>
                         {
                             nm.SetNotificationState(NotifationState.NotConnected);
                             vscode.window.showErrorMessage(er.message);
+                            mixpanel.track("snsb.extension.command.connect.fail", {
+                                error: er.message
+                            });
                         });
                     }
                 }
@@ -103,11 +128,20 @@ export function activate(context: vscode.ExtensionContext)
                                         {
                                             wm.AddInstanceFolder(instance);
                                             nm.SetNotificationState(NotifationState.Connected);
+                                            mixpanel.track("snsb.extension.command.connect.success", {
+                                                username: instance.UserName,
+                                                instance: instance.Url,
+                                                newWorkspace: true
+                                            });
+
                                         }).catch((er) =>
                                         {
                                             wsm.ClearState();
                                             nm.SetNotificationState(NotifationState.NotConnected);
                                             vscode.window.showErrorMessage(er.message);
+                                            mixpanel.track("snsb.extension.command.connect.fail", {
+                                                error: er.message
+                                            });
                                         });
                                     }
                                 }
@@ -127,6 +161,9 @@ export function activate(context: vscode.ExtensionContext)
             if (recordLocal)
             {
                 instance.OpenInPlatformRecord(recordLocal);
+                mixpanel.track('snsb.extension.command.openInPlatformRecord', {
+                    sys_class_name: recordLocal.sys_class_name
+                });
             }
         }
     });
@@ -139,6 +176,9 @@ export function activate(context: vscode.ExtensionContext)
             if (recordLocal)
             {
                 instance.OpenInPlatformList(recordLocal);
+                mixpanel.track('snsb.extension.command.openInPlatformList', {
+                    sys_class_name: recordLocal.sys_class_name
+                });
             }
         }
     });
@@ -162,42 +202,67 @@ export function activate(context: vscode.ExtensionContext)
                             set.then((us) =>
                             {
                                 wsm.SetUpdateSet(us);
+
                                 nm.SetNotificationUpdateSet(us);
                                 let msg = `UpdateSet Changed: ${us.name}`;
                                 console.log(msg);
                                 vscode.window.showInformationMessage(msg);
+
+                                mixpanel.track('snsb.extension.command.setUpdateSet.success');
                             }).catch((er) =>
                             {
                                 console.error(er);
+
+                                mixpanel.track('snsb.extension.command.setUpdateSet.fail', {
+                                    error: er
+                                });
                             });
                         }
                     }
                 });
-            }).catch((er) => console.error(er));
-        }
-    });
-
-    /**
-     * add include to workspace
-     */
-    let getInclude = vscode.commands.registerCommand("snsb.getInclude", () =>
-    {
-        if (instance.IsInitialized())
-        {
-            console.log("get includes");
-            let includes = instance.GetScriptIncludes();
-            includes.then((res) =>
-            {
-                vscode.window.showQuickPick(res).then((item) =>
-                {
-                    if (item)
-                    {
-                        wm.AddRecord(item, instance);
-                    }
-                });
             }).catch((er) =>
             {
                 console.error(er);
+                mixpanel.track('snsb.extension.command.setUpdateSet.fail', {
+                    error: er
+                });
+            });
+        }
+    });
+
+    let addRecord = vscode.commands.registerCommand("snsb.addRecord", () =>
+    {
+        if (instance.IsInitialized())
+        {
+            let availableRecords = Object.keys(SupportedRecords);
+            let p = vscode.window.showQuickPick(availableRecords, { placeHolder: "Select Record" });
+
+            p.then((res) =>
+            {
+                if (res)
+                {
+                    //@ts-ignore index error false
+                    let records = instance.GetRecords(SupportedRecords[res]);
+                    records.then((res) =>
+                    {
+                        vscode.window.showQuickPick(res).then((item) =>
+                        {
+                            if (item)
+                            {
+                                wm.AddRecord(item, instance);
+                                mixpanel.track('snsb.extension.command.addRecord.success', {
+                                    sys_class_name: item.sys_class_name,
+                                });
+                            }
+                        });
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                        mixpanel.track('snsb.extension.command.addRecord.fail', {
+                            error: er
+                        });
+                    });
+                }
             });
         }
         else
@@ -206,253 +271,142 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-    /**
-     * add widget to workspace
-     */
-    let getWidget = vscode.commands.registerCommand("snsb.getWidget", () =>
+    let createRecord = vscode.commands.registerCommand('snsb.createRecord', () =>
     {
         if (instance.IsInitialized())
         {
-            console.log("Get Widgets");
-            let widgets = instance.GetWidgets();
-            widgets.then((res) =>
+            let availableRecords = Object.keys(SupportedRecords);
+            let p = vscode.window.showQuickPick(availableRecords, { placeHolder: "Select Record" });
+            p.then((recordtype) =>
             {
-                vscode.window.showQuickPick(res).then((item) =>
+                if (recordtype)
                 {
-                    if (item)
+                    let n = vscode.window.showInputBox({ prompt: "Name of the Record" });
+                    n.then((name) =>
                     {
-                        wm.AddRecord(item, instance);
-                    }
-                });
-            }).catch((er) =>
-            {
-                console.error(er);
-            });
-        }
-        else
-        {
-            vscode.window.showErrorMessage("Connect to an instance");
-        }
-    });
+                        if (name)
+                        {
+                            try
+                            {
+                                switch (recordtype)
+                                {
+                                    case "Angular Provider": {
+                                        vscode.window.showQuickPick(["Directive", "Service", "Factory"], {
+                                            placeHolder: "Choose Type"
+                                        }).then((item) =>
+                                        {
+                                            let r = instance.CreateRecord(SupportedRecords[recordtype], {
+                                                'name': name,
+                                                'type': item
+                                            });
 
-    /**
-     * add theme to workspace
-     */
-    let getTheme = vscode.commands.registerCommand("snsb.getTheme", () =>
-    {
-        if (instance.IsInitialized())
-        {
-            let themes = instance.GetThemes();
-            themes.then((res) =>
-            {
-                vscode.window.showQuickPick(res).then((item) =>
-                {
-                    if (item)
-                    {
-                        wm.AddRecord(item, instance);
-                    }
-                });
-            }).catch((er) =>
-            {
-                console.error(er);
-            });
-        }
-        else
-        {
-            vscode.window.showErrorMessage("Connect to an instance");
-        }
-    });
+                                            //@ts-ignore already null checked
+                                            r.then((newRecord) =>
+                                            {
+                                                wm.AddRecord(newRecord, instance);
+                                            }).catch((err) =>
+                                            {
+                                                throw new Error(err);
+                                            });
+                                        });
+                                        break;
+                                    }
+                                    case "UI Page": {
+                                        vscode.window.showQuickPick(["Content Management", "General", "Home Pages", "HTML Editor", "Knowledge Base", "Service Catalog"], {
+                                            placeHolder: "Choose Category"
+                                        }).then((item) =>
+                                        {
+                                            let r = instance.CreateRecord(SupportedRecords[recordtype], {
+                                                'name': name,
+                                                'category': item
+                                            });
 
-    /**
-     * add style sheet to workspace
-     */
-    let getStyleSheet = vscode.commands.registerCommand("snsb.getStyleSheet", () =>
-    {
-        if (instance.IsInitialized())
-        {
-            let themes = instance.getStyleSheets();
-            themes.then((res) =>
-            {
-                vscode.window.showQuickPick(res).then((item) =>
-                {
-                    if (item)
-                    {
-                        wm.AddRecord(item, instance);
-                    }
-                });
-            }).catch((er) =>
-            {
-                console.error(er);
-            });
-        }
-        else
-        {
-            vscode.window.showErrorMessage("Connect to an instance");
-        }
-    });
+                                            //@ts-ignore already null checked
+                                            r.then((newRecord) =>
+                                            {
+                                                wm.AddRecord(newRecord, instance);
+                                            }).catch((err) =>
+                                            {
+                                                throw new Error(err);
+                                            });
+                                        });
+                                        break;
+                                    }
+                                    case "Validation Script": {
+                                        vscode.window.showQuickPick(["Approval Rules", "Audio", "Auto Number", "Basic Date/Time", "Basic Image", "Basic Time",
+                                            "Bootstrap Color", "Breakdown Element", "Catalog Preview", "Char", "Choice", "Collection", "Color", "Color Display", "Composite Field", "Composite Name",
+                                            "Compressed", "Condition String", "Conditions", "Counter", "CSS", "Currency", "Data Array", "Data Object", "Data Structure",
+                                            "Date", "Date/Time", "Day of Week", "Days of Week", "Decimal", "Document ID", "Documentation Field", "Domain ID", "Domain Path", "Due Date", "Duration",
+                                            "Email", "Email Script", "External Names", "Field List", "Field Name", "File Attachment", "Floating Point Number", "Formula",
+                                            "Glide Var", "Glyph Icon (Bootstrap)", "HTML", "HTML Script", "HTML Template", "Icon", "Image", "Index Name", "Integer", "Integer Date", "Integer String", "Integer Time", "Integer Type",
+                                            " IP Address", "IP Address (Validated IPV4, IPV6)", "Journal", "Journal Input", "Journal List", "JSON",
+                                            "List", "Long", "Long Integer String", "Mask Code", "Metric Absolute", "Metric Counter", "Metric Derive", "Metric Gauge", "MID Server Configuration", "Month of Year", "Multiple Line Small Text Area",
+                                            "Name-Value Pairs", "Name/Values", "NL Task Integer 1", "Order Index", "Other Date", "Password (1 Way Encrypted)", "Password (2 Way Encrypted)", "Percent Complete", "Phone Number", "Phone Nymber (E164)",
+                                            "Phone Number (Unused)", "Precise Time", "Price", "Properties", "Radio Button Choice", "Records", "Reference", "Reference Name", "Related Tags",
+                                            "Reminder Field Name", "Repeat Count", "Repeat Type", "Replication Payload", "Schedule Date/Time", "Script", "Script (Plain)", "Script (server side)",
+                                            "Short Field Name", "Short Table Name", "Slush Bucket", "Snapshot Template Value", "Source ID", "Source Name", "Source Table", "String", "String (Full UTF-8)", "string_boolean", "Sys ID (GUID)", "System Class Name", "System Class path", "System Event Name", "System Rule Field Name",
+                                            "Table Name", "Template Value", "Time", "Timer", "Translated", "Translated HTML", "Translated Text", "Tree Code", "Tree Path", "True/False", "Two Line Text Area",
+                                            "UI Action List", "URL", "User Input", "User Roles", "Variable Conditions", "Variable template value", "Variables",
+                                            "Version", "Video", "Week of Month", "Wide Text", "Wiki", "WMS Job", "Workflow", "Workflow Conditions", "XML"], {
+                                                placeHolder: "Choose Type"
+                                            }).then((item) =>
+                                            {
+                                                let r = instance.CreateRecord(SupportedRecords[recordtype], {
+                                                    'description': name,
+                                                    'internal_type': item
+                                                });
 
-    /**
-     * add ui script to workspace
-     */
-    let getUiScript = vscode.commands.registerCommand("snsb.getUiScript", () =>
-    {
-        if (instance.IsInitialized())
-        {
-            let themes = instance.GetUiScripts();
-            themes.then((res) =>
-            {
-                vscode.window.showQuickPick(res).then((item) =>
-                {
-                    if (item)
-                    {
-                        wm.AddRecord(item, instance);
-                    }
-                });
-            }).catch((er) =>
-            {
-                console.error(er);
-            });
-        }
-        else
-        {
-            vscode.window.showErrorMessage("Connect to an instance");
-        }
-    });
+                                                //@ts-ignore already null checked
+                                                r.then((newRecord) =>
+                                                {
+                                                    wm.AddRecord(newRecord, instance);
+                                                }).catch((err) =>
+                                                {
+                                                    throw new Error(err);
+                                                });
+                                            });
 
-    /**
-     * add mail script to workspace
-     */
-    let getMailScript = vscode.commands.registerCommand("snsb.getMailScript", () =>
-    {
-        if (instance.IsInitialized())
-        {
-            let themes = instance.GetMailScripts();
-            themes.then((res) =>
-            {
-                vscode.window.showQuickPick(res).then((item) =>
-                {
-                    if (item)
-                    {
-                        wm.AddRecord(item, instance);
-                    }
-                });
-            }).catch((er) =>
-            {
-                console.error(er);
-            });
-        }
-        else
-        {
-            vscode.window.showErrorMessage("Connect to an instance");
-        }
-    });
+                                        break;
+                                    }
+                                    default: {
+                                        //@ts-ignore index error false
+                                        let r = instance.CreateRecord(SupportedRecords[recordtype], {
+                                            'name': name
+                                        });
+                                        //@ts-ignore already null checked
 
-    /**
-     * add header an footer widgets to workspace
-     */
-    let getHeadersAndFooters = vscode.commands.registerCommand("snsb.getHeadersAndFooters", () =>
-    {
-        if (instance.IsInitialized())
-        {
-            let hf = instance.GetHeadersAndFooters();
-            hf.then((res) =>
-            {
-                vscode.window.showQuickPick(res).then((item) =>
-                {
-                    if (item)
-                    {
-                        wm.AddRecord(item, instance);
-                    }
-                });
-            }).catch((er) =>
-            {
-                console.error(er);
+                                        r.then((newRecord) =>
+                                        {
+                                            wm.AddRecord(newRecord, instance);
+                                        }).catch((err) =>
+                                        {
+                                            throw new Error(err);
+                                        });
+                                        break;
+                                    }
+                                }
+                                mixpanel.track('snsb.extension.command.createRecord.success', {
+                                    //@ts-ignore index any is a string.
+                                    sys_class_name: SupportedRecords[recordtype]
+                                });
+                            } catch (error)
+                            {
+                                vscode.window.showErrorMessage(error);
+                                mixpanel.track('snsb.extension.command.createRecord.fail', {
+                                    error: error
+                                });
+                            }
+                        }
+                    });
+                }
             });
         }
         else
         {
             vscode.window.showErrorMessage("Connect to an instance");
-        }
-    });
-
-    /**
-     * add scripted API to workspace
-     */
-    let getScriptedApiResource = vscode.commands.registerCommand("snsb.getScriptedRestApiResource", () =>
-    {
-        if (instance.IsInitialized())
-        {
-            let themes = instance.GetSriptedApiResources();
-            themes.then((res) =>
-            {
-                vscode.window.showQuickPick(res).then((item) =>
-                {
-                    if (item)
-                    {
-                        wm.AddRecord(item, instance);
-                    }
-                });
-            }).catch((er) =>
-            {
-                console.error(er);
+            mixpanel.track('snsb.extension.command.createRecord.fail', {
+                error: "NotConnected"
             });
-        }
-        else
-        {
-            vscode.window.showErrorMessage("Connect to an instance");
-        }
-    });
-
-    /**
-     * add scripted API to workspace
-     */
-    let getScriptAction = vscode.commands.registerCommand("snsb.getScriptAction", () =>
-    {
-        if (instance.IsInitialized())
-        {
-            let sa = instance.GetScriptActions();
-            sa.then((res) =>
-            {
-                vscode.window.showQuickPick(res).then((item) =>
-                {
-                    if (item)
-                    {
-                        wm.AddRecord(item, instance);
-                    }
-                });
-            }).catch((er) =>
-            {
-                console.error(er);
-            });
-        }
-        else
-        {
-            vscode.window.showErrorMessage("Connect to an instance");
-        }
-    });
-
-    let getProcessor = vscode.commands.registerCommand("snsb.getProcessor", () =>
-    {
-        if (instance.IsInitialized())
-        {
-            let proc = instance.GetProcessors();
-            proc.then((res) =>
-            {
-                vscode.window.showQuickPick(res).then((item) =>
-                {
-                    if (item)
-                    {
-                        wm.AddRecord(item, instance);
-                    }
-                });
-            }).catch((er) =>
-            {
-                console.error(er);
-            });
-        }
-        else
-        {
-            vscode.window.showErrorMessage("Connect to an instance");
         }
     });
 
@@ -475,20 +429,33 @@ export function activate(context: vscode.ExtensionContext)
                         {
                             vscode.window.showInformationMessage(`Saved`);
                             wm.UpdateRecord(res, uri);
+
+                            mixpanel.track('snsb.extension.command.saveRecord.success', {
+                                sys_class_name: res.sys_class_name
+                            });
                         }).catch((er) =>
                         {
                             vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
+                            mixpanel.track('snsb.extension.command.saveRecord.fail', {
+                                error: er.error.message
+                            });
                         });
                     }
                 }
             }).catch((err) =>
             {
                 vscode.window.showErrorMessage("Update set no longer in progress. Changes not saves to instance.");
+                mixpanel.track('snsb.extension.command.saveRecord.break', {
+                    reason: "UpdateSetNoLongerAvailable"
+                });
             });
         }
         else
         {
             vscode.window.showErrorMessage("Connect to an instance");
+            mixpanel.track('snsb.extension.command.saveRecord.fail', {
+                error: "NotConnected"
+            });
         }
     });
 
@@ -503,10 +470,48 @@ export function activate(context: vscode.ExtensionContext)
                 r.then((res) =>
                 {
                     wm.UpdateRecord(res, uri);
+                    mixpanel.track('snsb.extension.command.updateRecord.success', {
+                        sys_class_name: res.sys_class_name
+                    });
                 }).catch((er) =>
                 {
                     console.error(er);
+                    mixpanel.track('snsb.extension.command.updateRecord.fail', {
+                        error: er
+                    });
                 });
+            }
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance");
+            mixpanel.track('snsb.extension.command.updateRecord.fail', {
+                error: "NotConnected"
+            });
+        }
+    });
+
+    let deleteRecord = vscode.commands.registerCommand("snsb.deleteRecord", (uri) =>
+    {
+        if (instance.IsInitialized())
+        {
+            let record = wm.GetRecord(uri);
+
+            if (record)
+            {
+                let o = instance.DeleteRecord(record);
+                if (o)
+                {
+                    o.then((res) =>
+                    {
+                        vscode.window.showInformationMessage(`Record Deleted`);
+
+                        wm.DeleteRecord(uri.fsPath);
+                    }).catch((er) =>
+                    {
+                        vscode.window.showErrorMessage(`Delete Failed: ${er.error.message}`);
+                    });
+                }
             }
         }
         else
@@ -519,210 +524,99 @@ export function activate(context: vscode.ExtensionContext)
     {
         wsm.ClearState();
         nm.SetNotificationState(NotifationState.NotConnected);
+        mixpanel.track('snsb.extension.command.clearWorkSpaceState.success');
     });
 
     let rebuildCache = vscode.commands.registerCommand("snsb.rebuildCache", () =>
     {
         nm.SetNotificationState(NotifationState.NotConnected);
         instance.RebuildCache();
+        mixpanel.track('snsb.extension.command.rebuildCache.success');
     });
 
-    let createRecord = vscode.commands.registerCommand('snsb.createRecord', () =>
-    {
-        if (instance.IsInitialized())
-        {
-            let availableRecords = Object.keys(SupportedRecords);
-            let p = vscode.window.showQuickPick(availableRecords, { placeHolder: "Select Record" });
-            p.then((recordtype) =>
-            {
-                if (recordtype)
-                {
-                    let n = vscode.window.showInputBox({ prompt: "Name of the Record" });
-                    n.then((name) =>
-                    {
-                        // //select template
-                        // let templates = config.templates.find((element: object) =>
-                        // {
-                        //     //@ts-ignore already null checked and string value can only be valid or undefined.
-                        //     return element.class_name === SupportedRecords[recordtype];
-                        // });
-                        // let t = vscode.window.showQuickPick(config.templates);
-
-                        if (name)
-                        {
-                            //@ts-ignore already null checked
-                            var r = instance.CreateRecord(SupportedRecords[recordtype], name);
-                            r.then((newRecord) =>
-                            {
-                                wm.AddRecord(newRecord, instance);
-                            }).catch((err) =>
-                            {
-                                vscode.window.showErrorMessage(err);
-                            });
-                        }
-                    });
-                }
-            });
-        }
-    });
-
-    let createUpdateSet = vscode.commands.registerCommand("snsb.createUpdateSet", () =>
+    let createUpdateSet = vscode.commands.registerCommand("snsb.createUpdateSet", async () =>
     {
         //vscode.window.showInformationMessage('Hello World!');
         if (instance.IsInitialized())
         {
-            let option = new Object() as vscode.InputBoxOptions;
-            option.prompt = "Enter update-set name";
-
-            let updateSetPromise = vscode.window.showInputBox(option);
-            updateSetPromise.then((res) =>
+            try
             {
-                if (res !== undefined)
-                {
-                    vscode.window.showQuickPick(["Yes", "No"], {
-                        placeHolder: "Choose Parent Update-Set"
-                    }).then((item) =>
-                    {
-                        if (item === "Yes")
-                        {
-                            let updatesets = instance.GetUpdateSets();
-                            updatesets.then((result) =>
-                            {
-                                vscode.window.showQuickPick(result).then((item) =>
-                                {
-                                    if (item)
-                                    {
-                                        let parent = item.sys_id;
-                                        let p = instance.CreateUpdateSet(res, parent);
+                let UpdateSetName = await vscode.window.showInputBox({ prompt: "Enter update-set name" });
 
-                                        if (p)
-                                        {
-                                            p.then((res) =>
-                                            {
-                                                vscode.window.showInformationMessage(`Update set: ${res.name} created`);
-                                            }).catch((err) =>
-                                            {
-                                                vscode.window.showErrorMessage("Update-set not created");
-                                            });
-                                        }
-                                    }
-                                });
-                            }).catch((er) =>
-                            {
-                                console.error(er);
-                            });
-                        } else
-                        {
-                            let p = instance.CreateUpdateSet(res, "");
-                            if (p)
-                            {
-                                p.then((res) =>
-                                {
-                                    vscode.window.showInformationMessage(`Update set: ${res.name} created`);
-                                }).catch((err) =>
-                                {
-                                    vscode.window.showErrorMessage("Update-set not created");
-                                });
-                            }
-                        }
+                if (UpdateSetName)
+                {
+                    let setAsCurrent = await vscode.window.showQuickPick(["Yes", "No"], {
+                        placeHolder: "Set as current?"
                     });
-                }
-            });
-        }
-    });
 
-    let createUpdateSetAndSetAsCurrent = vscode.commands.registerCommand("snsb.createUpdateSetAndSetAsCurrent", () =>
-    {
-        if (instance.IsInitialized())
-        {
-            let option = new Object() as vscode.InputBoxOptions;
-            option.prompt = "Enter update-set name";
-
-            let updateSetPromise = vscode.window.showInputBox(option);
-            updateSetPromise.then((res) =>
-            {
-                if (res !== undefined)
-                {
-                    vscode.window.showQuickPick(["Yes", "No"], {
-                        placeHolder: "Choose Parent Update-Set"
-                    }).then((item) =>
+                    if (setAsCurrent)
                     {
-                        if (item === "Yes")
+                        let SelectParent = await vscode.window.showQuickPick(["Yes", "No"], {
+                            placeHolder: "Set Parent Update-Set?"
+                        });
+
+                        if (SelectParent)
                         {
-                            let updatesets = instance.GetUpdateSets();
-                            updatesets.then((result) =>
+                            //get parent sys id if chosen
+                            let parentId = "";
+                            let userSkip = false;
+                            if (SelectParent === "Yes")
                             {
-                                vscode.window.showQuickPick(result).then((item) =>
+                                let getUpdateset = await instance.GetUpdateSets();
+                                let parent = await vscode.window.showQuickPick(getUpdateset);
+
+                                if (parent)
                                 {
-                                    if (item)
-                                    {
-                                        let parent = item.sys_id;
-                                        let p = instance.CreateUpdateSet(res, parent);
-
-                                        if (p)
-                                        {
-                                            p.then((res) =>
-                                            {
-                                                let set = instance.SetUpdateSet(res);
-
-                                                if (set)
-                                                {
-                                                    set.then((us) =>
-                                                    {
-                                                        wsm.SetUpdateSet(us);
-                                                        nm.SetNotificationUpdateSet(us);
-                                                        let msg = `UpdateSet Created and set as current: ${us.name}`;
-                                                        console.log(msg);
-                                                        vscode.window.showInformationMessage(msg);
-                                                    }).catch((er) =>
-                                                    {
-                                                        console.error(er);
-                                                    });
-                                                }
-                                            }).catch((err) =>
-                                            {
-                                                vscode.window.showErrorMessage("Update-set not created");
-                                            });
-                                        }
-                                    }
-                                });
-                            }).catch((er) =>
-                            {
-                                console.error(er);
-                            });
-                        } else
-                        {
-                            let p = instance.CreateUpdateSet(res, "");
-
-                            if (p)
-                            {
-                                p.then((res) =>
+                                    parentId = parent.sys_id;
+                                }
+                                else
                                 {
-                                    let set = instance.SetUpdateSet(res);
+                                    //if user breaks when selecting update set do not continue. 
+                                    userSkip = true;
+                                }
+                            }
 
+                            if (!userSkip)
+                            {
+                                //create update set.
+                                let newUpdateset = await instance.CreateUpdateSet(UpdateSetName, parentId);
+
+                                if (setAsCurrent === "Yes")
+                                {
+                                    let set = await instance.SetUpdateSet(newUpdateset);
                                     if (set)
                                     {
-                                        set.then((us) =>
-                                        {
-                                            wsm.SetUpdateSet(us);
-                                            nm.SetNotificationUpdateSet(us);
-                                            let msg = `UpdateSet Created and set as current: ${us.name}`;
-                                            console.log(msg);
-                                            vscode.window.showInformationMessage(msg);
-                                        }).catch((er) =>
-                                        {
-                                            console.error(er);
-                                        });
+                                        wsm.SetUpdateSet(set);
+
+                                        nm.SetNotificationUpdateSet(set);
+                                        let msg = `UpdateSet Created and set as current: ${set.name}`;
+                                        console.log(msg);
+                                        vscode.window.showInformationMessage(msg);
                                     }
-                                }).catch((err) =>
+                                }
+                                else
                                 {
-                                    vscode.window.showErrorMessage("Update-set not created");
-                                });
+                                    let msg = `UpdateSet Created: ${newUpdateset.name}`;
+                                    console.log(msg);
+                                    vscode.window.showInformationMessage(msg);
+                                }
                             }
+
+                            mixpanel.track('snsb.extension.command.createUpdateSet.success', {
+                                "parent": (SelectParent === "Yes"),
+                                "setAsCurrent": (setAsCurrent === "Yes"),
+                                "breakByUser": userSkip
+                            });
                         }
-                    });
+                    }
                 }
-            });
+            } catch (error)
+            {
+                console.error(error);
+                mixpanel.track('snsb.extension.command.createUpdateSet.fail', {
+                    error: error.message
+                });
+            }
         }
     });
 
@@ -745,6 +639,10 @@ export function activate(context: vscode.ExtensionContext)
                         p.then((res) =>
                         {
                             vscode.window.showWarningMessage(`Newer Version of record ${res.sys_id} Found on instance`);
+
+                            mixpanel.track('snsb.extension.event.onDidSaveTextDocument.break', {
+                                reason: "Local Record outdated"
+                            });
                         }).catch((er) =>
                         {
                             if (record)
@@ -757,9 +655,17 @@ export function activate(context: vscode.ExtensionContext)
                                     {
                                         vscode.window.showInformationMessage(`Saved`);
                                         wm.UpdateRecord(res, e.uri);
+
+                                        mixpanel.track('snsb.extension.event.onDidSaveTextDocument.success', {
+                                            sys_class_name: res.sys_class_name
+                                        });
                                     }).catch((er) =>
                                     {
                                         vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
+
+                                        mixpanel.track('snsb.extension.event.onDidSaveTextDocument.fail', {
+                                            error: er.error.message
+                                        });
                                     });
                                 }
                             }
@@ -769,11 +675,14 @@ export function activate(context: vscode.ExtensionContext)
             }).catch((err) =>
             {
                 vscode.window.showErrorMessage("Update set no longer in progress. Changes not saves to instance.");
+                mixpanel.track('snsb.extension.event.onDidSaveTextDocument.break', {
+                    reason: "Updateset No Longer Available"
+                });
             });
         }
         else
         {
-            vscode.window.showErrorMessage("Connect to an instance - File not saved to ServiceNow");
+            console.warn("Connect to an instance - File not saved to ServiceNow");
         }
     });
 
@@ -794,51 +703,54 @@ export function activate(context: vscode.ExtensionContext)
                         r.then((res) =>
                         {
                             wm.UpdateRecord(res, e.uri);
+
+                            mixpanel.track('snsb.extension.event.onDidOpenTextDocument.success', {
+                                sys_class_name: res.sys_class_name
+                            });
+
                         }).catch((er) =>
                         {
                             console.error(er);
+
+                            mixpanel.track('snsb.extension.event.onDidOpenTextDocument.fail', {
+                                error: er
+                            });
                         });
                     }).catch((e) =>
                     {
                         console.info("local Record Up to date");
+                        mixpanel.track('snsb.extension.event.onDidOpenTextDocument.break', {
+                            reason: "Local Record Up To Date"
+                        });
                     });
                 }
             }
         }
         else
         {
-            vscode.window.showErrorMessage("Connect to an instance - File not updated");
+            console.warn("Connect to an instance - File not updated");
         }
     });
 
     let listeneronDidChangeConfiguration = vscode.workspace.onDidChangeConfiguration((e) =>
     {
         config = vscode.workspace.getConfiguration("snsb");
+        //config setup. 
+        mixpanel.track('snsb.extension.event.onDidChangeConfiguration', config);
     });
 
+    context.subscriptions.push(addRecord);
     context.subscriptions.push(openInPlatformRecord);
     context.subscriptions.push(openInPlatformList);
+    context.subscriptions.push(deleteRecord);
     context.subscriptions.push(setUpdateSet);
     context.subscriptions.push(connect);
     context.subscriptions.push(createRecord);
     context.subscriptions.push(createUpdateSet);
-    context.subscriptions.push(createUpdateSetAndSetAsCurrent);
     context.subscriptions.push(clearWorkState);
-    context.subscriptions.push(getInclude);
-    context.subscriptions.push(getWidget);
-    context.subscriptions.push(getTheme);
-    context.subscriptions.push(getStyleSheet);
-    context.subscriptions.push(getUiScript);
-    context.subscriptions.push(getMailScript);
-    context.subscriptions.push(getScriptedApiResource);
-    context.subscriptions.push(getHeadersAndFooters);
-    context.subscriptions.push(getScriptAction);
-    context.subscriptions.push(getProcessor);
     context.subscriptions.push(listenerOnDidSave);
     context.subscriptions.push(listenerOnDidOpen);
     context.subscriptions.push(listeneronDidChangeConfiguration);
-    context.subscriptions.push(openInPlatformRecord);
-    context.subscriptions.push(openInPlatformList);
     context.subscriptions.push(rebuildCache);
     context.subscriptions.push(saveRecord);
     context.subscriptions.push(updateRecord);
@@ -846,4 +758,5 @@ export function activate(context: vscode.ExtensionContext)
 // this method is called when your extension is deactivated
 export function deactivate(context: vscode.ExtensionContext)
 {
+    mixpanel.track('snsb.extension.deactivate');
 }

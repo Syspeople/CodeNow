@@ -1,13 +1,11 @@
 import { ISysMetadata } from "./all";
 import { IWorkspaceConvertable } from "../Manager/all";
 
-export interface ISysScriptInclude extends ISysMetadata, IWorkspaceConvertable
+export interface IFixScript extends ISysMetadata, IWorkspaceConvertable
 {
-    client_callable: boolean;
-    access: string;
     active: boolean;
     description: string;
+    sys_name: string;
     script: string;
-    api_name: string;
     name: string;
 }

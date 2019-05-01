@@ -1,5 +1,6 @@
-import { Record, ISpTheme, Relation } from './all';
-import { FileTypes } from '../Manager/all';
+import { Record, ISpTheme, Relation, Instance, Converter } from './all';
+import { FileTypes, MetaData, KeyValuePair } from '../Manager/all';
+import { Uri } from 'vscode';
 
 export class Theme extends Record implements ISpTheme
 {
@@ -70,5 +71,16 @@ export class Theme extends Record implements ISpTheme
         return {
             css_variables: this.css_variables
         };
+    }
+
+    GetMetadata(record: ISpTheme, instance: Instance): MetaData
+    {
+        if (instance.IsInitialized() && instance.Url)
+        {
+            let f = new Array<KeyValuePair<FileTypes, Uri>>();
+            f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${record.name}.${Converter.getFileTypeExtension(FileTypes.styleSheet)}`)));
+            return new MetaData(record, f, instance.Url.host, record.name);
+        }
+        throw new Error("Instance not initialized");
     }
 }

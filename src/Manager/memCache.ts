@@ -1,5 +1,5 @@
 import { KeyValuePair } from "./all";
-import { StateKeys } from "./StateKeys";
+import { SupportedRecords } from "../ServiceNow/all";
 
 export class MemCache
 {
@@ -8,12 +8,12 @@ export class MemCache
 
     }
 
-    private _values = new Array<KeyValuePair<StateKeys, any>>();
+    private _values = new Array<KeyValuePair<SupportedRecords, any>>();
 
     /**
      * Get
      */
-    public Get<T>(key: StateKeys): T | undefined
+    public Get<T>(key: SupportedRecords): T | undefined
     {
         var exist = this.gotKey(key);
 
@@ -23,7 +23,7 @@ export class MemCache
         }
     }
 
-    public Set(key: StateKeys, value: any): void
+    public Set(key: SupportedRecords, value: any): void
     {
         var exist = this.gotKey(key);
 
@@ -40,7 +40,7 @@ export class MemCache
         }
     }
 
-    private gotKey(key: StateKeys): KeyValuePair<StateKeys, any> | undefined
+    private gotKey(key: SupportedRecords): KeyValuePair<SupportedRecords, any> | undefined
     {
         return this._values.find((item) =>
         {

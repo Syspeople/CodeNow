@@ -1,10 +1,7 @@
 import * as Axios from "axios";
-import { Instance, ISysMetadata, ISysScriptInclude, ISpWidget, ISysProperty, SysProperty, ISpTheme, ISysUserSession, ISysUpdateSet, ISpCss, UpdateSet, IScriptedRestAPIResource, ISysEventScriptAction, ISysProcessor, SupportedRecords } from "../ServiceNow/all";
+import { Instance, ISysMetadata, ISysProperty, SysProperty, ISysUserSession, ISysUpdateSet, UpdateSet, SupportedRecords } from "../ServiceNow/all";
 import { IServiceNowResponse, ICookie } from "./all";
 import * as qs from "querystring";
-import { ISysUiScript } from "../ServiceNow/ISysUiScript";
-import { ISpHeaderFooter } from "../ServiceNow/ISpHeaderFooter";
-import { ISysMailScript } from "../ServiceNow/ISysMailScript";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
 
 export class Api
@@ -15,19 +12,9 @@ export class Api
     private _SNTableSuffix: string = `${this._SNApiEndpoint}/now/table`;
     private _SNUserTable: string = `${this._SNTableSuffix}/sys_user`;
     private _SNMetaData: string = `${this._SNTableSuffix}/sys_metadata`;
-    private _SNScriptIncludeTable: string = `${this._SNTableSuffix}/sys_script_include`;
-    private _SNWidgetTable: string = `${this._SNTableSuffix}/sp_widget`;
     private _SNSysProperties: string = `${this._SNTableSuffix}/sys_properties`;
-    private _SNSpThemeTable: string = `${this._SNTableSuffix}/sp_theme`;
     private _SNSysUserSession: string = `${this._SNTableSuffix}/sys_user_session`;
     private _SNSysUpdateSet: string = `${this._SNTableSuffix}/sys_update_set`;
-    private _SNSpStyleSheet: string = `${this._SNTableSuffix}/sp_css`;
-    private _SNSysUiScript: string = `${this._SNTableSuffix}/sys_ui_script`;
-    private _SNHeaderFooter: string = `${this._SNTableSuffix}/sp_header_footer`;
-    private _SNSysEmailScript: string = `${this._SNTableSuffix}/sys_script_email`;
-    private _SNScriptedRestApiResource: string = `${this._SNTableSuffix}/sys_ws_operation`;
-    private _SNSysEventScriptAction: string = `${this._SNTableSuffix}/sysevent_script_action`;
-    private _SNProcessor: string = `${this._SNTableSuffix}/sys_processor`;
     private _SNXmlHttp: string = `xmlhttp.do`;
     private _Properties: Array<ISysProperty> = new Array<ISysProperty>();
     private _Cookies: Array<ICookie> = [];
@@ -134,10 +121,9 @@ export class Api
      * configures a persistent session for the api client. 
      * 
      * Required for cookie based authentication. persistent Session is used for all subsequent request. 
-     * 
-     * use ClearSessionCookies() to stop using persistent session. 
+     * Remember to clear session afterwards.
      */
-    public NewSession(): Promise<boolean>
+    private NewSession(): Promise<void>
     {
         return new Promise((resolve, reject) =>
         {
@@ -160,7 +146,7 @@ export class Api
                                 {
                                     this.UpdateSessionCookies(<Array<string>>res.headers["set-cookie"]);
                                     this._csrfToken = resToken.data.result[0].csrf_token;
-                                    resolve(true);
+                                    resolve();
                                 }).catch((er) =>
                                 {
                                     console.error(er);
@@ -342,6 +328,16 @@ export class Api
     }
 
     /**
+    */
+    public DeleteRecord<T extends ISysMetadata>(record: ISysMetadata): Axios.AxiosPromise<IServiceNowResponse<T>> | undefined
+    {
+        if (this.HttpClient)
+        {
+            return this.HttpClient.delete(`${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`);
+        }
+    }
+
+    /**
      * GetRecord, returns record from sys_metadata
      */
     public GetRecordMetadata(record: ISysMetadata): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>> | undefined
@@ -354,41 +350,35 @@ export class Api
     }
 
     /**
-     * GetWidgets
-     * returns all widgets that are editable
+     * Retrieves all eligible records of a specific type. 
      */
-    public GetWidgets(): Axios.AxiosPromise<IServiceNowResponse<Array<ISpWidget>>> | undefined
+    public GetRecords(type: SupportedRecords): Axios.AxiosPromise<IServiceNowResponse<Array<ISysMetadata>>>
     {
         if (this.HttpClient)
         {
-            let url = `${this._SNWidgetTable}?internal=false&sys_policy=""`;
+            let url = `${this._SNTableSuffix}/${type}`;
+            //set specific queries where necessary
+            //defualt is all writable elements.
+            switch (type)
+            {
+                case SupportedRecords.Widget:
+                    url = url + `?sysparm_query=internal=false^sys_policy=`;
+                    break;
+                case SupportedRecords["Header or Footer Widget"]:
+                    url = url + `?sysparm_query=internal=false^sys_policy=`;
+                    break;
+                case SupportedRecords.Processor:
+                    url = url + `?sysparm_query=sys_policy=^type=script`;
+                    break;
+                default:
+                    url = url + `?sysparm_query=sys_policy=`;
+                    break;
+            }
             return this.HttpClient.get(url);
         }
-    }
-
-    /**
-     * GetWidgets
-     * returns all themes that are editable
-     */
-    public GetThemes(): Axios.AxiosPromise<IServiceNowResponse<Array<ISpTheme>>> | undefined
-    {
-        if (this.HttpClient)
+        else
         {
-            let url = `${this._SNSpThemeTable}?sys_policy=""`;
-            return this.HttpClient.get(url);
-        }
-    }
-
-    /**
-     * GetScriptIncludes lists all available script includes
-     * only returns includes that are not restricted by sys policy
-     */
-    public GetScriptIncludes(): Axios.AxiosPromise<IServiceNowResponse<Array<ISysScriptInclude>>> | undefined
-    {
-        if (this.HttpClient)
-        {
-            let url = `${this._SNScriptIncludeTable}?sys_policy=""`;
-            return this.HttpClient.get(url);
+            throw new Error("HTTP Client not initialized");
         }
     }
 
@@ -407,105 +397,6 @@ export class Api
         }
     }
 
-    /**
-    * GetStyleSheets
-    * 
-    */
-    public GetStyleSheets(): Axios.AxiosPromise<IServiceNowResponse<Array<ISpCss>>> | undefined
-    {
-        if (this.HttpClient)
-        {
-            //style sheets thats is not protected or read only.
-            let url = `${this._SNSpStyleSheet}?sys_policy=""`;
-            return this.HttpClient.get(url);
-        }
-    }
-
-    /**
-    * GetUiScripts
-    * 
-    */
-    public GetUiScripts(): Axios.AxiosPromise<IServiceNowResponse<Array<ISysUiScript>>> | undefined
-    {
-        if (this.HttpClient)
-        {
-            //update sets in global and in progress
-            let url = `${this._SNSysUiScript}?sys_policy=""`;
-            return this.HttpClient.get(url);
-        }
-    }
-
-    /**
-    * GetHeaderAndFooters
-    * 
-    */
-    public GetHeadersAndFooters(): Axios.AxiosPromise<IServiceNowResponse<Array<ISpHeaderFooter>>> | undefined
-    {
-        if (this.HttpClient)
-        {
-            //update sets in global and in progress
-            let url = `${this._SNHeaderFooter}?internal=false&sys_policy=""`;
-            return this.HttpClient.get(url);
-        }
-    }
-
-
-    /**
-    * GetEmailScripts
-    * 
-    */
-    public GetEmailScripts(): Axios.AxiosPromise<IServiceNowResponse<Array<ISysMailScript>>> | undefined
-    {
-        if (this.HttpClient)
-        {
-            //update sets in global and in progress
-            let url = `${this._SNSysEmailScript}?sys_policy=""`;
-            return this.HttpClient.get(url);
-        }
-    }
-
-    /**
-    * GetEmailScripts
-    * 
-    */
-    public GetScriptedApiResources(): Axios.AxiosPromise<IServiceNowResponse<Array<IScriptedRestAPIResource>>> | undefined
-    {
-        if (this.HttpClient)
-        {
-            //update sets in global and in progress
-            let url = `${this._SNScriptedRestApiResource}?sys_policy=""`;
-            return this.HttpClient.get(url);
-        }
-    }
-
-    /**
-    * GetScriptActions
-    * 
-    */
-    public GetScriptActions(): Axios.AxiosPromise<IServiceNowResponse<Array<ISysEventScriptAction>>> | undefined
-    {
-        if (this.HttpClient)
-        {
-            //update sets in global and in progress
-            let url = `${this._SNSysEventScriptAction}?sysparm_query=sys_policy=`;
-            return this.HttpClient.get(url);
-        }
-    }
-
-    /**
-    * processors
-    * 
-    */
-    public GetProcessors(): Axios.AxiosPromise<IServiceNowResponse<Array<ISysProcessor>>> | undefined
-    {
-        if (this.HttpClient)
-        {
-            //Processors that are not readonly and of the type === script.
-            let url = `${this._SNProcessor}?sysparm_query=sys_policy=^type=script`;
-            return this.HttpClient.get(url);
-        }
-    }
-
     public CreateRecord(type: SupportedRecords, body: object): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>> | undefined
     {
         if (this.HttpClient)
@@ -517,33 +408,32 @@ export class Api
 
     public CreateUpdateSet(name: string, parent: string): Axios.AxiosPromise<IServiceNowResponse<any>> | undefined
     {
-        return new Promise((resolve, reject) =>
+        return new Promise(async (resolve, reject) =>
         {
-            let url = `${this._SNSysUpdateSet}`;
-            var i = this.NewSession();
-
-            i.then((res) =>
+            try
             {
+                let url = `${this._SNSysUpdateSet}`;
                 if (this.HttpClient)
                 {
-                    this.HttpClient.post(url, {
+                    await this.NewSession();
+
+                    //@ts-ignore already null checked
+                    let response = await this.HttpClient.post(url, {
                         name: name,
                         parent: parent
-                    })
-                        .then(function (response)
-                        {
-                            resolve(response);
-                        })
-                        .catch(function (error)
-                        {
-                            console.log(error);
-                        });
+                    });
+
+                    resolve(response);
+                    this.ClearSessionCookies();
                 }
-            }).catch((er) =>
+                else
+                {
+                    throw new Error("Http client undefined");
+                }
+            } catch (error)
             {
-                console.error(er);
-                reject(er);
-            });
+                reject(error);
+            }
         });
     }
 }

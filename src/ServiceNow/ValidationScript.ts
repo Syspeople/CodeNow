@@ -1,34 +1,32 @@
-import { Record, ISysUiScript, ISysScriptInclude, Instance, Converter } from "./all";
+import { Record, IValidationScript, ISysScriptInclude, Instance, Converter } from "./all";
 import { FileTypes, MetaData, KeyValuePair } from "../Manager/all";
 import { Uri } from "vscode";
 
-export class UiScript extends Record implements ISysUiScript
+export class ValidationScript extends Record implements IValidationScript
 {
 
-    constructor(u: ISysUiScript)
+    constructor(u: IValidationScript)
     {
         super(u);
         this.active = u.active;
         this.description = u.description;
-        this.use_scoped_format = u.use_scoped_format;
-        this.global = u.global;
-        this.script_name = u.script_name;
-        this.script = u.script;
-        this.name = u.name;
+        this.validator = u.validator;
+        this.internal_type = u.internal_type;
+        this.ui_type = u.ui_type;
+        this.name = "";
 
     }
 
     active: boolean;
     description: string;
-    use_scoped_format: boolean;
-    global: false;
-    script_name: string;
-    script: string;
     name: string;
+    validator: string;
+    internal_type: string;
+    ui_type: string;
 
     public get label(): string
     {
-        return this.name;
+        return this.description;
     }
 
     detail?: string | undefined;
@@ -37,20 +35,20 @@ export class UiScript extends Record implements ISysUiScript
     {
         if (filetype === FileTypes.serverScript)
         {
-            this.script = content;
+            this.validator = content;
         }
     }
     GetAttribute(filetype: FileTypes): string | undefined
     {
         if (filetype === FileTypes.serverScript)
         {
-            return this.script;
+            return this.validator;
         }
     }
 
     GetPatchable(): Object
     {
-        return { script: this.script };
+        return { script: this.validator };
     }
 
     GetMetadata(record: ISysScriptInclude, instance: Instance): MetaData
@@ -58,8 +56,8 @@ export class UiScript extends Record implements ISysUiScript
         if (instance.IsInitialized() && instance.Url)
         {
             let f = new Array<KeyValuePair<FileTypes, Uri>>();
-            f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${record.name}.${Converter.getFileTypeExtension(FileTypes.serverScript)}`)));
-            return new MetaData(record, f, instance.Url.host, record.name);
+            f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${record.description}.${Converter.getFileTypeExtension(FileTypes.serverScript)}`)));
+            return new MetaData(record, f, instance.Url.host, record.description);
         }
         throw new Error("Instance not initialized");
     }

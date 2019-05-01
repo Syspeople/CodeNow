@@ -2430,6 +2430,170 @@ declare class SpModalOptions
     size: string;
 }
 
+/* CLIENT ANGULAR */
+
+/**
+ * Angular DI service
+ */
+
+declare var spUtil: SpUtil;
+
+declare class SpUtil
+{
+    /**
+    * Displays a notification error message.
+    * @param message Error message to display.
+    */
+    addErrorMessage(message: string): void
+
+    /**
+     * Displays a notification info message.
+     * @param message Info message to display
+     */
+    addInfoMessage(message: string): void
+
+    /**
+     * Displays a trivial notification message. 
+     * Trivial messages disappear after a short period of time.
+     * @param message Message to display.
+     */
+    addTrivialMessage(message: string): void
+
+    /**
+     * Formats a string as an alternative to string concatenation.
+     * Use this method to build a string with variables.
+     * @param template String template with values for substitution.
+     * @param data Object containing variables for substitution.
+     * @returns A formatted string.
+     * 
+     * @example spUtil.format('An error ocurred: {error} when loading {widget}', {error: '404', widget: 'sp-widget'})
+     */
+    format(template: string, data: Object): string
+
+    /**
+
+     * Returns a widget model by ID or sys_id.
+     * Use this method to embed a widget model in a widget client script.
+     * The callback function returns the full widget model.
+
+     * @param widgetId Widget ID or sys_id of the widget to embed.
+     * @param data (Optional) Name/value pairs of parameters to pass to the widget model.
+     * @returns Model of the embedded widget.
+     */
+    get(widgetId: string, data?: Object): Object
+
+    /**
+    * Watches for updates to a table or filter and returns the value from the callback function.
+    *
+    * Allows a widget developer to respond to table updates in real-time. For instance, by using recordWatch(), the Simple List widget can listen for changes to its data table. If records are added, removed, or updated, the widget updates automatically.
+    *
+    * When passing the $scope argument into the recordWatch() function, be sure to inject $scope into the parameters of your client script function.
+    *
+    * Tables that are periodically subject to a high frequency of database events are blacklisted from recordWatch() to prevent event storms.
+     * 
+     * @param $Scope Scope of the data object updated by the callback function.
+     * @param table Watched table.
+     * @param filter Filter for fields to watch.
+     * @param callback Optional. Parameter to define the callback function.
+     * @returns Return value of the callback function.
+     */
+    recordWatch($Scope: Object, table: string, filter: string, callback?: Function): Promise<any>
+
+    /**
+     * Calls the server and replaces the current options and data with the server response.
+     * Calling spUtil.refresh() is similar to calling server.refresh(). However, when you call spUtil.refresh(), you can define the $scope object.
+     * 
+     * @param $Scope The scope defined for the update.
+     * @returns The updated options and data objects.
+     */
+    refresh($Scope: Object): Object
+
+    /**
+     * Updates the data object on the server within a given scope.
+     * 
+     * This method is similar to server.update(), but includes a $scope parameter that defines the scope to pass over.
+     * @param $Scope The scope defined for the update.
+     * @returns The updated data object.
+     */
+    update($Scope: Object): Object
+
+    /**
+     * Gets portal headers
+     * UNDOCUMENTED BY SERVICENOW
+     * @returns {'Accept': 'application/json',  'x-portal': $rootScope.portal_id};
+     * 
+     */
+    getHeaders(): Object
+
+    /**
+     * 
+     * @param sys_id sys_id of the widget
+     * @retuns /api/now/sp/widget/sys_id
+     */
+    getWidgetURL(sys_id: string): string
+    /**
+     * 
+     * @param searchPage Search 
+     * @example spUtil.setSearchPage($scope.data.t);//t is a string passed via url here
+     */
+    setSearchPage(searchPage: string): void
+
+    /**
+     * 
+     * @param $Scope 
+     * @param list 
+     * @example spUtil.setBreadCrumb($scope, [{
+        label: c.data.community.Breadcrumb,
+        url: '#'
+     }])
+     */
+    setBreadCrumb($Scope: Object, list: []): void
+
+    /**
+     * 
+     * @param type 
+     * Example var url = spUtil.getURL({sysparm_type: 'view_form.login'});
+     */
+    getURL(type: Object): string
+
+    /**
+     * 
+     * @param id id of element to scroll to
+     * @param time Time to take
+     * @example spUtil.scrollTo("#" + item.sys_id);
+     */
+    scrollTo(id: string, time?: number): void
+    /**
+     * 
+     * @param character character to get accelerator of
+     * @example spUtil.getAccelerator('s');
+     * @returns returns for mac '⌘ + ' + char;  returns for otherwise 'Ctrl + ' + char;
+     */
+    getAccelerator(character: string): string
+
+    /**
+     * Create UID
+     * @param str string to create UID from
+     * @example spUtil.createUid('xxxxx');
+     */
+    createUid(str: string): string
+    /**
+     * Parse attributes from String to Object
+     * @param attributes Attributes in string form
+     * @example var attributes = spUtil.parseAttributes(field.attributes);
+        refQualElements = attributes['ref_qual_elements'].split(',');
+     * @returns Attributed Object
+     */
+    parseAttributes(attributes: string): Object
+
+    /**
+     * Gets the host
+     * @returns host as a string
+     */
+    getHost(): string
+}
+
+
 /**
  * Angular DI service
  */

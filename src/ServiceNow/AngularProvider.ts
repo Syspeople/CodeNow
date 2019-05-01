@@ -1,38 +1,31 @@
-import { Record, ISysScriptInclude, Instance, Converter } from "./all";
+import { Record, IAngularProvider, Instance, Converter } from "./all";
 import { FileTypes, MetaData, KeyValuePair } from '../Manager/all';
 import { Uri } from "vscode";
 
-export class ScriptInclude extends Record implements ISysScriptInclude
+export class AngularProvider extends Record implements IAngularProvider
 {
-
-    constructor(si: ISysScriptInclude)
+    constructor(ap: AngularProvider)
     {
-        super(si);
-        this.client_callable = si.client_callable;
-        this.access = si.access;
-        this.active = si.active;
-        this.description = si.description;
-        this.script = si.script;
-        this.api_name = si.api_name;
-        this.name = si.name;
+        super(ap);
+        this.script = ap.script;
+        this.name = ap.name;
+        this.sys_name = ap.sys_name;
+        this.type = ap.type;
     }
 
-    client_callable: boolean;
-    access: string;
-    active: boolean;
-    description: string;
     script: string;
-    api_name: string;
     name: string;
+    sys_name: string;
+    type: string;
 
     public get label(): string
     {
         return this.name;
     }
 
-    public get detail(): string | undefined
+    public get description(): string
     {
-        return this.description;
+        return "";
     }
 
     SetAttribute(content: string, filetype: FileTypes): void
@@ -63,7 +56,7 @@ export class ScriptInclude extends Record implements ISysScriptInclude
         return { script: this.script };
     }
 
-    GetMetadata(record: ISysScriptInclude, instance: Instance): MetaData
+    GetMetadata(record: IAngularProvider, instance: Instance): MetaData
     {
         if (instance.IsInitialized() && instance.Url)
         {

@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/DevOpsSyspeople/ServiceNow%20Scripting%20Bridge/_apis/build/status/Syspeople.snsb?branchName=master)](https://dev.azure.com/DevOpsSyspeople/ServiceNow%20Scripting%20Bridge/_build/latest?definitionId=1&branchName=master)
+
 # SNSB (ServiceNow Scripting Bridge)
 The Visual Code Extension for developing on the ServiceNow platform.
 
@@ -19,23 +21,18 @@ This extension aims to provide ServiceNow developers a first class development e
     - [Angular API's / ServicePortal](#angular-apis--serviceportal)
     - [Additional](#additional)
     - [ClientSide API's](#clientside-apis)
+    - [Snippets](#Snippets)
   - [Manually Specify Types](#manually-specify-types)
     - [Angular DI classes](#angular-di-classes)
     - [Custom Objects created in code.](#custom-objects-created-in-code)
+    - [Custom object mappings](#custom-object-mappings)
 - [Commands](#commands)
   - [Connect to ServiceNow](#connect-to-servicenow)
   - [Change Update Set](#change-update-set)
   - [Create Record](#create-record)
   - [Create Update Set](#create-update-set)
   - [Create Update Set and set as Current](#create-update-set-and-set-as-current)
-  - [Add Script Include To Workspace](#add-script-include-to-workspace)
-  - [Add Widget to Workspace](#add-widget-to-workspace)
-  - [Add Theme to Workspace](#add-theme-to-workspace)
-  - [Add Mail Script to Workspace](#add-mail-script-to-workspace)
-  - [Add UI Script to Workspace](#add-ui-script-to-workspace)
-  - [Add Script Include to Workspace](#add-script-include-to-workspace)
-  - [Add Stylesheet to Workspace](#add-stylesheet-to-workspace)
-  - [Add Header | Footer Widget to Workspace](#add-header--footer-widget-to-workspace)
+  - [Add Record to Workspace](#add-record-to-workspace)
   - [Open Record in platform](#open-record-in-platform)
   - [Open list in platform](#open-list-in-platform)
   - [Save](#save)
@@ -56,7 +53,7 @@ Low code elements might get added, but _none_ is planned.
 No code elements will not added to the extension in a way that will allow you to configure them directly from VsCode.
 
 # Features
-* Work with multiple ServicNow record.
+* Work with multiple ServicNow records.
 * Create new ServiceNow Records.
 * Automatically saves to your instance.
 * Automatically updates from your instance.
@@ -99,16 +96,22 @@ Extensions that go very well with this extension
 ## Supported Records
 Records types currently supported. 
 
+* Angular Providers.
+* Fix Scripts.
+* Mail Scripts.
+* Processors (scripted).
+* Script Actions.
 * Script Includes.
+* Scripted Rest API.
+* Service Portal Headers and Footers.
 * Service Portal Themes.
 * Service Portal Widgets.
 * StyleSheets.
+* UI Action
 * UI Scripts.
-* Mail Scripts.
-* Service Portal Headers and Footers.
-* Scripted Rest API.
-* Script Actions
-* Processors (scripted).
+* UI Page.
+* Validation Scripts.
+
 
 ## Intellisense
 Currently there is intellisense for the following API's.
@@ -143,6 +146,7 @@ NB: Some API's are not fully documented (Publicly anyways). if you miss a method
 * $q
 * $location
 * spModal
+* spUtil
 * controller (angular controller class)
 
 ### Additional
@@ -187,6 +191,33 @@ spModal.open(opt).then(function (res)
 });
 ```
 
+
+### Custom object mappings
+You can use JsDoc to provide intellisense for custom objects mappings created by yourself or others. see param:arrVariables
+
+```javascript
+/**
+	 * 
+	 * @param {Array<{value:string,display_value:string}>} arrVariables 
+	 * @param {String} stringVarName 
+	 */
+	function getReqVarValue(arrVariables, stringVarName)
+	{
+		for (var index in arrVariables)
+		{
+			var variable = arrVariables[index];
+			if (variable.name === stringVarName)
+			{
+				return {
+					value: variable.value,
+					displayValue: variable.display_value
+				}
+			}
+		}
+	}
+
+```
+
 # Commands
 
 ## Connect to ServiceNow
@@ -224,35 +255,10 @@ Lets you create a new update set and sets it as the current update set.
 
 It can be chosen if a parent update set should be added.
 
-## Add Script Include To Workspace
+## Add Record to Workspace
 Imports a script include into the workspace for edit.
 
 Read only and restricted script includes is not available.
-
-## Add Widget to Workspace
-Imports a widget into the the workspace.
-
-Read only and restricted widgets is not available.
-
-## Add Theme to Workspace
-Imports a theme into the workspace.
-
-Read only and restricted themes is not available.
-
-## Add Mail Script to Workspace
-Imports a Mail Script into the workspace.
-
-## Add UI Script to Workspace
-Imports a UI Script into the workspace.
-
-## Add Script Include to Workspace
-Imports a Script Include into the workspace.
-
-## Add Stylesheet to Workspace
-Imports a Stylesheet into the workspace.
-
-## Add Header | Footer Widget to Workspace
-Imports a Service Portal header or footer widget into the workspace.
 
 ## Open Record in platform
 Right click a record to open it in the platform. 
@@ -291,6 +297,10 @@ default: true
 Enable or disable automatic import on document open. Only applied if higher version exists on instance.
 
 default: true
+
+### Snippets
+ [Here](/snippets.md) is a list of avaiable snippets.
+
 
 ### Contributors
  [ambsoerensen](https://github.com/ambsoerensen)

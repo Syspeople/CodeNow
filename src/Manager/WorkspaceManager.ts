@@ -1,6 +1,8 @@
 import * as fileSystem from 'fs';
-import { ISysMetadata, Instance, ISysScriptInclude, ISpWidget, ISpTheme, ISpCss, ISysUiScript, ISysMailScript, ISpHeaderFooter, IScriptedRestAPIResource, Converter, ISysEventScriptAction, ISysProcessor } from '../ServiceNow/all';
-import { MetaData, KeyValuePair, WorkspaceStateManager, FileTypes } from './all';
+import * as path from 'path';
+
+import { Instance, Converter } from '../ServiceNow/all';
+import { MetaData, WorkspaceStateManager, IWorkspaceConvertable } from './all';
 import { Uri, ExtensionContext, window, WorkspaceFolder, workspace } from 'vscode';
 import { ISysMetadataIWorkspaceConvertable } from '../MixIns/all';
 
@@ -123,6 +125,38 @@ export class WorkspaceManager
         }
     }
 
+    public RefreshRecords(i: Instance): void
+    {
+        var pathIns = this.GetPathInstance(i);
+
+
+        if (pathIns)
+        {
+            var allFiles = this.getFiles(pathIns.toString());
+
+
+            allFiles.forEach(filePath =>
+            {
+                console.log(filePath);
+                var uri = Uri.parse(filePath);
+
+                var recordLocal = this.GetRecord(uri);
+                if (recordLocal)
+                {
+                    let r = i.GetRecord(recordLocal);
+                    r.then((res) =>
+                    {
+                        this.UpdateRecord(res, uri);
+                    }).catch((er) =>
+                    {
+                        console.error(er);
+                    });
+                }
+            });
+
+        }
+
+    }
     /**
      * AddRecord a new record. 
      */
@@ -161,100 +195,29 @@ export class WorkspaceManager
         }
     }
 
+    public DeleteRecord(uri: string): void
+    {
+        var parentFolder = path.dirname(uri);
+        var allFiles = this.getFiles(parentFolder);
+
+
+        allFiles.forEach(filePath =>
+        {
+            this.DeleteFile(filePath);
+        });
+
+        this.DeleteFolder(path.dirname(uri));
+    }
+
     /**
      * Creates a metadata object for local reference from a record. 
      * @param record 
      * @param instance 
      */
-    private createMetadata(record: ISysMetadata, instance: Instance): MetaData | undefined
+    private createMetadata(record: IWorkspaceConvertable, instance: Instance): MetaData | undefined
     {
-        let recordName: string;
-        let f = new Array<KeyValuePair<FileTypes, Uri>>();
-        let meta: MetaData | undefined;
-        let instanceName: string;
 
-        if (instance.Url)
-        {
-            instanceName = instance.Url.host;
-        }
-        else
-        {
-            throw new Error("Instance url undefined");
-        }
-
-        //add new records here
-        switch (record.sys_class_name)
-        {
-            case "sys_script_include":
-                recordName = (<ISysScriptInclude>record).name;
-
-                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            case "sp_widget":
-                recordName = (<ISpWidget>record).name;
-
-                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
-                f.push(new KeyValuePair(FileTypes.clientScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.clientScript)}`)));
-                f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
-                f.push(new KeyValuePair(FileTypes.html, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.html)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            case "sp_theme":
-                recordName = (<ISpTheme>record).name;
-
-                f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            case "sp_css":
-                recordName = (<ISpCss>record).name;
-
-                f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            case "sys_ui_script":
-                recordName = (<ISysUiScript>record).name;
-
-                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            case "sp_header_footer":
-                recordName = (<ISpHeaderFooter>record).name;
-
-                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
-                f.push(new KeyValuePair(FileTypes.clientScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.clientScript)}`)));
-                f.push(new KeyValuePair(FileTypes.styleSheet, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.styleSheet)}`)));
-                f.push(new KeyValuePair(FileTypes.html, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.html)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            case "sys_script_email":
-                recordName = (<ISysMailScript>record).name;
-
-                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            case "sys_ws_operation":
-                recordName = (<IScriptedRestAPIResource>record).name;
-
-                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            case "sysevent_script_action":
-                recordName = (<ISysEventScriptAction>record).name;
-
-                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            case "sys_processor":
-                recordName = (<ISysProcessor>record).name;
-
-                f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${recordName}.${this.getFileTypeExtension(FileTypes.serverScript)}`)));
-                meta = new MetaData(record, f, instanceName, recordName);
-                break;
-            default:
-                console.warn(`createMetadata: Record ${record.sys_class_name} not recognized`);
-                break;
-        }
+        let meta = record.GetMetadata(record, instance);
 
         if (meta)
         {
@@ -264,23 +227,6 @@ export class WorkspaceManager
         else
         {
             console.warn("Metadata undefined");
-        }
-    }
-
-    private getFileTypeExtension(type: FileTypes): string
-    {
-        switch (type)
-        {
-            case FileTypes.serverScript:
-                return "server_script.js";
-            case FileTypes.clientScript:
-                return "client_script.js";
-            case FileTypes.styleSheet:
-                return "scss";
-            case FileTypes.html:
-                return "html";
-            default:
-                throw new Error("FileType not recognized");
         }
     }
 
@@ -396,6 +342,24 @@ export class WorkspaceManager
         }
     }
 
+    private DeleteFolder(path: string)
+    {
+        if (typeof String)
+        {
+            if (this.FolderExist(path))
+            {
+                fileSystem.rmdir(path, (res) =>
+                {
+                    //only exceptions is parsed on callback 
+                    if (res)
+                    {
+                        window.showErrorMessage(res.message);
+                    }
+                });
+            }
+        }
+    }
+
     private FolderExist(path: string): boolean
     {
         try
@@ -424,6 +388,25 @@ export class WorkspaceManager
         }
     }
 
+    private DeleteFile(path: string): void
+    {
+        if (this.FileExist(path))
+        {
+            fileSystem.unlink(path, (res) =>
+            {
+                //only exceptions is parsed on callback 
+                if (res)
+                {
+                    window.showErrorMessage(res.message);
+                }
+            });
+        }
+        else
+        {
+            console.warn(`File not found: ${path}`);
+        }
+    }
+
     private CreateFile(path: string, value: string): void
     {
         if (!this.FileExist(path))
@@ -432,15 +415,41 @@ export class WorkspaceManager
         }
     }
 
+    // Get all files from directory and sub-directories.
+    private getFiles(dir: string, files_?: Array<string>): Array<string>
+    {
+
+        files_ = files_ || [];
+        var files = fileSystem.readdirSync(dir);
+        for (var i in files)
+        {
+            var name = dir + '/' + files[i];
+            if (fileSystem.statSync(name).isDirectory())
+            {
+                this.getFiles(name, files_);
+            } else
+            {
+                files_.push(name);
+            }
+        }
+        return files_;
+    }
+
     private WriteFile(path: string, value: string): void
     {
         try
         {//message is null
-            fileSystem.writeFile(path, value, 'utf8', (err) => { if (err) { console.error(err); } });
+            fileSystem.writeFile(path, value, 'utf8', (err) =>
+            {
+                if (err) 
+                {
+                    console.error(err);
+                }
+            });
         }
-        catch (e)
+        catch (error)
         {
-            console.error(e);
+            console.error(error);
         }
     }
 

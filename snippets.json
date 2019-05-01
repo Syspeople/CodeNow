@@ -1,0 +1,41 @@
+{
+	//GlideRecord
+	"GlideRecord Query": {
+		"prefix": "grQuery",
+		"body": [
+			"var gr${1} = new GlideRecord('${1:tableName}');",
+			"",
+			"gr${1}.addActiveQuery();",
+			"gr${1}.query();",
+			"",
+			"while (gr${1}.next()) {",
+			"$0",
+			"}"
+		],
+		"description": "Modify Records"
+	},
+	"GlideRecord Get": {
+		"prefix": "grGet",
+		"body": [
+			"var gr${1} = new GlideRecord('${1:tableName}');",
+			"",
+			"if (gr${1}.get('sys_id', ${2:variable}))",
+			"{",
+			"$0",
+			"}"
+		],
+		"description": "Modify Single Record"
+	},
+	"GlideRecord Insert ": {
+		"prefix": "grInsert",
+		"body": [
+			"var gr${1} = new GlideRecord('${1:tableName}');",
+			"",
+			"gr${1}.initialize();",
+			"gr${1}.setValue('${2:fieldName}', '${3:fieldValue}');",
+			"",
+			"$0gr${1}.insert();"
+		],
+		"description": "New record"
+	}
+}

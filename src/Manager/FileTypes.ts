@@ -3,5 +3,6 @@ export enum FileTypes
     serverScript,
     clientScript,
     styleSheet,
-    html
+    html,
+    processingScript
 }

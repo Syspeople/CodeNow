@@ -1,12 +1,15 @@
-import { FileTypes } from "./all";
+import { FileTypes, MetaData } from "./all";
 import { IPatchable } from "../Api/all";
+import { Instance } from "../ServiceNow/all";
+import { QuickPickItem } from "vscode";
 
 /**
  * interface required to write and read records to and from workspace.
  */
-export interface IWorkspaceConvertable extends IPatchable
+export interface IWorkspaceConvertable extends IPatchable, QuickPickItem
 {
     name: string;
+
     /**
      * Set value on object based on filetype. 
      * @param content content to be set on class
@@ -20,4 +23,6 @@ export interface IWorkspaceConvertable extends IPatchable
      * @param filetype 
      */
     GetAttribute(filetype: FileTypes): string | undefined;
+
+    GetMetadata(record: IWorkspaceConvertable, instance: Instance): MetaData;
 }

@@ -1,28 +1,23 @@
-import { Record, ISysUiScript, ISysScriptInclude, Instance, Converter } from "./all";
+import { Record, IFixScript, ISysScriptInclude, Instance, Converter } from "./all";
 import { FileTypes, MetaData, KeyValuePair } from "../Manager/all";
 import { Uri } from "vscode";
 
-export class UiScript extends Record implements ISysUiScript
+export class FixScript extends Record implements IFixScript
 {
 
-    constructor(u: ISysUiScript)
+    constructor(u: IFixScript)
     {
         super(u);
         this.active = u.active;
         this.description = u.description;
-        this.use_scoped_format = u.use_scoped_format;
-        this.global = u.global;
-        this.script_name = u.script_name;
         this.script = u.script;
         this.name = u.name;
-
+        this.sys_name = u.sys_name;
     }
 
     active: boolean;
     description: string;
-    use_scoped_format: boolean;
-    global: false;
-    script_name: string;
+    sys_name: string;
     script: string;
     name: string;
 
