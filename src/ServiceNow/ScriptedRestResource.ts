@@ -1,13 +1,13 @@
-import { Record, IScriptedRestAPIResource, Instance, Converter } from "./all";
+import { Record, Instance, Converter, ISysWsOperation } from "./all";
 import { QuickPickItem, Uri } from "vscode";
 import { FileTypes, MetaData, KeyValuePair } from "../Manager/all";
 import { Relation } from "./Relation";
 
 
-export class ScriptedRestAPIResource extends Record implements IScriptedRestAPIResource, QuickPickItem
+export class ScriptedRestResource extends Record implements ISysWsOperation, QuickPickItem
 {
 
-    constructor(u: IScriptedRestAPIResource)
+    constructor(u: ISysWsOperation)
     {
         super(u);
         this.active = u.active;
@@ -54,7 +54,7 @@ export class ScriptedRestAPIResource extends Record implements IScriptedRestAPIR
         throw new Error("Method not implemented.");
     }
 
-    GetMetadata(record: IScriptedRestAPIResource, instance: Instance): MetaData
+    GetMetadata(record: ISysWsOperation, instance: Instance): MetaData
     {
         if (instance.IsInitialized() && instance.Url)
         {

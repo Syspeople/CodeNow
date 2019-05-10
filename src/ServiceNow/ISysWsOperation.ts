@@ -2,7 +2,7 @@ import { ISysMetadata } from "./all";
 import { IWorkspaceConvertable } from "../Manager/all";
 import { Relation } from "./Relation";
 
-export interface IScriptedRestAPIResource extends ISysMetadata, IWorkspaceConvertable
+export interface ISysWsOperation extends ISysMetadata, IWorkspaceConvertable
 {
     web_service_version: Relation;
     web_service_definition: Relation;

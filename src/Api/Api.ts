@@ -370,6 +370,9 @@ export class Api
                 case SupportedRecords.Processor:
                     url = url + `?sysparm_query=sys_policy=^type=script`;
                     break;
+                case SupportedRecords["Scripted Rest API"]:
+                    url = url + `?sysparm_query=sys_policy=`;
+                    break;
                 default:
                     url = url + `?sysparm_query=sys_policy=`;
                     break;

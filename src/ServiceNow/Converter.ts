@@ -1,14 +1,6 @@
-import { ISysMetadata, ScriptInclude, ISysScriptInclude, Widget, ISpWidget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, SpHeaderFooter, ISpHeaderFooter, MailScript, ISysMailScript, ScriptedRestAPIResource, IScriptedRestAPIResource, ScriptAction, ISysEventScriptAction, Processor, ISysProcessor, UiAction, ISysUiAction } from "./all";
+import { ISysMetadata, ScriptInclude, ISysWsDefinition, ISysScriptInclude, Widget, ISpWidget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, SpHeaderFooter, ISpHeaderFooter, MailScript, ISysMailScript, ScriptAction, ISysEventScriptAction, Processor, ISysProcessor, UiAction, ISysUiAction, ScriptedRestResource, ScriptedRestService, AngularProvider, IAngularProvider, UiPage, IUiPage, FixScript, IFixScript, ValidationScript, IValidationScript } from "./all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
 import { FileTypes } from "../Manager/all";
-import { IAngularProvider } from "./IAngularProvider";
-import { AngularProvider } from "./AngularProvider";
-import { UiPage } from "./UiPage";
-import { IUiPage } from "./IUiPage";
-import { FixScript } from "./FixScript";
-import { IFixScript } from "./IFixScript";
-import { ValidationScript } from "./ValidationScript";
-import { IValidationScript } from "./IValidationScript";
 
 
 export class Converter
@@ -37,8 +29,8 @@ export class Converter
                 return new SpHeaderFooter(<ISpHeaderFooter>c);
             case "sys_script_email":
                 return new MailScript(<ISysMailScript>c);
-            case "sys_ws_operation":
-                return new ScriptedRestAPIResource(<IScriptedRestAPIResource>c);
+            case "sys_ws_definition":
+                return new ScriptedRestService(<ISysWsDefinition>c);
             case "sysevent_script_action":
                 return new ScriptAction(<ISysEventScriptAction>c);
             case "sys_processor":
