@@ -395,7 +395,7 @@ export class Api
         if (this.HttpClient)
         {
             //update sets in global and in progress
-            let url = `${this._SNSysUpdateSet}?sysparm_query=state=in progress`;
+            let url = `${this._SNSysUpdateSet}?sysparm_query=state=in progress^application.scope=global`;
             return this.HttpClient.get(url);
         }
     }
