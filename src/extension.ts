@@ -7,7 +7,7 @@ import { URL } from 'url';
 import * as ServiceNow from './ServiceNow/all';
 import * as Managers from './Manager/all';
 import { StatusBarManager, NotifationState } from './Manager/all';
-import { SupportedRecords } from './ServiceNow/all';
+import { SupportedRecords, ISysWsOperation } from './ServiceNow/all';
 
 let token;
 if (vscode.env.machineId === "someValue.machineId")
@@ -230,38 +230,82 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-    let addRecord = vscode.commands.registerCommand("snsb.addRecord", () =>
+    let addRecord = vscode.commands.registerCommand("snsb.addRecord", () => 
     {
         if (instance.IsInitialized())
         {
             let availableRecords = Object.keys(SupportedRecords);
-            let p = vscode.window.showQuickPick(availableRecords, { placeHolder: "Select Record" });
 
-            p.then((res) =>
+            //remove Scripted rest definitions. Not selecetable but required for caching purposes. 
+            let availableRecordsFiltered = availableRecords.filter((i) =>
+            {
+                return i !== "Scripted Rest Definition";
+            });
+
+            let p = vscode.window.showQuickPick(availableRecordsFiltered, { placeHolder: "Select Record" });
+
+            p.then(async (res) =>
             {
                 if (res)
                 {
-                    //@ts-ignore index error false
-                    let records = instance.GetRecords(SupportedRecords[res]);
-                    records.then((res) =>
+                    try
                     {
-                        vscode.window.showQuickPick(res).then((item) =>
+                        let className: string = "";
+
+                        //@ts-ignore index error false
+                        let recordType: SupportedRecords = SupportedRecords[res];
+
+                        switch (recordType)
                         {
-                            if (item)
-                            {
-                                wm.AddRecord(item, instance);
-                                mixpanel.track('snsb.extension.command.addRecord.success', {
-                                    sys_class_name: item.sys_class_name,
-                                });
-                            }
+                            //handle rest api identically
+                            case SupportedRecords["Scripted Rest API"]:
+                                let restDefs = await instance.GetRecords(SupportedRecords["Scripted Rest Definition"]);
+                                let restDef = await vscode.window.showQuickPick(restDefs);
+
+                                if (restDef)
+                                {
+                                    let restOps = await instance.GetRecords(SupportedRecords["Scripted Rest API"]);
+
+                                    if (restOps)
+                                    {
+                                        let ops = restOps as Array<ISysWsOperation>;
+
+                                        let restOp = await vscode.window.showQuickPick(ops.filter((e) =>
+                                        {
+                                            //@ts-ignore restDef already nullchecked
+                                            return e.web_service_definition.value === restDef.sys_id;
+                                        }));
+
+                                        if (restOp)
+                                        {
+                                            wm.AddRecord(restOp, instance);
+                                            className = restOp.sys_class_name;
+                                        }
+                                    }
+                                }
+                                break;
+                            default:
+                                let records = await instance.GetRecords(recordType);
+
+                                let record = await vscode.window.showQuickPick(records);
+
+                                if (record)
+                                {
+                                    wm.AddRecord(record, instance);
+                                    className = record.sys_class_name;
+                                }
+                                break;
+                        }
+                        mixpanel.track('snsb.extension.command.addRecord.success', {
+                            sys_class_name: className
                         });
-                    }).catch((er) =>
+                    }
+                    catch (error)
                     {
-                        console.error(er);
                         mixpanel.track('snsb.extension.command.addRecord.fail', {
-                            error: er
+                            error: error
                         });
-                    });
+                    }
                 }
             });
         }
@@ -273,6 +317,7 @@ export function activate(context: vscode.ExtensionContext)
 
     let createRecord = vscode.commands.registerCommand('snsb.createRecord', () =>
     {
+        //add rest
         if (instance.IsInitialized())
         {
             let availableRecords = Object.keys(SupportedRecords);
@@ -368,6 +413,9 @@ export function activate(context: vscode.ExtensionContext)
 
                                         break;
                                     }
+
+                                    case "Scripted Rest API":
+                                        throw new Error("not Implemented");
                                     default: {
                                         //@ts-ignore index error false
                                         let r = instance.CreateRecord(SupportedRecords[recordtype], {

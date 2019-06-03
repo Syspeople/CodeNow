@@ -59,7 +59,7 @@ export class ScriptedRestService extends Record implements ISysWsDefinition, Qui
         if (instance.IsInitialized() && instance.Url)
         {
             let f = new Array<KeyValuePair<FileTypes, Uri>>();
-            return new MetaData(record, f, instance.Url.host, record.name);
+            return new MetaData(record, f, instance.Url.host, record.service_id);
         }
         throw new Error("Instance not initialized");
     }

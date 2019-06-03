@@ -1,4 +1,4 @@
-import { ISysMetadata, ScriptInclude, ISysWsDefinition, ISysScriptInclude, Widget, ISpWidget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, SpHeaderFooter, ISpHeaderFooter, MailScript, ISysMailScript, ScriptAction, ISysEventScriptAction, Processor, ISysProcessor, UiAction, ISysUiAction, ScriptedRestResource, ScriptedRestService, AngularProvider, IAngularProvider, UiPage, IUiPage, FixScript, IFixScript, ValidationScript, IValidationScript } from "./all";
+import { ISysMetadata, ScriptInclude, ScriptedRestResource, ISysWsDefinition, ISysScriptInclude, Widget, ISpWidget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, SpHeaderFooter, ISpHeaderFooter, MailScript, ISysMailScript, ScriptAction, ISysEventScriptAction, Processor, ISysProcessor, UiAction, ISysUiAction, ScriptedRestService, AngularProvider, IAngularProvider, UiPage, IUiPage, FixScript, IFixScript, ValidationScript, IValidationScript, ISysWsOperation } from "./all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
 import { FileTypes } from "../Manager/all";
 
@@ -31,6 +31,8 @@ export class Converter
                 return new MailScript(<ISysMailScript>c);
             case "sys_ws_definition":
                 return new ScriptedRestService(<ISysWsDefinition>c);
+            case "sys_ws_operation":
+                return new ScriptedRestResource(<ISysWsOperation>c);
             case "sysevent_script_action":
                 return new ScriptAction(<ISysEventScriptAction>c);
             case "sys_processor":

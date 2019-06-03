@@ -7,7 +7,9 @@ export enum SupportedRecords
     "Processor" = "sys_processor",
     "Script Action" = "sysevent_script_action",
     "Script Include" = "sys_script_include",
-    "Scripted Rest API" = "sys_ws_definition",
+    //required to cache records
+    "Scripted Rest Definition" = "sys_ws_definition",
+    "Scripted Rest API" = "sys_ws_operation",
     "Stylesheet" = "sp_css",
     "Theme" = "sp_theme",
     "UI Page" = "sys_ui_page",

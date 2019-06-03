@@ -11,4 +11,6 @@ export interface ISysWsOperation extends ISysMetadata, IWorkspaceConvertable
     relative_path: string;
     description: string;
     operation_script: string;
+    http_method: string;
+    operation_uri: string;
 }
