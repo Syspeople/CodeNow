@@ -219,7 +219,6 @@ export class Instance
      */
     public OpenInPlatformRecord(record: ISysMetadata): void
     {
-        //nav_to.do?uri=%2Fsys_script_include.do%3Fsys_id%3D8a060ae7c0a80027000b70aecfd1f263
         if (this._url)
         {
             let url = `${this._url.href}nav_to.do?uri=/${record.sys_class_name}.do?sys_id=${record.sys_id}`;
@@ -728,6 +727,34 @@ var current = current;
             case SupportedRecords["Scripted Rest API"]:
                 return {
                     name: record.name,
+                    http_method: record.http_method,
+                    relative_path: "/",
+                    web_service_definition: record.web_service_definition,
+                    operation_script: `
+(
+    /**
+     * @param {sn_ws.RESTAPIRequest} request 
+     * @param {sn_ws.RESTAPIResponse} response 
+     */
+    function process(request, response)
+    {
+        try
+        {
+            //add your code
+        }
+        catch (error)
+        {
+            var err = new sn_ws_err.ServiceError();
+            err.setStatus(500);
+            err.setMessage(error);
+            return err;
+        };
+    })(request, response);`
+                };
+            case SupportedRecords["Scripted Rest Definition"]:
+                return {
+                    name: record.name,
+                    service_id: record.name.replace(' ', '_').toLowerCase()
                 };
             case SupportedRecords["Stylesheet"]:
                 return {

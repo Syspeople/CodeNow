@@ -370,6 +370,9 @@ export class Api
                 case SupportedRecords.Processor:
                     url = url + `?sysparm_query=sys_policy=^type=script`;
                     break;
+                case SupportedRecords["Scripted Rest API"]:
+                    url = url + `?sysparm_query=sys_policy=`;
+                    break;
                 default:
                     url = url + `?sysparm_query=sys_policy=`;
                     break;
@@ -392,7 +395,7 @@ export class Api
         if (this.HttpClient)
         {
             //update sets in global and in progress
-            let url = `${this._SNSysUpdateSet}?sysparm_query=state=in progress`;
+            let url = `${this._SNSysUpdateSet}?sysparm_query=state=in progress^application.scope=global`;
             return this.HttpClient.get(url);
         }
     }
