@@ -8,6 +8,7 @@ import * as ServiceNow from './ServiceNow/all';
 import * as Managers from './Manager/all';
 import { StatusBarManager, NotifationState } from './Manager/all';
 import { SupportedRecords, ISysWsOperation } from './ServiceNow/all';
+import { ISysMetadataIWorkspaceConvertable } from './MixIns/all';
 
 let token;
 if (vscode.env.machineId === "someValue.machineId")
@@ -321,13 +322,20 @@ export function activate(context: vscode.ExtensionContext)
         if (instance.IsInitialized())
         {
             let availableRecords = Object.keys(SupportedRecords);
-            let p = vscode.window.showQuickPick(availableRecords, { placeHolder: "Select Record" });
+
+            //remove Scripted rest definitions. Not selecetable but required for caching purposes. 
+            let availableRecordsFiltered = availableRecords.filter((i) =>
+            {
+                return i !== "Scripted Rest Definition";
+            });
+
+            let p = vscode.window.showQuickPick(availableRecordsFiltered, { placeHolder: "Select Record" });
             p.then((recordtype) =>
             {
                 if (recordtype)
                 {
                     let n = vscode.window.showInputBox({ prompt: "Name of the Record" });
-                    n.then((name) =>
+                    n.then(async (name) =>
                     {
                         if (name)
                         {
@@ -413,9 +421,55 @@ export function activate(context: vscode.ExtensionContext)
 
                                         break;
                                     }
-
                                     case "Scripted Rest API":
-                                        throw new Error("not Implemented");
+                                        //select http method.
+
+                                        let method = await vscode.window.showQuickPick(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], { placeHolder: "Select HTTP method" });
+
+                                        //Create or use existing rest service
+                                        let existing = await vscode.window.showQuickPick(['Existing Rest Service', 'New Rest Service'], { placeHolder: "Select Rest Service" });
+
+                                        if (existing)
+                                        {
+                                            let definition: ISysMetadataIWorkspaceConvertable | undefined;
+                                            if (existing === "New Rest Service")
+                                            {
+                                                let restServiceName = await vscode.window.showInputBox({ prompt: "Name of the service" });
+
+                                                if (restServiceName)
+                                                {
+                                                    definition = await instance.CreateRecord(SupportedRecords["Scripted Rest Definition"], {
+                                                        'name': restServiceName
+                                                    });
+                                                }
+                                            }
+                                            else
+                                            {
+
+                                                let definitions = await instance.GetRecords(SupportedRecords["Scripted Rest Definition"]);
+
+                                                if (definitions)
+                                                {
+                                                    definition = await vscode.window.showQuickPick(definitions, { placeHolder: "Select Rest Service" });
+                                                }
+                                            }
+
+                                            //create operation
+                                            if (definition)
+                                            {
+                                                let newOperation = await instance.CreateRecord(SupportedRecords["Scripted Rest API"], {
+                                                    'name': name,
+                                                    'web_service_definition': definition.sys_id,
+                                                    'http_method': method,
+                                                });
+
+                                                if (newOperation)
+                                                {
+                                                    wm.AddRecord(newOperation, instance);
+                                                }
+                                            }
+                                        }
+                                        break;
                                     default: {
                                         //@ts-ignore index error false
                                         let r = instance.CreateRecord(SupportedRecords[recordtype], {

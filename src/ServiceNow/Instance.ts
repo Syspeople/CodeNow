@@ -727,6 +727,34 @@ var current = current;
             case SupportedRecords["Scripted Rest API"]:
                 return {
                     name: record.name,
+                    http_method: record.http_method,
+                    relative_path: "/",
+                    web_service_definition: record.web_service_definition,
+                    operation_script: `
+(
+    /**
+     * @param {sn_ws.RESTAPIRequest} request 
+     * @param {sn_ws.RESTAPIResponse} response 
+     */
+    function process(request, response)
+    {
+        try
+        {
+            //add your code
+        }
+        catch (error)
+        {
+            var err = new sn_ws_err.ServiceError();
+            err.setStatus(500);
+            err.setMessage(error);
+            return err;
+        };
+    })(request, response);`
+                };
+            case SupportedRecords["Scripted Rest Definition"]:
+                return {
+                    name: record.name,
+                    service_id: record.name.replace(' ', '_').toLowerCase()
                 };
             case SupportedRecords["Stylesheet"]:
                 return {
