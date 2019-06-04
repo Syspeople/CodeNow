@@ -48,7 +48,7 @@ Add a template for record creation in extension.ts method:getTemplate.
 specific query parameters for record type. only if required. in **Api.ts**
 
 ### Step 9 Optional
-Add custom handling of cration if required.
+Add custom handling of creation if required.
 
 
 ## Add class declarations

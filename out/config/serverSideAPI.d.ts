@@ -1857,8 +1857,320 @@ declare interface HttpServletRequest extends ServletRequest
 
 }
 
+declare namespace sn_ws_err
+{
+    /**
+     * Indicates an error in the request, such as incorrect syntax.
+     * 
+     * status code: 400
+     */
+    class BadRequestError
+    {
+        constructor(message?: string);
+    }
+
+    /**
+     * Indicates a requested resource is not available.
+     * 
+     * status code: 404
+     */
+    class NotFoundError
+    {
+        constructor(message?: string);
+    }
+
+    /**
+     * Indicates the Accept header value passed in the request is incompatible with the web service.
+     *      
+     * status code: 406
+     */
+    class NotAcceptableErro
+    {
+        constructor(message?: string);
+    }
+
+    /**
+     * Indicates that there is a conflict in the request, such as multiple conflicting updates.
+     *      
+     * status code: 409
+     */
+    class ConflictError
+    {
+        constructor(message?: string);
+    }
+
+    /**
+     * Indicates the request media type is not supported by the web service.
+     *      
+     * status code: 415
+     */
+    class UnsuppotedMediaTypeError
+    {
+        constructor(message?: string);
+    }
+
+    /**
+     * Used to create custom errors.
+     * 
+     * ```
+var myError = new sn_ws_err.ServiceError();
+myError.setStatus(418);
+myError.setMessage("I am a Teapot");
+myError.setDetail("Here are the details about this error");
+response.setError(myError);
+```
+     */
+    class ServiceError
+    {
+        constructor();
+
+        /**
+         * Set http status code.
+         * @param status Http status code
+         */
+        setStatus(status: number): void;
+
+        /**
+         * Set error message
+         * @param message message
+         */
+        setMessage(message: string): void;
+
+        /**
+         * Set error details
+         * @param detail 
+         */
+        setDetail(detail: string): void;
+    }
+
+
+}
+
 declare namespace sn_ws
 {
+    /**
+     * No constructor, globally available in Scripted Rest Api scripts.
+     */
+    class RESTAPIRequest
+    {
+        /**
+         * The body of the request.
+         * 
+         * The body of the request. You can access data from the body object using the RESTAPIRequestBody API.
+         */
+        body: RESTAPIRequestBody;
+
+        /**
+         * All headers from the request.
+         * 
+         * ```
+var headers = request.headers; 
+var acceptHeader = headers.Accept;
+var myCustomHeader = headers.myCustom; 
+var specialHeader = headers['spe ci-al'];
+```
+         */
+        headers: object;
+
+        /**
+         * The path parameters passed in the request URI.
+         *
+         * ```
+var pathParams = request.pathParams;
+var tableName = pathParams.tableName;
+var id = pathParams.id;
+```
+         */
+        pathParams: object;
+
+        /**
+         * The query parameters from the web service request.
+         * 
+         * ```
+var queryParams = request.queryParams; 
+var isActiveQuery = queryParams.active;
+var nameQueryVal = queryParams.name;
+```
+         */
+        queryParams: Object;
+
+        /**
+         * The entire query added to the endpoint URI.
+         */
+        queryString: string;
+
+        /**
+         * The request URI, excluding domain information.
+         */
+        uri: string;
+
+        /**
+         * The entire request URL.
+         */
+        url: string;
+
+        /**
+         * Returns the value of a specific header from the web service request.
+         * 
+         * ```
+var acceptHeader = request.getHeader('accept');
+```
+         * @param headerName 
+         */
+        getHeader(headerName: string): string;
+
+        /**
+         * Get the content types specified in the request Accept header.
+         */
+        getSupportedResponseContentTypes(): Array<string>;
+    }
+
+    /**
+     * No constructor - available through RESTAPIRequest
+     */
+    class RESTAPIRequestBody
+    {
+        /**
+         * The content of the request body.'
+         * 
+         * ```
+var requestData = requestBody.data;
+if (requestData instanceof Array) { 
+ entry = requestData[0].name;
+ id = requestData[0].id;
+}
+```
+         */
+        data: Object | Array<Object>
+
+        /**
+         * The content of the request body, as a stream.
+         */
+        dataStream: object;
+
+        /**
+         * The content of the request body, as a String.
+         */
+        dataString: string;
+
+        /**
+         * Determine if there are additional entries in the request body.
+         * 
+         * Use this method with the nextEntry() method to iterate over multiple request body entries.
+         */
+        hasNext(): boolean;
+
+        /**
+         * Retrieve one entry from the request body as a script object.
+         * 
+         * Use this method with the hasNext() method to iterate over multiple request body entries.
+         * ```
+var requestBody = request.body;
+while(requestBody.hasNext()){
+var entry = requestBody.nextEntry();
+}
+```
+         */
+        nextEntry(): Object;
+    }
+
+    /**
+     * No Constructor - Available through scripted rest apis.
+     */
+    class RESTAPIResponse
+    {
+        /**
+         * Get the ResponseStreamWriter for this response, allowing you to write directly to the response stream.
+         */
+        getStreamWriter(): RESTAPIResponseStream;
+
+        /**
+         * Sets the body content to send in the web service response.
+         * 
+         * Object in body is automatically serialized to JSON or XML based on the Accept header. 
+         * @param body The response body, as a JavaScript object.
+         */
+        setBody(body: object): void;
+
+        /**
+         * Assigns a value to the Content-Type header in the web service response.
+         * 
+         * You must set a response content type before writing the response. The content type is set automatically for string responses, based on the request Accept header value.
+         * 
+         * Setting an invalid content type causes the response to default to JSON. Failing to set a content type results in a status code 500 error when sending a binary response.
+         * @param contentType 
+         */
+        setContentType(contentType: string): void;
+
+        /**
+        * Configure the response to return an error.
+        * @param error An error object.
+        */
+        setError(error: object): void;
+
+        /**
+         * Assign a value to a REST service response header.
+         * @param header The header you want to set.
+         * @param value The value to assign the specified header.
+         */
+        setHeader(header: string, value: string): void;
+
+        /**
+         * Sets the headers for the web service response.
+         * 
+         * 
+         * ```
+var headers = {};
+headers.X-Total-Count=100;
+headers.Location='https://instance.service-now.com/<endpoint_to_resource>';
+response.setHeaders(headers);
+```
+         * @param headers A JavaScript object listing each header and the value to assign that header.
+         */
+        setHeaders(headers: Object): void;
+
+        /**
+         * Assigns a value to the Location header in the web service response.
+         * @param location 
+         */
+        setLocation(location: string): void;
+
+        /**
+         * Sets the status code number for the web service response.
+         * @param status 
+         */
+        setStatus(status: number): void;
+    }
+
+    /**
+     * No Constructor - Available through scripted rest apis.
+     */
+    class RESTAPIResponseStream
+    {
+        /**
+         * Write an input stream to the response stream.
+         * 
+         * You must set the content type and status code before calling the writeStream() method or the response will fail. You cannot modify these values after calling the writeStream() method.
+         * ```
+response.setContentType('application/json');
+response.setStatus(200);
+var writer = response.getStreamWriter();
+writer.writeStream(attachmentStream);
+```
+         * @param stream An attachment or a response stream from a third-party service.
+         */
+        writeStream(stream: object): void;
+
+        /**
+         * Write string data to the response stream.
+         * 
+         * You must set the content type and status code before calling the writeString() method or the response will fail. 
+         * 
+         * You cannot modify these values after calling the writeString() method.
+         * @param data The string to add to the response data.
+         */
+        writeString(data: string): void;
+    }
     class RestMessagev2
     {
         /**

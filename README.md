@@ -21,7 +21,6 @@ This extension aims to provide ServiceNow developers a first class development e
     - [Angular API's / ServicePortal](#angular-apis--serviceportal)
     - [Additional](#additional)
     - [ClientSide API's](#clientside-apis)
-    - [Snippets](#Snippets)
   - [Manually Specify Types](#manually-specify-types)
     - [Angular DI classes](#angular-di-classes)
     - [Custom Objects created in code.](#custom-objects-created-in-code)
@@ -42,6 +41,7 @@ This extension aims to provide ServiceNow developers a first class development e
 - [Options](#options)
   - [uploadOnSave](#uploadonsave)
   - [addOnOpen](#addonopen)
+    - [Snippets](#snippets)
     - [Contributors](#contributors)
 
 
@@ -138,6 +138,17 @@ NB: Some API's are not fully documented (Publicly anyways). if you miss a method
   * GlideHttpHeader
   * RestMessageV2
   * RestResponseV2
+  * RESTAPIRequest
+  * RESTAPIRequestBody
+  * RESTAPIResponse
+  * RESTAPIResponseStream
+* sn_ws_err
+  * ServiceError
+  * BadRequestError
+  * NotFoundError
+  * NotAcceptableError
+  * ConflictError
+  * UnsuppotedMediaTypeError
   
 
 ### Angular API's / ServicePortal
@@ -308,6 +319,5 @@ default: true
  [CGraabaek](https://github.com/CGraabaek)
 
  #### How to contribute
-
  [Here](/contribution.md) is a contribution guide, outlining the steps to be taken to contribute to this project.
  
