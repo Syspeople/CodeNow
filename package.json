@@ -1,7 +1,7 @@
 {
-    "name": "snsb",
-    "displayName": "ServiceNow Script Bridge",
-    "description": "Work with ServiceNow Ressource straight from Vs Code.",
+    "name": "cn",
+    "displayName": "ServiceNow CodeNow",
+    "description": "Empower your ServiceNow development with zero configuration. Create.",
     "version": "0.8.0",
     "publisher": "ambs",
     "repository": {
@@ -33,72 +33,18 @@
             {
                 "title": "ServiceNow Scripting Bridge",
                 "properties": {
-                    "snsb.uploadOnSave": {
+                    "cn.uploadOnSave": {
                         "type": "boolean",
                         "default": true,
                         "description": "Automatically upload record on save",
                         "scope": "window"
                     },
-                    "snsb.addOnOpen": {
+                    "cn.addOnOpen": {
                         "type": "boolean",
                         "default": true,
                         "description": "On open automatically add record to workspace record if outdated",
                         "scope": "window"
                     },
-                    "snsb.templates": {
-                        "type": "array",
-                        "description": "Define templates available when creating new records(Experimental)",
-                        "scope": "window",
-                        "items": {
-                            "definitions": {},
-                            "type": "object",
-                            "title": "Template Schema",
-                            "required": [
-                                "name",
-                                "class_name",
-                                "template"
-                            ],
-                            "properties": {
-                                "name": {
-                                    "$id": "#/properties/name",
-                                    "type": "string",
-                                    "title": "The Name Schema",
-                                    "default": "",
-                                    "examples": [
-                                        "templateName"
-                                    ],
-                                    "pattern": "^(.*)$"
-                                },
-                                "class_name": {
-                                    "$id": "#/properties/class_name",
-                                    "type": "string",
-                                    "title": "The Class_name Schema",
-                                    "default": "",
-                                    "examples": [
-                                        "sys_script_include"
-                                    ],
-                                    "pattern": "^(.*)$"
-                                },
-                                "template": {
-                                    "$id": "#/properties/template",
-                                    "type": "string",
-                                    "title": "The Template Schema",
-                                    "default": "",
-                                    "examples": [
-                                        "code"
-                                    ],
-                                    "pattern": "^(.*)$"
-                                }
-                            }
-                        },
-                        "default": [
-                            {
-                                "name": "DisplayName",
-                                "class_name": "sys_script_include",
-                                "template": "Code"
-                            }
-                        ]
-                    }
                 }
             }
         ],
@@ -106,114 +52,114 @@
         "menus": {
             "explorer/context": [
                 {
-                    "group": "snsb",
-                    "command": "snsb.updateRecord",
+                    "group": "cn",
+                    "command": "cn.updateRecord",
                     "when": "resourceScheme == file"
                 },
                 {
-                    "group": "snsb",
-                    "command": "snsb.saveRecord",
+                    "group": "cn",
+                    "command": "cn.saveRecord",
                     "when": "resourceScheme == file"
                 },
                 {
-                    "group": "snsb",
-                    "command": "snsb.openInPlatformRecord",
+                    "group": "cn",
+                    "command": "cn.openInPlatformRecord",
                     "when": "resourceScheme == file"
                 },
                 {
-                    "group": "snsb",
-                    "command": "snsb.openInPlatformList",
+                    "group": "cn",
+                    "command": "cn.openInPlatformList",
                     "when": "resourceScheme == file"
                 },
                 {
-                    "group": "snsb",
-                    "command": "snsb.deleteRecord",
+                    "group": "cn",
+                    "command": "cn.deleteRecord",
                     "when": "resourceScheme == file"
                 }
             ],
             "commandPalette": [
                 {
-                    "command": "snsb.saveRecord",
+                    "command": "cn.saveRecord",
                     "when": "false"
                 },
                 {
-                    "command": "snsb.updateRecord",
+                    "command": "cn.updateRecord",
                     "when": "false"
                 },
                 {
-                    "command": "snsb.openInPlatformRecord",
+                    "command": "cn.openInPlatformRecord",
                     "when": "false"
                 },
                 {
-                    "command": "snsb.openInPlatformList",
+                    "command": "cn.openInPlatformList",
                     "when": "false"
                 },
                 {
-                    "command": "snsb.deleteRecord",
+                    "command": "cn.deleteRecord",
                     "when": "false"
                 }
             ]
         },
         "commands": [
             {
-                "command": "snsb.openInPlatformRecord",
+                "command": "cn.openInPlatformRecord",
                 "title": "Open Record in Platform",
-                "category": "snsb"
+                "category": "cn"
             },
             {
-                "command": "snsb.openInPlatformList",
+                "command": "cn.openInPlatformList",
                 "title": "Open List in Platform",
-                "category": "snsb"
+                "category": "cn"
             },
             {
-                "command": "snsb.setUpdateset",
+                "command": "cn.setUpdateset",
                 "title": "Change Update Set",
-                "category": "snsb"
+                "category": "cn"
             },
             {
-                "command": "snsb.connect",
+                "command": "cn.connect",
                 "title": "Connect to ServiceNow",
-                "category": "snsb"
+                "category": "cn"
             },
             {
-                "command": "snsb.clearWorkSpaceState",
+                "command": "cn.clearWorkSpaceState",
                 "title": "Clear Instance",
-                "category": "snsb"
+                "category": "cn"
             },
             {
-                "command": "snsb.rebuildCache",
+                "command": "cn.rebuildCache",
                 "title": "Refresh Records",
-                "category": "snsb"
+                "category": "cn"
             },
             {
-                "command": "snsb.addRecord",
+                "command": "cn.addRecord",
                 "title": "Add Record to Workspace",
-                "category": "snsb"
+                "category": "cn"
             },
             {
-                "command": "snsb.saveRecord",
+                "command": "cn.saveRecord",
                 "title": "Save Record",
-                "category": "snsb"
+                "category": "cn"
             },
             {
-                "command": "snsb.updateRecord",
+                "command": "cn.updateRecord",
                 "title": "Update Record",
-                "category": "snsb"
+                "category": "cn"
             },
             {
-                "command": "snsb.createUpdateSet",
+                "command": "cn.createUpdateSet",
                 "title": "Create Updateset",
-                "category": "snsb"
+                "category": "cn"
             },
             {
-                "command": "snsb.createRecord",
+                "command": "cn.createRecord",
                 "title": "Create Record",
-                "category": "snsb"
+                "category": "cn"
             },
             {
-                "command": "snsb.deleteRecord",
+                "command": "cn.deleteRecord",
                 "title": "Delete Record",
-                "category": "snsb"
+                "category": "cn"
             }
         ]
     },

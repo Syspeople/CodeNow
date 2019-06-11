@@ -12,7 +12,7 @@ export class StatusBarManager
         this.state = window.createStatusBarItem(StatusBarAlignment.Left, -500);
         this.SetNotificationState(NotifationState.NotConnected);
         this.updateSet = window.createStatusBarItem(StatusBarAlignment.Left, -501);
-        this.updateSet.command = "snsb.setUpdateset";
+        this.updateSet.command = "cn.setUpdateset";
     }
 
     private state: StatusBarItem;
@@ -41,7 +41,7 @@ export class StatusBarManager
                 case NotifationState.NotConnected:
                     this.state.text = `$(stop)`;
                     this.state.tooltip = "Not Connected to ServiceNow";
-                    this.state.command = "snsb.connect";
+                    this.state.command = "cn.connect";
                     if (this.updateSet)
                     {
                         this.updateSet.hide();
