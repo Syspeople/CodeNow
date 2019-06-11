@@ -1,7 +1,7 @@
 {
     "name": "cn",
-    "displayName": "ServiceNow CodeNow",
-    "description": "Empower your ServiceNow development with zero configuration. Create.",
+    "displayName": "CodeNow",
+    "description": "Empower your ServiceNow development with zero configuration.",
     "version": "0.8.0",
     "publisher": "ambs",
     "repository": {
@@ -31,7 +31,7 @@
         ],
         "configuration": [
             {
-                "title": "ServiceNow Scripting Bridge",
+                "title": "",
                 "properties": {
                     "cn.uploadOnSave": {
                         "type": "boolean",
@@ -44,11 +44,10 @@
                         "default": true,
                         "description": "On open automatically add record to workspace record if outdated",
                         "scope": "window"
-                    },
+                    }
                 }
             }
         ],
-        "configurationDefaults": {},
         "menus": {
             "explorer/context": [
                 {
@@ -104,62 +103,62 @@
             {
                 "command": "cn.openInPlatformRecord",
                 "title": "Open Record in Platform",
-                "category": "cn"
+                "category": "CodeNow"
             },
             {
                 "command": "cn.openInPlatformList",
                 "title": "Open List in Platform",
-                "category": "cn"
+                "category": "CodeNow"
             },
             {
                 "command": "cn.setUpdateset",
                 "title": "Change Update Set",
-                "category": "cn"
+                "category": "CodeNow"
             },
             {
                 "command": "cn.connect",
                 "title": "Connect to ServiceNow",
-                "category": "cn"
+                "category": "CodeNow"
             },
             {
                 "command": "cn.clearWorkSpaceState",
                 "title": "Clear Instance",
-                "category": "cn"
+                "category": "CodeNow"
             },
             {
                 "command": "cn.rebuildCache",
                 "title": "Refresh Records",
-                "category": "cn"
+                "category": "CodeNow"
             },
             {
                 "command": "cn.addRecord",
                 "title": "Add Record to Workspace",
-                "category": "cn"
+                "category": "CodeNow"
             },
             {
                 "command": "cn.saveRecord",
                 "title": "Save Record",
-                "category": "cn"
+                "category": "CodeNow"
             },
             {
                 "command": "cn.updateRecord",
                 "title": "Update Record",
-                "category": "cn"
+                "category": "CodeNow"
             },
             {
                 "command": "cn.createUpdateSet",
                 "title": "Create Updateset",
-                "category": "cn"
+                "category": "CodeNow"
             },
             {
                 "command": "cn.createRecord",
                 "title": "Create Record",
-                "category": "cn"
+                "category": "CodeNow"
             },
             {
                 "command": "cn.deleteRecord",
                 "title": "Delete Record",
-                "category": "cn"
+                "category": "CodeNow"
             }
         ]
     },
