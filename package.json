@@ -4,6 +4,7 @@
     "description": "Empower your ServiceNow development with zero configuration.",
     "version": "0.8.0",
     "publisher": "ambs",
+    "license": "MIT",
     "repository": {
         "type": "git",
         "url": "https://github.com/Syspeople/snsb"
