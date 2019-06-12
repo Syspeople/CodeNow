@@ -48,6 +48,10 @@ jobs:
     pool:
       vmImage: 'vs2017-win2016'
     steps:
+      - task: PowerShell@2
+        inputs:
+          targetType: inline
+          script: '. .\buildfunctions.ps1; $v = addBuildNumber -buildNumber $(Build.BuildNumber);write-host "##vso[task.setvariable variable=vsix]cn-$v.vsix"' # Required when targetType == Inline
       - task: NodeTool@0
         inputs:
           versionSpec: '8.x'
@@ -55,14 +59,10 @@ jobs:
       - script: |
           npm install
         displayName: 'npm install'
-      - task: PowerShell@2
-        inputs:
-          targetType: inline
-          script: '. .\buildfunctions.ps1; $v = addBuildNumber -buildNumber $(Build.BuildNumber);write-host "##vso[task.setvariable variable=vsix]cn-$v.vsix"' # Required when targetType == Inline
       - task: Bash@3
         inputs:
           targetType: inline
-          script: 'npm install -g vsce && vsce publish -p $(ambsKey)' # Required when targetType == Inline
+          script: 'npm install && npm install -g vsce && vsce publish -p $(ambsKey)' # Required when targetType == Inline
 # - script: |
 #     npm install -g vsce
 #     vsce package -o ".\$(vsix)"
