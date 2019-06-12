@@ -2,7 +2,7 @@
     "name": "cn",
     "displayName": "CodeNow",
     "description": "Empower your ServiceNow development with zero configuration.",
-    "version": "0.8.0",
+    "version": "0.9.0",
     "publisher": "j27q6tasx6z32tftojfekap44umwkigmng2bf3gmj6aapra6zzya",
     "license": "MIT",
     "repository": {
