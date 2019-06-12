@@ -1,26 +1,23 @@
 [![Build Status](https://dev.azure.com/DevOpsSyspeople/ServiceNow%20Scripting%20Bridge/_apis/build/status/Syspeople.snsb?branchName=master)](https://dev.azure.com/DevOpsSyspeople/ServiceNow%20Scripting%20Bridge/_build/latest?definitionId=1&branchName=master)
 
-# SNSB (ServiceNow Scripting Bridge)
+# CodeNow
 The Visual Code Extension for developing on the ServiceNow platform.
 
 This extension aims to provide ServiceNow developers a first class development experience without depending on instance specific configuration.
 
 **No ServiceNow configuration required.**
 
-- [SNSB (ServiceNow Scripting Bridge)](#snsb-servicenow-scripting-bridge)
+- [CodeNow](#codenow)
 - [Which elements is added?](#which-elements-is-added)
 - [Features](#features)
 - [How to](#how-to)
-- [Try it](#try-it)
-  - [Vscode Debugger](#vscode-debugger)
-  - [Package and install](#package-and-install)
 - [Additional Extensions](#additional-extensions)
   - [Supported Records](#supported-records)
   - [Intellisense](#intellisense)
-    - [ServerSide API's](#serverside-apis)
+    - [ServiceNow ServerSide API's](#servicenow-serverside-apis)
+    - [ServiceNow ClientSide API's](#servicenow-clientside-apis)
     - [Angular API's / ServicePortal](#angular-apis--serviceportal)
     - [Additional](#additional)
-    - [ClientSide API's](#clientside-apis)
   - [Manually Specify Types](#manually-specify-types)
     - [Angular DI classes](#angular-di-classes)
     - [Custom Objects created in code.](#custom-objects-created-in-code)
@@ -65,29 +62,6 @@ No code elements will not added to the extension in a way that will allow you to
 # How to
 Add screenshots and stuff. 
 
-# Try it
-You need to have [Node.js](https://nodejs.org/en/) installed either way. make sure the path variable is up to date (reboot).
-
-Only Basic auth is currently available. 
-
-
-## Vscode Debugger
-1. Clone and open repository
-2. rebuild module dependencies using command "npm install" (make sure you are located in the workspace root)
-3. start debugger
-4. when debugging open a workspace (a folder)
-5. invoke command: Connect to ServiceNow
-
-## Package and install
-1. Clone the repository. Remember do have the branch you want checked out and synced.
-2. Install Visual Studio Code Extensions: **npm install -g vsce** 
-3. Open a terminal and cd to root dir of your repository.
-4. package extension: **vsce package**
-5. Open Vscode and use command: install from vsix
-6. navigate to packaged vsix from step 4 and open it. 
-
-Builds will automatically be made available at a later point. 
-
 # Additional Extensions
 Extensions that go very well with this extension
 
@@ -118,7 +92,7 @@ Currently there is intellisense for the following API's.
 
 NB: Some API's are not fully documented (Publicly anyways). if you miss a method or attribute please create an issue.
 
-### ServerSide API's
+### ServiceNow ServerSide API's
 * GlideRecord
 * GlideSystem (gs)
 * GlideSPScriptable ($sp)
@@ -150,6 +124,8 @@ NB: Some API's are not fully documented (Publicly anyways). if you miss a method
   * ConflictError
   * UnsuppotedMediaTypeError
   
+### ServiceNow ClientSide API's
+* GlideAjax
 
 ### Angular API's / ServicePortal
 * $http
@@ -167,8 +143,6 @@ eg.:
 * $q is $Q
 * $http is $Http
 
-### ClientSide API's
-* GlideAjax
 
 ## Manually Specify Types
 Occassionally it is required to manually specify a type in order for Vs Code to properly identify class and provide intellisense.
@@ -303,9 +277,8 @@ Enable or disable automatic upload on save. If a newer version exists on the ins
 
 default: true
 
-
 ## addOnOpen
-Enable or disable automatic import on document open. Only applied if higher version exists on instance.
+Enable or disable automatic import on document open. Only applied if newer version exists on instance.
 
 default: true
 

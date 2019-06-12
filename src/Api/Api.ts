@@ -362,19 +362,19 @@ export class Api
             switch (type)
             {
                 case SupportedRecords.Widget:
-                    url = url + `?sysparm_query=internal=false^sys_policy=`;
+                    url = url + `?sysparm_query=internal=false^sys_policy=^sys_scope=global`;
                     break;
                 case SupportedRecords["Header or Footer Widget"]:
-                    url = url + `?sysparm_query=internal=false^sys_policy=`;
+                    url = url + `?sysparm_query=internal=false^sys_policy=^sys_scope=global`;
                     break;
                 case SupportedRecords.Processor:
-                    url = url + `?sysparm_query=sys_policy=^type=script`;
+                    url = url + `?sysparm_query=sys_policy=^type=script^sys_scope=global`;
                     break;
                 case SupportedRecords["Scripted Rest API"]:
                     url = url + `?sysparm_query=sys_policy=`;
                     break;
                 default:
-                    url = url + `?sysparm_query=sys_policy=`;
+                    url = url + `?sysparm_query=sys_policy=^sys_scope=global`;
                     break;
             }
             return this.HttpClient.get(url);
