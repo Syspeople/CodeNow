@@ -14,11 +14,10 @@ pr:
     include:
       - dev
 
-pool:
-  vmImage: 'vs2017-win2016'
-
 jobs:
   - job: Prerequisites
+    pool:
+      vmImage: 'vs2017-win2016'
     steps:
       - task: NodeTool@0
         inputs:
