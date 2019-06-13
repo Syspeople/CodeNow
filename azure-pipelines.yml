@@ -17,6 +17,7 @@ pr:
     include:
       - dev
 
+#Build from dev
 jobs:
   - job: PackageVsix
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
@@ -39,7 +40,7 @@ jobs:
         inputs:
           artifactName: "$(vsix)"
           targetPath: "./$(vsix)"
-    #Not complete yet
+#publish from master
   - job: PublishMarketPlace 
     condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
     pool:
@@ -60,9 +61,3 @@ jobs:
         inputs:
           targetType: inline
           script: 'npm install && npm install -g vsce && vsce publish -p $(ambsKey)' # Required when targetType == Inline
-# - script: |
-#     npm install -g vsce
-#     vsce package -o ".\$(vsix)"
-#   displayName: 'Package'
-
-#publish vsix
