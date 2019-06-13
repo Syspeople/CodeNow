@@ -23,8 +23,8 @@ export * from './ISpHeaderFooter';
 export * from './SpHeaderFooter';
 export * from './ISysMailScript';
 export * from './MailScript';
-export * from './IScriptedRestAPIResource';
-export * from './ScriptedRestAPIResource';
+export * from './ISysWsOperation';
+export * from './ISysWsDefinition';
 export * from './Converter';
 export * from './SupportedRecords';
 export * from './ISysEventScriptAction';
@@ -39,5 +39,7 @@ export * from './ISysUiAction';
 export * from './UiAction';
 export * from './IFixScript';
 export * from './FixScript';
-export * from './ValidationScript'
-export * from './IValidationScript'
+export * from './ValidationScript';
+export * from './IValidationScript';
+export * from './ScriptedRestResource';
+export * from './ScriptedRestService';

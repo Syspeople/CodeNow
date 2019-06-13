@@ -72,7 +72,6 @@ export class MetaData extends Record implements ILocalMetaData
     {
         var displayValue = this.getClassDisplayValue();
         return Uri.parse(`${this.basePath}/${displayValue}`);
-
     }
 
     /**
@@ -81,7 +80,15 @@ export class MetaData extends Record implements ILocalMetaData
     public getRecordUri(): Uri
     {
         var displayValue = this.getClassDisplayValue();
-        return Uri.parse(`${this.basePath}/${displayValue}/${this.RecordName}`);
+        switch (this.sys_class_name)
+        {
+            case "sys_ws_operation":
+                return Uri.parse(`${this.basePath}/${displayValue}`);
+
+            default:
+                return Uri.parse(`${this.basePath}/${displayValue}/${this.RecordName}`);
+        }
+
     }
 
     /**

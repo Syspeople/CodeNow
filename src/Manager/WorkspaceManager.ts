@@ -166,14 +166,6 @@ export class WorkspaceManager
 
         if (options)
         {
-            //ensure sysclass folder.
-            let uriSys = options.getSysClassUri();
-            this.CreateFolder(uriSys.fsPath);
-
-            //ensure record Folder
-            let uriRecord = options.getRecordUri();
-            this.CreateFolder(uriRecord.fsPath);
-
             //all supported files.
             let arrEnum = MetaData.getFileTypes();
 
@@ -184,6 +176,7 @@ export class WorkspaceManager
                 let uri = options.getFileUri(element);
                 if (uri)
                 {
+                    this.ensurePath(uri, instance);
                     let content = record.GetAttribute(element);
                     if (content || content === "")
                     {
@@ -192,6 +185,36 @@ export class WorkspaceManager
                 }
             }
             return options;
+        }
+    }
+
+    /**
+     * creates all parent folders if they do not exist. 
+     * Only creates folders from the workspace root and downward.
+     * @param uri 
+     */
+    private ensurePath(uri: Uri, instance: Instance)
+    {
+        if (this._delimiter)
+        {
+            let pathWorkspace = this.GetPathWorkspace();
+            if (pathWorkspace)
+            {
+
+                let folders = uri.fsPath.replace(pathWorkspace.uri.fsPath, '').trim().split(this._delimiter);
+
+                let path = pathWorkspace.uri.fsPath;
+
+                for (let index = 0; index < folders.length - 1; index++)
+                {
+                    const element = folders[index];
+                    if (element)
+                    {
+                        path = path + `${this._delimiter}${element}`;
+                        this.CreateFolder(path);
+                    }
+                }
+            }
         }
     }
 

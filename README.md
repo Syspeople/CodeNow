@@ -112,6 +112,17 @@ NB: Some API's are not fully documented (Publicly anyways). if you miss a method
   * GlideHttpHeader
   * RestMessageV2
   * RestResponseV2
+  * RESTAPIRequest
+  * RESTAPIRequestBody
+  * RESTAPIResponse
+  * RESTAPIResponseStream
+* sn_ws_err
+  * ServiceError
+  * BadRequestError
+  * NotFoundError
+  * NotAcceptableError
+  * ConflictError
+  * UnsuppotedMediaTypeError
   
 ### ServiceNow ClientSide API's
 * GlideAjax
@@ -281,6 +292,5 @@ default: true
  [CGraabaek](https://github.com/CGraabaek)
 
  #### How to contribute
-
  [Here](/contribution.md) is a contribution guide, outlining the steps to be taken to contribute to this project.
  
