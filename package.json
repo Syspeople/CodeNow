@@ -2,9 +2,10 @@
     "name": "cn",
     "displayName": "CodeNow",
     "description": "Empower your ServiceNow development with zero configuration.",
-    "version": "0.8.0",
+    "version": "0.9",
     "publisher": "j27q6tasx6z32tftojfekap44umwkigmng2bf3gmj6aapra6zzya",
     "license": "MIT",
+    "icon": "images/icon.png",
     "repository": {
         "type": "git",
         "url": "https://github.com/Syspeople/snsb"
@@ -13,7 +14,9 @@
         "vscode": "^1.21.0"
     },
     "categories": [
-        "Other"
+        "Other",
+        "Linters",
+        "Programming Languages"
     ],
     "activationEvents": [
         "*"
