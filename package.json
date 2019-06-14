@@ -5,7 +5,7 @@
     "version": "0.9",
     "publisher": "ambsoerensen",
     "license": "MIT",
-    "icon": "./images/icon.png",
+    "icon": "images/icon.png",
     "galleryBanner": {
         "color": "#a2c617",
         "theme": "dark"
