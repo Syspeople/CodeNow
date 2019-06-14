@@ -12,7 +12,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/Syspeople/snsb"
+        "url": "https://github.com/Syspeople/CodeNow"
     },
     "engines": {
         "vscode": "^1.21.0"
