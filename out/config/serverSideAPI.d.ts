@@ -304,6 +304,11 @@ declare class GlideRecord
     _query(): void;
 }
 
+declare class GlideAggregate
+{
+    constructor(tableName: string);
+}
+
 declare class GlideElement
 {
     /** The Scoped GlideElement API provides a number of convenient script methods for dealing with fields and their values. Scoped GlideElement methods are available for the fields of the current GlideRecord.
