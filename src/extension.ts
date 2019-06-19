@@ -626,6 +626,7 @@ export function activate(context: vscode.ExtensionContext)
     let clearWorkState = vscode.commands.registerCommand("cn.clearWorkSpaceState", () =>
     {
         wsm.ClearState();
+        instance = new ServiceNow.Instance();
         nm.SetNotificationState(NotifationState.NotConnected);
         mixpanel.track('cn.extension.command.clearWorkSpaceState.success');
     });
