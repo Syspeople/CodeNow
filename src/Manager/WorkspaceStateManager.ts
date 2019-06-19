@@ -5,8 +5,6 @@ import { UpdateSet, SupportedRecords, ISysMetadata } from "../ServiceNow/all";
 //get update and manage workpace state.
 export class WorkspaceStateManager
 {
-
-
     constructor(context: ExtensionContext)
     {
         this._context = context;
@@ -17,20 +15,18 @@ export class WorkspaceStateManager
     private _context: ExtensionContext;
 
     /**
-     * ClearState, sets all stateKeys to undefined
+     * Removes instance specifik entries cached in workspace.
      */
     public ClearState(): void
     {
-        for (const key in StateKeys)
-        {
-            if (StateKeys.hasOwnProperty(key))
-            {
-                const element = StateKeys[key];
-                this._context.workspaceState.update(element.toString(), undefined);
-            }
-        }
+        this._context.workspaceState.update(StateKeys.url.toString(), undefined);
+        this._context.workspaceState.update(StateKeys.user.toString(), undefined);
+        this._context.workspaceState.update(StateKeys.updateSet.toString(), undefined);
     }
 
+    /**
+     * Returns the Codes Extensioncontext
+     */
     getContext(): ExtensionContext
     {
         return this._context;
