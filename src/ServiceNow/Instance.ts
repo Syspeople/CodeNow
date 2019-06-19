@@ -153,6 +153,7 @@ export class Instance
                             {
                                 //@ts-ignore updateSet already nullchecked
                                 nm.SetNotificationUpdateSet(defaultUs);
+                                wsm.SetUpdateSet(us);
                                 resolve();
                             }).catch((er) =>
                             {
