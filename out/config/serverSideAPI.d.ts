@@ -363,7 +363,7 @@ declare class GlideAggregate
      * @param agg The type of the aggregate, for example, SUM or Count.
      * @param name Name of the field to get the aggregate from.
      */
-    getAggregate(agg: string, name: string)
+    getAggregate(agg: string, name: string): string;
 
     /**
      * Gets the query necessary to return the current aggregate.
