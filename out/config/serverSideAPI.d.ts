@@ -2309,7 +2309,7 @@ writer.writeStream(attachmentStream);
          */
         writeString(data: string): void;
     }
-    class RestMessagev2
+    class RESTMessagev2
     {
         /**
          * Instantiates an empty RESTMessageV2 object. 
@@ -2496,7 +2496,7 @@ writer.writeStream(attachmentStream);
         setStringParameterNoEscape(name: string, value: string): void;
     }
 
-    class RestResponseV2
+    class RESTResponseV2
     {
         /**
          * The RESTResponseV2 API allows you to use the data returned by an outbound REST message in JavaScript code.
