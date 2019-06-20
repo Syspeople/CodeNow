@@ -1,7 +1,9 @@
 # CodeNow
 Empower your ServiceNow Development with no instance configuration.
 
-Write high quality code fast and intuitively.
+- Save time and improve quality with autocomplete and snippets.
+- Always get your updates to the right place with "on the fly" updateset creation. 
+- plug'n'play - No configuration required. Just install, connect and code.
 
 ## Feedback
 Encounter an issue, got a question, or just general feedback raise an issue on github.
