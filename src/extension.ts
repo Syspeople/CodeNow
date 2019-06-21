@@ -1,30 +1,26 @@
 'use strict';
 
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { URL } from 'url';
+//import { URL } from 'url';
+import { Md5 } from "md5-typescript";
 import * as ServiceNow from './ServiceNow/all';
 import * as Managers from './Manager/all';
 import { StatusBarManager, NotifationState } from './Manager/all';
 import { SupportedRecords, ISysWsOperation } from './ServiceNow/all';
 import { ISysMetadataIWorkspaceConvertable } from './MixIns/all';
+import { URL } from 'url';
 
 let token;
 if (vscode.env.machineId === "someValue.machineId")
 {
-    //dev
     token = '48ec45ce7cb17e257d933d9cab2e0665';
 }
 else
 {
-    //prod
     token = 'dd31fdbf95e8a0bfb560cb8219b672f2';
 }
 const mixpanel = new Managers.Mixpanel(token);
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext)
 {
     const wsm = new Managers.WorkspaceStateManager(context);
@@ -33,12 +29,11 @@ export function activate(context: vscode.ExtensionContext)
     let instance: ServiceNow.Instance;
     let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration("cn");
 
-    //vscode.env.machineId "someValue.machineId" means dev host.
     mixpanel.track("cn.extension.activated");
 
     if (wsm.HasInstanceInState)
     {
-        instance = new ServiceNow.Instance();
+        instance = new ServiceNow.Instance(config);
 
         vscode.window.showWarningMessage("Not connected to an instanse - Record synchronization disabled");
     }
@@ -64,7 +59,6 @@ export function activate(context: vscode.ExtensionContext)
                     let usr = wsm.GetUserName();
                     if (url && usr)
                     {
-
                         let p = instance.Initialize(new URL(url), usr, res, wsm, nm);
                         nm.SetNotificationState(NotifationState.Downloading);
                         p.then(() =>
@@ -73,7 +67,7 @@ export function activate(context: vscode.ExtensionContext)
                             nm.SetNotificationState(NotifationState.Connected);
                             wm.RefreshRecords(instance);
                             mixpanel.track("cn.extension.command.connect.success", {
-                                username: instance.UserName,
+                                username: Md5.init(instance.UserName),
                                 instance: instance.Url,
                                 newWorkspace: false
                             });
@@ -130,11 +124,10 @@ export function activate(context: vscode.ExtensionContext)
                                             wm.AddInstanceFolder(instance);
                                             nm.SetNotificationState(NotifationState.Connected);
                                             mixpanel.track("cn.extension.command.connect.success", {
-                                                username: instance.UserName,
+                                                username: Md5.init(instance.UserName),
                                                 instance: instance.Url,
                                                 newWorkspace: true
                                             });
-
                                         }).catch((er) =>
                                         {
                                             wsm.ClearState();
@@ -490,7 +483,7 @@ export function activate(context: vscode.ExtensionContext)
                                 }
                                 mixpanel.track('cn.extension.command.createRecord.success', {
                                     //@ts-ignore index any is a string.
-                                    sys_class_name: SupportedRecords[recordtype]
+                                    sys_class_name: recordtype
                                 });
                             } catch (error)
                             {
@@ -626,7 +619,7 @@ export function activate(context: vscode.ExtensionContext)
     let clearWorkState = vscode.commands.registerCommand("cn.clearWorkSpaceState", () =>
     {
         wsm.ClearState();
-        instance = new ServiceNow.Instance();
+        instance = new ServiceNow.Instance(config);
         nm.SetNotificationState(NotifationState.NotConnected);
         mixpanel.track('cn.extension.command.clearWorkSpaceState.success');
     });
@@ -838,6 +831,11 @@ export function activate(context: vscode.ExtensionContext)
     let listeneronDidChangeConfiguration = vscode.workspace.onDidChangeConfiguration((e) =>
     {
         config = vscode.workspace.getConfiguration("cn");
+
+        if (instance.IsInitialized())
+        {
+            instance.setConfig(config);
+        }
         //config setup. 
         mixpanel.track('cn.extension.event.onDidChangeConfiguration', config);
     });

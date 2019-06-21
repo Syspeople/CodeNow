@@ -3,6 +3,7 @@ import { Instance, ISysMetadata, ISysProperty, SysProperty, ISysUserSession, ISy
 import { IServiceNowResponse, ICookie } from "./all";
 import * as qs from "querystring";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
+import { WorkspaceConfiguration } from "vscode";
 
 export class Api
 {
@@ -38,8 +39,8 @@ export class Api
     }
 
     /**
-         * Setup class, Currently only basic auth.
-         */
+    * Setup class, Currently only basic auth.
+    */
     constructor(Instance: Instance, Password: string)
     {
         if (Instance.Url && Instance.UserName)
@@ -58,9 +59,20 @@ export class Api
 
             this._SNHost = host;
 
+            let timeout: number;
+
+            if (Instance.Config)
+            {
+                timeout = <number>Instance.Config.timeout;
+            }
+            else
+            {
+                timeout = 3000;
+            }
+
             this._HttpClient = Axios.default.create({
                 baseURL: this._SNHost,
-                timeout: 3000
+                timeout: timeout
             });
 
             this._HttpClient.interceptors.request.use((r) =>
@@ -95,6 +107,17 @@ export class Api
                 }
                 return r;
             });
+        }
+    }
+
+    /**
+     * Updates the Timmout using the config.
+     */
+    public setTimeout(config: WorkspaceConfiguration): void
+    {
+        if (this.HttpClient)
+        {
+            this.HttpClient.defaults.timeout = config.timeout;
         }
     }
 

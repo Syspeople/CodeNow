@@ -52,6 +52,12 @@
                         "default": true,
                         "description": "On open automatically add record to workspace record if outdated",
                         "scope": "window"
+                    },
+                    "cn.timeout": {
+                        "type": "number",
+                        "default": 3000,
+                        "description": "Timout for HTTP client in ms",
+                        "scope": "window"
                     }
                 }
             }
