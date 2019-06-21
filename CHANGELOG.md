@@ -1,3 +1,8 @@
+## 0.9.20190621
+* Updated readme
+* Typo in class name for RESTMessageV2 and RESTMessageV2
+* Bug fixed where connect would fail if updateset got completed while not connected in Vs Code.
+
 ## 0.9.20190619
 * add intellisense for GlideAggregate 
 * Error with update set not validating properly on first run have been fixed.
