@@ -1,9 +1,9 @@
 # CodeNow
 Empower your ServiceNow Development with no instance configuration.
 
-- Save time by pushing and pulling changes directly yo your instance.
+- Save time by pushing and pulling changes directly to your instance.
 - Improve quality with autocomplete and snippets.
-- Always get your updates to the right place by changing or creating updatesets. 
+- Always get your updates to the right place by changing and creating updatesets. 
 - No configuration required. Simply Install, Connect and Code.
 
 ## Feedback
