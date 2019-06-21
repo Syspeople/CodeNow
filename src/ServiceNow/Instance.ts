@@ -136,6 +136,32 @@ export class Instance
                             });
                         }
                     }
+                    else
+                    {
+                        let defaultUs = res.find((element) =>
+                        {
+                            return (element.is_default === "true");
+                        });
+
+                        if (defaultUs)
+                        {
+                            let e = this.SetUpdateSet(defaultUs);
+                            if (e)
+                            {
+                                e.then((us) =>
+                                {
+                                    //@ts-ignore updateSet already nullchecked
+                                    nm.SetNotificationUpdateSet(defaultUs);
+                                    wsm.SetUpdateSet(us);
+                                    resolve();
+                                }).catch((er) =>
+                                {
+                                    console.error(er);
+                                    reject(er);
+                                });
+                            }
+                        }
+                    }
                 }
                 else
                 {
