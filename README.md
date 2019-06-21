@@ -2,13 +2,13 @@
 Empower your ServiceNow Development with no instance configuration.
 
 - Save time and improve quality with autocomplete and snippets.
-- Always get your updates to the right place with "on the fly" updateset creation. 
-- plug'n'play - No configuration required. Just install, connect and code.
+- Always get your updates to the right place by changing or creating updatesets. 
+- No configuration required. Simply Install, Connect and Code.
 
 ## Feedback
 Encounter an issue, got a question, or just general feedback raise an issue on github.
 
-## To Short Want more
+## To short want more
 Check out our [Wiki](https://github.com/Syspeople/CodeNow/wiki) on github.
 
 Here you find information regarding:
@@ -22,7 +22,7 @@ Create and develop many different kinds of pro code record types directly from V
 ![create](images/create.gif)
 
 ## Open Records
-Open existing Records.
+Open existing records.
 
 ![open](images/open.gif)
 
