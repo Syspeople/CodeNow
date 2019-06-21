@@ -2326,12 +2326,12 @@ writer.writeStream(attachmentStream);
         /**
          * Sends the REST message to the endpoint.
          */
-        execute(): RestResponseV2;
+        execute(): RESTResponseV2;
 
         /**
          * Sends the REST message to the endpoint asynchronously. The instance does not wait for a response from the web service provider when making asynchronous calls.
          */
-        executeAsync(): RestResponseV2;
+        executeAsync(): RESTResponseV2;
 
         /**
          * Returns the URL of the endpoint for the REST message.
