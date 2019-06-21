@@ -1,12 +1,15 @@
 # CodeNow
 Empower your ServiceNow Development with no instance configuration.
 
-Write high quality code fast and intuitively.
+- Save time by pushing and pulling changes directly to your instance.
+- Improve quality with autocomplete and snippets.
+- Always get your updates to the right place by changing and creating updatesets. 
+- No configuration required. Simply Install, Connect and Code.
 
 ## Feedback
 Encounter an issue, got a question, or just general feedback raise an issue on github.
 
-## To Short Want more
+## To short want more
 Check out our [Wiki](https://github.com/Syspeople/CodeNow/wiki) on github.
 
 Here you find information regarding:
@@ -20,7 +23,7 @@ Create and develop many different kinds of pro code record types directly from V
 ![create](images/create.gif)
 
 ## Open Records
-Open existing Records.
+Open existing records.
 
 ![open](images/open.gif)
 

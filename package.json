@@ -1,7 +1,7 @@
 {
     "name": "cn",
     "displayName": "CodeNow",
-    "description": "Empower your ServiceNow development with zero configuration.",
+    "description": "Write high quality code fast and intuitively",
     "version": "0.9",
     "publisher": "ambsoerensen",
     "license": "MIT",
