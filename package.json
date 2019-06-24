@@ -185,15 +185,16 @@
     },
     "devDependencies": {
         "typescript": "^3.0.0",
-        "vscode": "^1.1.6",
         "tslint": "^5.8.0",
         "@types/node": "^7.0.43",
         "@types/mocha": "^2.2.42"
     },
     "dependencies": {
         "@types/opn": "^5.1.0",
-        "axios": "^0.18.0",
+        "axios": "^0.19.0",
+        "md5-typescript": "^1.0.5",
         "mixpanel": "^0.10.2",
-        "opn": "^5.4.0"
+        "opn": "^5.4.0",
+        "vscode": "^1.1.34"
     }
 }
