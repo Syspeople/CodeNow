@@ -4,13 +4,20 @@ import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
 import opn = require('opn');
+import { WorkspaceConfiguration } from "vscode";
 
 export class Instance
 {
+
     /**
      * Initialize() have to be invoked.
      */
-    constructor() { }
+    constructor(config: WorkspaceConfiguration)
+    {
+        this.Config = config;
+    }
+
+    Config: WorkspaceConfiguration;
 
     private _wsm: WorkspaceStateManager | undefined;
 
@@ -196,6 +203,19 @@ export class Instance
             });
         });
 
+    }
+
+    public setConfig(config: WorkspaceConfiguration): void
+    {
+        this.Config = config;
+
+        if (this.IsInitialized())
+        {
+            if (this._ApiProxy)
+            {
+                this._ApiProxy.setTimeout(config);
+            }
+        }
     }
 
     /**

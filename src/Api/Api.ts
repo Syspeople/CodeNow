@@ -3,24 +3,35 @@ import { Instance, ISysMetadata, ISysProperty, SysProperty, ISysUserSession, ISy
 import { IServiceNowResponse, ICookie } from "./all";
 import * as qs from "querystring";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
+import { WorkspaceConfiguration } from "vscode";
 
 export class Api
 {
     private _HttpClient: Axios.AxiosInstance | undefined;
+    private _username: string = "";
+    private _password: string = "";
+    private _Cookies: Array<ICookie> = [];
+    private _csrfToken: string = "";
+    private _Properties: Array<ISysProperty> = new Array<ISysProperty>();
+
     private _SNHost: string = "";
     private _SNApiEndpoint = "/api";
+
     private _SNTableSuffix: string = `${this._SNApiEndpoint}/now/table`;
+    private _SNCodeSearchSuffix: string = `${this._SNApiEndpoint}/sn_codesearch/code_search`;
+    private _SNXmlHttp: string = `xmlhttp.do`;
+
     private _SNUserTable: string = `${this._SNTableSuffix}/sys_user`;
     private _SNMetaData: string = `${this._SNTableSuffix}/sys_metadata`;
     private _SNSysProperties: string = `${this._SNTableSuffix}/sys_properties`;
     private _SNSysUserSession: string = `${this._SNTableSuffix}/sys_user_session`;
     private _SNSysUpdateSet: string = `${this._SNTableSuffix}/sys_update_set`;
-    private _SNXmlHttp: string = `xmlhttp.do`;
-    private _Properties: Array<ISysProperty> = new Array<ISysProperty>();
-    private _Cookies: Array<ICookie> = [];
-    private _csrfToken: string = "";
-    private _username: string = "";
-    private _password: string = "";
+
+    private _SNCodeSearch: string = `${this._SNCodeSearchSuffix}/search`;
+
+
+
+
 
     private get _session_store(): string | undefined
     {
@@ -38,8 +49,8 @@ export class Api
     }
 
     /**
-         * Setup class, Currently only basic auth.
-         */
+    * Setup class, Currently only basic auth.
+    */
     constructor(Instance: Instance, Password: string)
     {
         if (Instance.Url && Instance.UserName)
@@ -58,9 +69,20 @@ export class Api
 
             this._SNHost = host;
 
+            let timeout: number;
+
+            if (Instance.Config)
+            {
+                timeout = <number>Instance.Config.timeout;
+            }
+            else
+            {
+                timeout = 3000;
+            }
+
             this._HttpClient = Axios.default.create({
                 baseURL: this._SNHost,
-                timeout: 3000
+                timeout: timeout
             });
 
             this._HttpClient.interceptors.request.use((r) =>
@@ -74,7 +96,7 @@ export class Api
 
                     this._Cookies.forEach(element =>
                     {
-                        cookie = cookie + `${element.name}=${element.value};`;
+                        cookie = cookie + `${element.name}=${element.value}; `;
                     });
 
                     r.headers["Cookie"] = cookie;
@@ -82,7 +104,7 @@ export class Api
 
                 if (this._csrfToken)
                 {
-                    r.headers["X-UserToken"] = `${this._csrfToken}`;
+                    r.headers["X-UserToken"] = `${this._csrfToken} `;
                 }
 
                 //add auth for apis where required.
@@ -95,6 +117,17 @@ export class Api
                 }
                 return r;
             });
+        }
+    }
+
+    /**
+     * Updates the Timmout using the config.
+     */
+    public setTimeout(config: WorkspaceConfiguration): void
+    {
+        if (this.HttpClient)
+        {
+            this.HttpClient.defaults.timeout = config.timeout;
         }
     }
 
@@ -129,7 +162,7 @@ export class Api
         {
             if (this.HttpClient)
             {
-                let p = this.HttpClient.get(`${this._SNSysUserSession}?sysparm_limit=1`);
+                let p = this.HttpClient.get(`${this._SNSysUserSession}?sysparm_limit = 1`);
 
                 if (p)
                 {
@@ -138,7 +171,7 @@ export class Api
                         if (this.HttpClient)
                         {
                             this.UpdateSessionCookies(<Array<string>>res.headers["set-cookie"]);
-                            let pToken = this.HttpClient.get<IServiceNowResponse<Array<ISysUserSession>>>(`${this._SNSysUserSession}?id=${this._session_store}`);
+                            let pToken = this.HttpClient.get<IServiceNowResponse<Array<ISysUserSession>>>(`${this._SNSysUserSession}?id = ${this._session_store} `);
                             //let pToken = this.GetCsrfToken(this._session_store);
                             if (pToken)
                             {
@@ -171,7 +204,7 @@ export class Api
     {
         return new Promise((resolve, reject) =>
         {
-            let url = `${this._SNHost}/${this._SNXmlHttp}`;
+            let url = `${this._SNHost} /${this._SNXmlHttp}`;
 
             if (this.HttpClient)
             {
@@ -438,5 +471,22 @@ export class Api
                 reject(error);
             }
         });
+    }
+
+    /**
+     * search
+     */
+    public search(term: string)
+    {
+        if (this.HttpClient)
+        {
+            let url = `${this._SNCodeSearch}`;
+            return this.HttpClient.get(url, {
+                params: {
+                    term: term,
+                    search_all_scopes: true
+                }
+            });
+        }
     }
 }
