@@ -1,3 +1,7 @@
+## 0.9.20190624
+* Add options to change timeout for HTTP requests
+* Update Package Dependencies
+
 ## 0.9.20190621
 * Updated readme
 * Typo in class name for RESTMessageV2 and RESTMessageV2
