@@ -1,5 +1,7 @@
 ## 0.9.20190625
 * Add options to change timeout for HTTP requests
+* Add warning in case the metadata got deleted.
+* Ensuring only instance files are checked on document open event.
 * Update Package Dependencies
 * Update Readmme
 
