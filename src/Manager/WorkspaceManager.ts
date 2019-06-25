@@ -139,7 +139,6 @@ export class WorkspaceManager
 
             allFiles.forEach(filePath =>
             {
-                console.log(filePath);
                 var uri = Uri.file(filePath);
 
                 var recordLocal = this.GetRecord(uri);
@@ -157,8 +156,28 @@ export class WorkspaceManager
             });
 
         }
-
     }
+
+    public fileFromInstance(uri: Uri, instance: Instance): boolean
+    {
+        var pathIns = this.GetPathInstance(instance);
+
+        if (pathIns)
+        {
+            var allFiles = this.getFiles(pathIns.toString());
+
+            let match = allFiles.find((element) =>
+            {
+                return uri.fsPath === element;
+            });
+            if (match)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * AddRecord a new record. 
      */
