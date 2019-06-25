@@ -1,6 +1,7 @@
-## 0.9.20190624
+## 0.9.20190625
 * Add options to change timeout for HTTP requests
 * Update Package Dependencies
+* Update Readmme
 
 ## 0.9.20190621
 * Updated readme
