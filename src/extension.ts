@@ -786,39 +786,42 @@ export function activate(context: vscode.ExtensionContext)
     {
         if (instance.IsInitialized())
         {
-            if (config.addOnOpen)
+            if (wm.fileFromInstance(e.uri, instance))
             {
-                var recordLocal = wm.GetRecord(e.uri);
-                if (recordLocal)
+                if (config.addOnOpen)
                 {
-                    var p = instance.IsLatest(recordLocal);
-
-                    p.then((res) =>
+                    var recordLocal = wm.GetRecord(e.uri);
+                    if (recordLocal)
                     {
-                        let r = instance.GetRecord(res);
-                        r.then((res) =>
-                        {
-                            wm.UpdateRecord(res, e.uri);
+                        var p = instance.IsLatest(recordLocal);
 
-                            mixpanel.track('cn.extension.event.onDidOpenTextDocument.success', {
-                                sys_class_name: res.sys_class_name
+                        p.then((res) =>
+                        {
+                            let r = instance.GetRecord(res);
+                            r.then((res) =>
+                            {
+                                wm.UpdateRecord(res, e.uri);
+
+                                mixpanel.track('cn.extension.event.onDidOpenTextDocument.success', {
+                                    sys_class_name: res.sys_class_name
+                                });
+
+                            }).catch((er) =>
+                            {
+                                console.error(er);
+
+                                mixpanel.track('cn.extension.event.onDidOpenTextDocument.fail', {
+                                    error: er
+                                });
                             });
-
-                        }).catch((er) =>
+                        }).catch((e) =>
                         {
-                            console.error(er);
-
-                            mixpanel.track('cn.extension.event.onDidOpenTextDocument.fail', {
-                                error: er
+                            console.info("local Record Up to date");
+                            mixpanel.track('cn.extension.event.onDidOpenTextDocument.break', {
+                                reason: "Local Record Up To Date"
                             });
                         });
-                    }).catch((e) =>
-                    {
-                        console.info("local Record Up to date");
-                        mixpanel.track('cn.extension.event.onDidOpenTextDocument.break', {
-                            reason: "Local Record Up To Date"
-                        });
-                    });
+                    }
                 }
             }
         }
