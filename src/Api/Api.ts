@@ -162,7 +162,7 @@ export class Api
         {
             if (this.HttpClient)
             {
-                let p = this.HttpClient.get(`${this._SNSysUserSession}?sysparm_limit = 1`);
+                let p = this.HttpClient.get(`${this._SNSysUserSession}?sysparm_limit=1`);
 
                 if (p)
                 {
@@ -171,7 +171,7 @@ export class Api
                         if (this.HttpClient)
                         {
                             this.UpdateSessionCookies(<Array<string>>res.headers["set-cookie"]);
-                            let pToken = this.HttpClient.get<IServiceNowResponse<Array<ISysUserSession>>>(`${this._SNSysUserSession}?id = ${this._session_store} `);
+                            let pToken = this.HttpClient.get<IServiceNowResponse<Array<ISysUserSession>>>(`${this._SNSysUserSession}?id=${this._session_store} `);
                             //let pToken = this.GetCsrfToken(this._session_store);
                             if (pToken)
                             {
@@ -204,7 +204,7 @@ export class Api
     {
         return new Promise((resolve, reject) =>
         {
-            let url = `${this._SNHost} /${this._SNXmlHttp}`;
+            let url = `${this._SNHost}/${this._SNXmlHttp}`;
 
             if (this.HttpClient)
             {
