@@ -85,7 +85,9 @@ export class WorkspaceManager
             }
             else
             {
-                console.warn("Unable to find metadataa in local storage for " + uri.fsPath);
+                let msg = "Unable to find metadata in workspace. Add record to reload metadata for " + uri.fsPath;
+                console.warn(msg);
+                window.showWarningMessage(msg);
             }
         }
         catch (e)
@@ -138,7 +140,7 @@ export class WorkspaceManager
             allFiles.forEach(filePath =>
             {
                 console.log(filePath);
-                var uri = Uri.parse(filePath);
+                var uri = Uri.file(filePath);
 
                 var recordLocal = this.GetRecord(uri);
                 if (recordLocal)
@@ -446,7 +448,7 @@ export class WorkspaceManager
         var files = fileSystem.readdirSync(dir);
         for (var i in files)
         {
-            var name = dir + '/' + files[i];
+            var name = dir + this._delimiter + files[i];
             if (fileSystem.statSync(name).isDirectory())
             {
                 this.getFiles(name, files_);
