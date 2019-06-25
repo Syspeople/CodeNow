@@ -3,7 +3,7 @@ import { Record, ISysMetadata, UpdateSet, Converter, SupportedRecords } from "./
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
-import opn = require('opn');
+import opn = require('open');
 import { WorkspaceConfiguration } from "vscode";
 
 export class Instance
