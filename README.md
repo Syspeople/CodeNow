@@ -6,8 +6,13 @@ Empower your ServiceNow Development with no instance configuration.
 - Always get your updates to the right place by changing and creating updatesets. 
 - No configuration required. Simply Install, Connect and Code.
 
+## Credits
+I want to thank my colleagues and the management team at [Syspeople](https://syspeople.eu/) for their help, support and profound believe in the value of giving back.
+
+If you need help realizing the full potential of your ServiceNow implementation [Syspeople](https://syspeople.eu/) is worth your consideration. 
+
 ## Feedback
-Encounter an issue, got a question, or just general feedback raise an issue on github.
+Encounter an issue, got a question, or just general feedback raise an [issue on github](https://github.com/Syspeople/CodeNow/issues).
 
 ## To short want more
 Check out our [Wiki](https://github.com/Syspeople/CodeNow/wiki) on github.
