@@ -630,6 +630,12 @@ export function activate(context: vscode.ExtensionContext)
         mixpanel.track('cn.extension.command.rebuildCache.success');
     });
 
+    let codeSearch = vscode.commands.registerCommand("cn.codeSearch", () =>
+    {
+        console.log("woop search");
+    });
+
+
     let createUpdateSet = vscode.commands.registerCommand("cn.createUpdateSet", async () =>
     {
         //vscode.window.showInformationMessage('Hello World!');
@@ -848,6 +854,7 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(openInPlatformList);
     context.subscriptions.push(deleteRecord);
     context.subscriptions.push(setUpdateSet);
+    context.subscriptions.push(codeSearch);
     context.subscriptions.push(connect);
     context.subscriptions.push(createRecord);
     context.subscriptions.push(createUpdateSet);

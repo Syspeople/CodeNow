@@ -19,8 +19,7 @@
     },
     "categories": [
         "Other",
-        "Linters",
-        "Programming Languages"
+        "Linters"
     ],
     "activationEvents": [
         "*"
@@ -172,6 +171,11 @@
             {
                 "command": "cn.deleteRecord",
                 "title": "Delete Record",
+                "category": "CodeNow"
+            },
+            {
+                "command": "cn.codeSearch",
+                "title": "Code Search",
                 "category": "CodeNow"
             }
         ]

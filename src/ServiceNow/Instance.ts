@@ -338,6 +338,20 @@ export class Instance
     }
 
     /**
+     * Performs a codesearch on connected instance
+     */
+    public search(term: string)
+    {
+        if (this.IsInitialized())
+        {
+            if (this.ApiProxy)
+            {
+                this.ApiProxy.search(term);
+            }
+        }
+    }
+
+    /**
     * GetRecord retrieves full record from instance
     */
     public GetRecord(record: ISysMetadata): Promise<ISysMetadataIWorkspaceConvertable>
