@@ -406,6 +406,9 @@ export class Api
                 case SupportedRecords["Scripted Rest API"]:
                     url = url + `?sysparm_query=sys_policy=`;
                     break;
+                case SupportedRecords["UI Action"]:
+                    url = url + `?sysparm_query=sys_policy=&sysparm_fields=table,order,comments,active,script,condition,hint,name,sys_class_name,sys_id,sys_policy,sys_updated_on,sys_created_on,sys_package,sys_scope`;
+                    break;
                 default:
                     url = url + `?sysparm_query=sys_policy=^sys_scope=global`;
                     break;
