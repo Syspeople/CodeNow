@@ -1,3 +1,6 @@
+## 0.9.20190628
+* Fix issue were retrieval of UI Actions would time out causing caching issues. 
+
 ## 0.9.20190625
 * Add options to change timeout for HTTP requests
 * Add warning in case the metadata got deleted.
