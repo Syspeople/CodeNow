@@ -340,13 +340,13 @@ export class Instance
     /**
      * Performs a codesearch on connected instance
      */
-    public search(term: string)
+    public async search(term: string)
     {
         if (this.IsInitialized())
         {
             if (this.ApiProxy)
             {
-                this.ApiProxy.search(term);
+                return await this.ApiProxy.search(term);
             }
         }
     }

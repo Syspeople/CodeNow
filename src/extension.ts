@@ -630,9 +630,17 @@ export function activate(context: vscode.ExtensionContext)
         mixpanel.track('cn.extension.command.rebuildCache.success');
     });
 
-    let codeSearch = vscode.commands.registerCommand("cn.codeSearch", () =>
+    let codeSearch = vscode.commands.registerCommand("cn.codeSearch", async () =>
     {
         console.log("woop search");
+
+        var term = await vscode.window.showInputBox({ placeHolder: "Search Term" });
+
+        if (term)
+        {
+            var res = await instance.search(term);
+            console.log(res);
+        }
     });
 
 
