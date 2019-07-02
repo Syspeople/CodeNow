@@ -43,3 +43,7 @@ export * from './ValidationScript';
 export * from './IValidationScript';
 export * from './ScriptedRestResource';
 export * from './ScriptedRestService';
+export * from './ICodeSearchResult';
+export * from './ICodeSearchHit';
+export * from './ICodeSearchMatch';
+export * from './ICodeSearchLineMatch';
