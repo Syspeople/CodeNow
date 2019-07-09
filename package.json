@@ -26,6 +26,23 @@
     ],
     "main": "./out/extension",
     "contributes": {
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "codeSearch",
+                    "title": "CodeSearch",
+                    "icon": "images/cloud-computing.svg"
+                }
+            ]
+        },
+        "views": {
+            "codeSearch": [
+                {
+                    "id": "searchResults",
+                    "name": "Search Results"
+                }
+            ]
+        },
         "snippets": [
             {
                 "language": "javascript",

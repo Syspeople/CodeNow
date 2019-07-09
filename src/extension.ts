@@ -9,6 +9,7 @@ import { StatusBarManager, NotifationState } from './Manager/all';
 import { SupportedRecords, ISysWsOperation } from './ServiceNow/all';
 import { ISysMetadataIWorkspaceConvertable } from './MixIns/all';
 import { URL } from 'url';
+import { TreeDataProviderCodeSearch } from './Providers/all';
 
 let token;
 if (vscode.env.machineId === "someValue.machineId")
@@ -28,6 +29,7 @@ export function activate(context: vscode.ExtensionContext)
     const nm = new StatusBarManager();
     let instance: ServiceNow.Instance;
     let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration("cn");
+    let searchProvider: TreeDataProviderCodeSearch = new TreeDataProviderCodeSearch();
 
     mixpanel.track("cn.extension.activated");
 
@@ -632,14 +634,17 @@ export function activate(context: vscode.ExtensionContext)
 
     let codeSearch = vscode.commands.registerCommand("cn.codeSearch", async () =>
     {
-        console.log("woop search");
-
-        var term = await vscode.window.showInputBox({ placeHolder: "Search Term" });
-
-        if (term)
+        if (instance.IsInitialized())
         {
-            var res = await instance.search(term);
-            console.log(res);
+            var term = await vscode.window.showInputBox({ placeHolder: "Search Term" });
+
+            if (term)
+            {
+                var res = await instance.search(term);
+                res.setLabel(term);
+
+                searchProvider.addSearch(res);
+            }
         }
     });
 
@@ -857,12 +862,15 @@ export function activate(context: vscode.ExtensionContext)
         mixpanel.track('cn.extension.event.onDidChangeConfiguration', config);
     });
 
+    let codeSearchProvider = vscode.window.registerTreeDataProvider('searchResults', searchProvider);
+
     context.subscriptions.push(addRecord);
     context.subscriptions.push(openInPlatformRecord);
     context.subscriptions.push(openInPlatformList);
     context.subscriptions.push(deleteRecord);
     context.subscriptions.push(setUpdateSet);
     context.subscriptions.push(codeSearch);
+    context.subscriptions.push(codeSearchProvider);
     context.subscriptions.push(connect);
     context.subscriptions.push(createRecord);
     context.subscriptions.push(createUpdateSet);

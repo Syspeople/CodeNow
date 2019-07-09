@@ -1,11 +1,16 @@
 import { URL } from "url";
-import { Record, ISysMetadata, UpdateSet, Converter, SupportedRecords } from "./all";
+import { Record, ISysMetadata, UpdateSet, Converter, SupportedRecords, SearchResponse } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
 import opn = require('open');
 import { WorkspaceConfiguration } from "vscode";
 
+/**
+ * Instance class
+ * Type casting, validation of operations and initialization of connection to ServiceNow.
+ * All communication is handled through the API proxy class. 
+ */
 export class Instance
 {
 
@@ -340,15 +345,31 @@ export class Instance
     /**
      * Performs a codesearch on connected instance
      */
-    public async search(term: string)
+    public async search(term: string): Promise<SearchResponse>
     {
-        if (this.IsInitialized())
+        return new Promise(async (resolve, reject) =>
         {
-            if (this.ApiProxy)
+            try
             {
-                return await this.ApiProxy.search(term);
+                if (this.IsInitialized())
+                {
+                    if (this.ApiProxy)
+                    {
+                        let res = await this.ApiProxy.search(term);
+                        if (res)
+                        {
+                            console.log(res.config);
+                            resolve(new SearchResponse(res.data));
+                        }
+                    }
+                }
+                reject();
             }
-        }
+            catch (er)
+            {
+                reject(er);
+            }
+        });
     }
 
     /**

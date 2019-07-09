@@ -482,7 +482,7 @@ export class Api
     /**
      * Performs a code search accross all scopes.
      */
-    public search(term: string): Axios.AxiosPromise<ICodeSearchResult> | undefined
+    public search(term: string): Axios.AxiosPromise<IServiceNowResponse<Array<ICodeSearchResult>>> | undefined
     {
         if (this.HttpClient)
         {
