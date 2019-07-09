@@ -79,6 +79,18 @@
             }
         ],
         "menus": {
+            "view/title": [
+                {
+                    "command": "cn.codeSearchClear",
+                    "when": "view == searchResults",
+                    "group": "navigation"
+                },
+                {
+                    "command": "cn.codeSearch",
+                    "when": "view == searchResults",
+                    "group": "navigation"
+                }
+            ],
             "explorer/context": [
                 {
                     "group": "cn",
@@ -125,6 +137,14 @@
                 },
                 {
                     "command": "cn.deleteRecord",
+                    "when": "false"
+                },
+                {
+                    "command": "cn.codeSearch",
+                    "when": "false"
+                },
+                {
+                    "command": "cn.codeSearchClear",
                     "when": "false"
                 }
             ]
@@ -192,8 +212,21 @@
             },
             {
                 "command": "cn.codeSearch",
-                "title": "Code Search",
-                "category": "CodeNow"
+                "title": "Add Search",
+                "category": "CodeNow",
+                "icon": {
+                    "dark": "images/icons/round_library_add_white_48dp.png",
+                    "light": "images/icons/round_library_add_black_48dp.png"
+                }
+            },
+            {
+                "command": "cn.codeSearchClear",
+                "title": "Clear Results",
+                "category": "CodeNow",
+                "icon": {
+                    "dark": "images/icons/round_done_all_white_48dp.png",
+                    "light": "images/icons/round_done_all_black_48dp.png"
+                }
             }
         ]
     },

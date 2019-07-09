@@ -640,14 +640,28 @@ export function activate(context: vscode.ExtensionContext)
 
             if (term)
             {
-                var res = await instance.search(term);
-                res.setLabel(term);
+                var res = instance.search(term);
 
-                searchProvider.addSearch(res);
+                searchProvider.addSearch(res, term);
             }
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance");
         }
     });
 
+    let codeSearchClear = vscode.commands.registerCommand("cn.codeSearchClear", async () =>
+    {
+        if (instance.IsInitialized())
+        {
+            searchProvider.clearSearch();
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance");
+        }
+    });
 
     let createUpdateSet = vscode.commands.registerCommand("cn.createUpdateSet", async () =>
     {
@@ -854,10 +868,8 @@ export function activate(context: vscode.ExtensionContext)
     {
         config = vscode.workspace.getConfiguration("cn");
 
-        if (instance.IsInitialized())
-        {
-            instance.setConfig(config);
-        }
+        instance.setConfig(config);
+
         //config setup. 
         mixpanel.track('cn.extension.event.onDidChangeConfiguration', config);
     });
@@ -870,6 +882,7 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(deleteRecord);
     context.subscriptions.push(setUpdateSet);
     context.subscriptions.push(codeSearch);
+    context.subscriptions.push(codeSearchClear);
     context.subscriptions.push(codeSearchProvider);
     context.subscriptions.push(connect);
     context.subscriptions.push(createRecord);

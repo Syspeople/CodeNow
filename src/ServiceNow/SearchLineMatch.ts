@@ -19,4 +19,10 @@ export class SearchLineMatch extends TreeItem implements ICodeSearchLineMatch
     {
         return this.context;
     }
+
+
+    public get tooltip(): string
+    {
+        return this.context;
+    }
 }

@@ -358,7 +358,6 @@ export class Instance
                         let res = await this.ApiProxy.search(term);
                         if (res)
                         {
-                            console.log(res.config);
                             resolve(new SearchResponse(res.data));
                         }
                     }
