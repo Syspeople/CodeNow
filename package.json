@@ -5,7 +5,7 @@
     "version": "0.9",
     "publisher": "ambsoerensen",
     "license": "MIT",
-    "icon": "images/icon.png",
+    "icon": "images/icons/icon.png",
     "galleryBanner": {
         "color": "#838381",
         "theme": "dark"
@@ -31,7 +31,7 @@
                 {
                     "id": "codeSearch",
                     "title": "CodeSearch",
-                    "icon": "images/cloud-computing.svg"
+                    "icon": "images/icons/search.svg"
                 }
             ]
         },
