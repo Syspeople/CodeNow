@@ -49,6 +49,9 @@ export class TreeDataProviderCodeSearch implements TreeDataProvider<TreeItem>
         });
     }
 
+    /**
+     * clears all search results.
+     */
     public async clearSearch(): Promise<void>
     {
         return new Promise(async (resolve, reject) =>
@@ -58,6 +61,7 @@ export class TreeDataProviderCodeSearch implements TreeDataProvider<TreeItem>
                 if (this._searches.length > 0)
                 {
                     this._searches = new Array<TreeItem>();
+                    this._eventEmitter.fire();
                 }
                 resolve();
             } catch (error)
