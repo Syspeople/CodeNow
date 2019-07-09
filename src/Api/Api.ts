@@ -77,7 +77,7 @@ export class Api
             }
             else
             {
-                timeout = 3000;
+                timeout = 10000;
             }
 
             this._HttpClient = Axios.default.create({
@@ -481,13 +481,14 @@ export class Api
 
     /**
      * Performs a code search accross all scopes.
+     * Might take a while to finish.
      */
     public search(term: string): Axios.AxiosPromise<IServiceNowResponse<Array<ICodeSearchResult>>> | undefined
     {
         if (this.HttpClient)
         {
             let url = `${this._SNCodeSearch}?term=${term}&search_all_scopes=true`;
-            return this.HttpClient.get(url);
+            return this.HttpClient.get(url, { timeout: 20000 });
         }
     }
 }
