@@ -4,7 +4,7 @@ import { Uri } from "vscode";
 
 export class AngularProvider extends Record implements IAngularProvider
 {
-    constructor(ap: AngularProvider)
+    constructor(ap: IAngularProvider)
     {
         super(ap);
         this.script = ap.script;
