@@ -640,9 +640,17 @@ export function activate(context: vscode.ExtensionContext)
 
             if (term)
             {
-                var res = instance.search(term);
-
-                searchProvider.addSearch(res, term);
+                vscode.window.withProgress<number>({
+                    location: vscode.ProgressLocation.Notification,
+                    title: "Code Search"
+                }, async (progress) =>
+                    {
+                        progress.report({ message: `Searching for: ${term}` });
+                        //@ts-ignore term already null checked
+                        var res = await instance.search(term);
+                        //@ts-ignore term already null checked
+                        return searchProvider.addSearch(res, term);
+                    });
             }
         }
         else

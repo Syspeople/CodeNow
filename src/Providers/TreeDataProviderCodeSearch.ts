@@ -25,18 +25,18 @@ export class TreeDataProviderCodeSearch implements TreeDataProvider<TreeItem>
     }
 
     /**
-     * add a search to the view.
-     * returns number of searches available
+     * 
+     * @param search 
+     * @param term keyword used for the search. 
      */
-    public async addSearch(search: Promise<SearchResponse>, term: string): Promise<Number>
+    public async addSearch(search: SearchResponse, term: string): Promise<Number>
     {
         return new Promise(async (resolve, reject) =>
         {
             try
             {
-                let res = await search;
-                res.setLabel(term);
-                var length = this._searches.unshift(res);
+                search.setLabel(term);
+                var length = this._searches.unshift(search);
 
                 this._eventEmitter.fire();
 
