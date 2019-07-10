@@ -91,6 +91,18 @@
                     "group": "navigation"
                 }
             ],
+            "view/item/context": [
+                {
+                    "command": "cn.codeSearchOpenInPlatform",
+                    "when": "view == searchResults && viewItem == 'record'",
+                    "group": "inline"
+                },
+                {
+                    "command": "cn.codeSearchOpenInCode",
+                    "when": "view == searchResults && viewItem == 'record'",
+                    "group": "inline"
+                }
+            ],
             "explorer/context": [
                 {
                     "group": "cn",
@@ -215,8 +227,8 @@
                 "title": "Add Search",
                 "category": "CodeNow",
                 "icon": {
-                    "dark": "images/icons/round_library_add_white_48dp.png",
-                    "light": "images/icons/round_library_add_black_48dp.png"
+                    "dark": "images/icons/dark/round-library_add-24px.svg",
+                    "light": "images/icons/light/round-library_add-24px.svg"
                 }
             },
             {
@@ -224,8 +236,26 @@
                 "title": "Clear Results",
                 "category": "CodeNow",
                 "icon": {
-                    "dark": "images/icons/round_done_all_white_48dp.png",
-                    "light": "images/icons/round_done_all_black_48dp.png"
+                    "dark": "images/icons/dark/round-done_all-24px.svg",
+                    "light": "images/icons/light/round-done_all-24px.svg"
+                }
+            },
+            {
+                "command": "cn.codeSearchOpenInPlatform",
+                "title": "Open in platform",
+                "category": "CodeNow",
+                "icon": {
+                    "dark": "images/icons/dark/round-open_in_browser-16px.svg",
+                    "light": "images/icons/light/round-open_in_browser-16px.svg"
+                }
+            },
+            {
+                "command": "cn.codeSearchOpenInCode",
+                "title": "Add to workspace",
+                "category": "CodeNow",
+                "icon": {
+                    "dark": "images/icons/dark/round-cloud_download-16px.svg",
+                    "light": "images/icons/light/round-cloud_download-16px.svg"
                 }
             }
         ]

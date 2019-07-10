@@ -22,10 +22,9 @@ export class SearchHit extends TreeItem implements ICodeSearchHit, ICodeSearchEx
         this.tableLabel = s.tableLabel;
         this.sysId = s.sysId;
         this.modified = s.modified;
+        this.contextValue = "record";
 
-        //cast to class
         this.matches = new Array<SearchMatch>();
-
         s.matches.forEach(element =>
         {
             this.matches.push(new SearchMatch(element));

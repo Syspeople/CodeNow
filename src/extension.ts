@@ -646,8 +646,12 @@ export function activate(context: vscode.ExtensionContext)
                 }, async (progress) =>
                     {
                         progress.report({ message: `Searching for: ${term}` });
+
                         //@ts-ignore term already null checked
                         var res = await instance.search(term);
+
+                        mixpanel.track('cn.extension.command.codeSearch.success');
+
                         //@ts-ignore term already null checked
                         return searchProvider.addSearch(res, term);
                     });
@@ -664,11 +668,24 @@ export function activate(context: vscode.ExtensionContext)
         if (instance.IsInitialized())
         {
             searchProvider.clearSearch();
+            mixpanel.track('cn.extension.command.codeSearchClear.success');
         }
         else
         {
             vscode.window.showErrorMessage("Connect to an instance");
         }
+    });
+
+    let codeSearchOpenInPlatform = vscode.commands.registerCommand("cn.codeSearchOpenInPlatform", async () =>
+    {
+        console.log("Open the record in platform");
+        throw new Error("Not implemented");
+    });
+
+    let codeSearchOpenInCode = vscode.commands.registerCommand("cn.codeSearchOpenInCode", async () =>
+    {
+        console.log("Open the record in code");
+        throw new Error("Not implemented");
     });
 
     let createUpdateSet = vscode.commands.registerCommand("cn.createUpdateSet", async () =>
@@ -892,6 +909,8 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(codeSearch);
     context.subscriptions.push(codeSearchClear);
     context.subscriptions.push(codeSearchProvider);
+    context.subscriptions.push(codeSearchOpenInPlatform);
+    context.subscriptions.push(codeSearchOpenInCode);
     context.subscriptions.push(connect);
     context.subscriptions.push(createRecord);
     context.subscriptions.push(createUpdateSet);
