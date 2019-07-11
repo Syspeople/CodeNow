@@ -1,10 +1,8 @@
-import { Relation } from './all';
+import { Relation, IIdentifiable } from './all';
 
 //Interface declaring fields used from sys_metadata
-export interface ISysMetadata
+export interface ISysMetadata extends IIdentifiable
 {
-    sys_class_name: string;
-    sys_id: string;
     sys_policy: string;
     sys_updated_on: Date;
     sys_created_on: Date;
