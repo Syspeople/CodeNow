@@ -53,3 +53,5 @@ export * from './SearchResult';
 export * from './SearchHit';
 export * from './SearchMatch';
 export * from './SearchLineMatch';
+export * from './IIdentifiable';
+export * from './SupportedRecordsHelper';

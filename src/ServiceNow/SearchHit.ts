@@ -1,7 +1,7 @@
-import { ICodeSearchHit, ICodeSearchExpandable, SearchMatch } from "./all";
+import { ICodeSearchHit, ICodeSearchExpandable, SearchMatch, IIdentifiable } from "./all";
 import { TreeItem, TreeItemCollapsibleState } from "vscode";
 
-export class SearchHit extends TreeItem implements ICodeSearchHit, ICodeSearchExpandable
+export class SearchHit extends TreeItem implements ICodeSearchHit, ICodeSearchExpandable, IIdentifiable
 {
     name: string;
     className: string;
@@ -34,5 +34,15 @@ export class SearchHit extends TreeItem implements ICodeSearchHit, ICodeSearchEx
     getChildren(): TreeItem[]
     {
         return this.matches;
+    }
+
+    public get sys_class_name(): string
+    {
+        return this.className;
+    }
+
+    public get sys_id(): string
+    {
+        return this.sysId;
     }
 }

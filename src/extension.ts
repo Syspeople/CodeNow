@@ -6,7 +6,7 @@ import { Md5 } from "md5-typescript";
 import * as ServiceNow from './ServiceNow/all';
 import * as Managers from './Manager/all';
 import { StatusBarManager, NotifationState } from './Manager/all';
-import { SupportedRecords, ISysWsOperation } from './ServiceNow/all';
+import { SupportedRecords, ISysWsOperation, SupportedRecordsHelper } from './ServiceNow/all';
 import { ISysMetadataIWorkspaceConvertable } from './MixIns/all';
 import { URL } from 'url';
 import { TreeDataProviderCodeSearch } from './Providers/all';
@@ -230,13 +230,8 @@ export function activate(context: vscode.ExtensionContext)
     {
         if (instance.IsInitialized())
         {
-            let availableRecords = Object.keys(SupportedRecords);
-
             //remove Scripted rest definitions. Not selecetable but required for caching purposes. 
-            let availableRecordsFiltered = availableRecords.filter((i) =>
-            {
-                return i !== "Scripted Rest Definition";
-            });
+            let availableRecordsFiltered = SupportedRecordsHelper.GetRecordsDisplayValueFiltered();
 
             let p = vscode.window.showQuickPick(availableRecordsFiltered, { placeHolder: "Select Record" });
 
@@ -317,13 +312,8 @@ export function activate(context: vscode.ExtensionContext)
         //add rest
         if (instance.IsInitialized())
         {
-            let availableRecords = Object.keys(SupportedRecords);
-
             //remove Scripted rest definitions. Not selecetable but required for caching purposes. 
-            let availableRecordsFiltered = availableRecords.filter((i) =>
-            {
-                return i !== "Scripted Rest Definition";
-            });
+            let availableRecordsFiltered = SupportedRecordsHelper.GetRecordsDisplayValueFiltered();
 
             let p = vscode.window.showQuickPick(availableRecordsFiltered, { placeHolder: "Select Record" });
             p.then((recordtype) =>
@@ -676,15 +666,19 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-    let codeSearchOpenInPlatform = vscode.commands.registerCommand("cn.codeSearchOpenInPlatform", async () =>
+    let codeSearchOpenInPlatform = vscode.commands.registerCommand("cn.codeSearchOpenInPlatform", async (item) =>
     {
-        console.log("Open the record in platform");
-        throw new Error("Not implemented");
+        //command only available after successfull connection and retrival of search result.
+        if (instance.IsInitialized())
+        {
+            instance.OpenInPlatformRecord(item);
+        }
     });
 
-    let codeSearchOpenInCode = vscode.commands.registerCommand("cn.codeSearchOpenInCode", async () =>
+    let codeSearchOpenInCode = vscode.commands.registerCommand("cn.codeSearchOpenInCode", async (item) =>
     {
         console.log("Open the record in code");
+        console.log(item);
         throw new Error("Not implemented");
     });
 

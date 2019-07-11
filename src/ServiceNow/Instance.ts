@@ -1,5 +1,5 @@
 import { URL } from "url";
-import { Record, ISysMetadata, UpdateSet, Converter, SupportedRecords, SearchResponse } from "./all";
+import { Record, ISysMetadata, UpdateSet, Converter, SupportedRecords, SearchResponse, IIdentifiable, SupportedRecordsHelper } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
@@ -269,7 +269,7 @@ export class Instance
     /**
      * OpenInPlatform Opens a record in hte default browser
      */
-    public OpenInPlatformRecord(record: ISysMetadata): void
+    public OpenInPlatformRecord(record: IIdentifiable): void
     {
         if (this._url)
         {
@@ -281,7 +281,7 @@ export class Instance
     /**
      * OpenInPlatform open the list for a specified table in the default browser
      */
-    public OpenInPlatformList(record: ISysMetadata): void
+    public OpenInPlatformList(record: IIdentifiable): void
     {
         if (this._url)
         {
@@ -513,7 +513,7 @@ export class Instance
     {
         if (this.IsInitialized)
         {
-            let availableRecords = Object.keys(SupportedRecords);
+            let availableRecords = SupportedRecordsHelper.GetRecordsDisplayValue();
 
             availableRecords.forEach(element =>
             {
