@@ -1,4 +1,4 @@
-import { Record, ISysMetadata, SupportedRecords } from "../ServiceNow/all";
+import { Record, ISysMetadata, SupportedRecordsHelper } from "../ServiceNow/all";
 import { KeyValuePair, ILocalMetaData } from "./all";
 import { Uri, workspace } from "vscode";
 import { FileTypes } from "./FileTypes";
@@ -136,8 +136,6 @@ export class MetaData extends Record implements ILocalMetaData
 
     public getClassDisplayValue(): string | undefined
     {
-        //@ts-ignore index
-        const classDisplayValue = Object.keys(SupportedRecords).find(key => SupportedRecords[key] === this.sys_class_name);
-        return classDisplayValue;
+        return SupportedRecordsHelper.getDisplayName(this.sys_class_name);
     }
 }
