@@ -680,6 +680,51 @@ export function activate(context: vscode.ExtensionContext)
         console.log("Open the record in code");
         console.log(item);
         throw new Error("Not implemented");
+
+        //@ts-ignore index error false
+        // let recordType: SupportedRecords = SupportedRecords[res];
+
+        // switch (recordType)
+        // {
+        //     //handle rest api identically
+        //     case SupportedRecords["Scripted Rest API"]:
+        //         let restDefs = await instance.GetRecords(SupportedRecords["Scripted Rest Definition"]);
+        //         let restDef = await vscode.window.showQuickPick(restDefs);
+
+        //         if (restDef)
+        //         {
+        //             let restOps = await instance.GetRecords(SupportedRecords["Scripted Rest API"]);
+
+        //             if (restOps)
+        //             {
+        //                 let ops = restOps as Array<ISysWsOperation>;
+
+        //                 let restOp = await vscode.window.showQuickPick(ops.filter((e) =>
+        //                 {
+        //                     //@ts-ignore restDef already nullchecked
+        //                     return e.web_service_definition.value === restDef.sys_id;
+        //                 }));
+
+        //                 if (restOp)
+        //                 {
+        //                     wm.AddRecord(restOp, instance);
+        //                     className = restOp.sys_class_name;
+        //                 }
+        //             }
+        //         }
+        //         break;
+        //     default:
+        //         let records = await instance.GetRecords(recordType);
+
+        //         let record = await vscode.window.showQuickPick(records);
+
+        //         if (record)
+        //         {
+        //             wm.AddRecord(record, instance);
+        //             className = record.sys_class_name;
+        //         }
+        //         break;
+        // }
     });
 
     let createUpdateSet = vscode.commands.registerCommand("cn.createUpdateSet", async () =>
