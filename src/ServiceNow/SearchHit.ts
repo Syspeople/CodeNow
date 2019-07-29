@@ -1,4 +1,4 @@
-import { ICodeSearchHit, ICodeSearchExpandable, SearchMatch, IIdentifiable } from "./all";
+import { ICodeSearchHit, ICodeSearchExpandable, SearchMatch, IIdentifiable, SupportedRecordsHelper } from "./all";
 import { TreeItem, TreeItemCollapsibleState } from "vscode";
 
 export class SearchHit extends TreeItem implements ICodeSearchHit, ICodeSearchExpandable, IIdentifiable
@@ -22,7 +22,7 @@ export class SearchHit extends TreeItem implements ICodeSearchHit, ICodeSearchEx
         this.tableLabel = s.tableLabel;
         this.sysId = s.sysId;
         this.modified = s.modified;
-        this.contextValue = "record";
+        this.contextValue = `${SupportedRecordsHelper.isSupported(this.className)}`;
 
         this.matches = new Array<SearchMatch>();
         s.matches.forEach(element =>

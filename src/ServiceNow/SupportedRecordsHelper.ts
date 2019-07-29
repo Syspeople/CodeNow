@@ -26,10 +26,8 @@ export class SupportedRecordsHelper
         return out;
     }
 
-    //key => SupportedRecords[key] === this.sys_class_name
-
     /**
-     * getDiplayName
+     * Gets the display value of a given record type.
      */
     public static getDisplayName(ClassName: string): string
     {
@@ -66,5 +64,15 @@ export class SupportedRecordsHelper
         });
 
         return RecordsFiltered;
+    }
+
+    /**
+     * Returns true if the record type is supported by the extension. 
+     */
+    public static isSupported(className: string)
+    {
+        let allTypes = this.GetRecordsValue();
+
+        return (allTypes.indexOf(className) > -1);
     }
 }
