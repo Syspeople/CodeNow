@@ -1,3 +1,5 @@
+//Validate filter function in SupportedRecordsHelper.ts
+
 export enum SupportedRecords
 {
     "Angular Provider" = "sp_angular_provider",

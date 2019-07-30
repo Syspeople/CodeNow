@@ -2,10 +2,10 @@
     "name": "cn",
     "displayName": "CodeNow",
     "description": "Write high quality code fast and intuitively with ServiceNow",
-    "version": "0.9.0",
+    "version": "0.10.0",
     "publisher": "ambsoerensen",
     "license": "MIT",
-    "icon": "images/icon.png",
+    "icon": "images/icons/icon.png",
     "galleryBanner": {
         "color": "#838381",
         "theme": "dark"
@@ -15,18 +15,34 @@
         "url": "https://github.com/Syspeople/CodeNow"
     },
     "engines": {
-        "vscode": "^1.21.0"
+        "vscode": "^1.36.0"
     },
     "categories": [
         "Other",
-        "Linters",
-        "Programming Languages"
+        "Linters"
     ],
     "activationEvents": [
         "*"
     ],
     "main": "./out/extension",
     "contributes": {
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "codeSearch",
+                    "title": "CodeSearch",
+                    "icon": "images/icons/baseline-cloud_circle-24px.svg"
+                }
+            ]
+        },
+        "views": {
+            "codeSearch": [
+                {
+                    "id": "searchResults",
+                    "name": "Search Results"
+                }
+            ]
+        },
         "snippets": [
             {
                 "language": "javascript",
@@ -63,6 +79,30 @@
             }
         ],
         "menus": {
+            "view/title": [
+                {
+                    "command": "cn.codeSearchClear",
+                    "when": "view == searchResults",
+                    "group": "navigation"
+                },
+                {
+                    "command": "cn.codeSearch",
+                    "when": "view == searchResults",
+                    "group": "navigation"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "cn.codeSearchOpenInPlatform",
+                    "when": "view == searchResults && viewItem",
+                    "group": "inline"
+                },
+                {
+                    "command": "cn.codeSearchOpenInCode",
+                    "when": "view == searchResults && viewItem == 'true'",
+                    "group": "inline"
+                }
+            ],
             "explorer/context": [
                 {
                     "group": "cn",
@@ -109,6 +149,14 @@
                 },
                 {
                     "command": "cn.deleteRecord",
+                    "when": "false"
+                },
+                {
+                    "command": "cn.codeSearch",
+                    "when": "false"
+                },
+                {
+                    "command": "cn.codeSearchClear",
                     "when": "false"
                 }
             ]
@@ -173,6 +221,42 @@
                 "command": "cn.deleteRecord",
                 "title": "Delete Record",
                 "category": "CodeNow"
+            },
+            {
+                "command": "cn.codeSearch",
+                "title": "Add Search",
+                "category": "CodeNow",
+                "icon": {
+                    "dark": "images/icons/dark/round-library_add-24px.svg",
+                    "light": "images/icons/light/round-library_add-24px.svg"
+                }
+            },
+            {
+                "command": "cn.codeSearchClear",
+                "title": "Clear Results",
+                "category": "CodeNow",
+                "icon": {
+                    "dark": "images/icons/dark/round-done_all-24px.svg",
+                    "light": "images/icons/light/round-done_all-24px.svg"
+                }
+            },
+            {
+                "command": "cn.codeSearchOpenInPlatform",
+                "title": "Open in platform",
+                "category": "CodeNow",
+                "icon": {
+                    "dark": "images/icons/dark/round-open_in_browser-16px.svg",
+                    "light": "images/icons/light/round-open_in_browser-16px.svg"
+                }
+            },
+            {
+                "command": "cn.codeSearchOpenInCode",
+                "title": "Add to workspace",
+                "category": "CodeNow",
+                "icon": {
+                    "dark": "images/icons/dark/round-cloud_download-16px.svg",
+                    "light": "images/icons/light/round-cloud_download-16px.svg"
+                }
             }
         ]
     },
