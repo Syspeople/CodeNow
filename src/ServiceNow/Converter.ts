@@ -1,8 +1,6 @@
-import { ISysMetadata, ScriptInclude, ScriptedRestResource, ISysWsDefinition, ISysScriptInclude, Widget, ISpWidget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, SpHeaderFooter, ISpHeaderFooter, MailScript, ISysMailScript, ScriptAction, ISysEventScriptAction, Processor, ISysProcessor, UiAction, ISysUiAction, ScriptedRestService, AngularProvider, IAngularProvider, UiPage, IUiPage, FixScript, IFixScript, ValidationScript, IValidationScript, ISysWsOperation } from "./all";
+import { ISysMetadata, ScriptInclude, ScriptedRestResource, ISysWsDefinition, ISysScriptInclude, Widget, ISpWidget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, SpHeaderFooter, ISpHeaderFooter, MailScript, ISysMailScript, ScriptAction, ISysEventScriptAction, Processor, ISysProcessor, UiAction, ISysUiAction, ScriptedRestService, AngularProvider, IAngularProvider, UiPage, IUiPage, FixScript, IFixScript, ValidationScript, IValidationScript, ISysWsOperation, AngularTemplate, IAngularTemplate, UiMacro, IUiMacro } from "./all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
 import { FileTypes } from "../Manager/all";
-import { AngularTemplate } from "./AngularTemplate";
-import { IAngularTemplate } from "./IAngularTemplate";
 
 
 export class Converter
@@ -43,6 +41,8 @@ export class Converter
                 return new AngularProvider(<IAngularProvider>c);
             case "sys_ui_page":
                 return new UiPage(<IUiPage>c);
+            case "sys_ui_macro":
+                return new UiMacro(<IUiMacro>c);
             case "sys_ui_action":
                 return new UiAction(<ISysUiAction>c);
             case "sys_script_fix":
@@ -76,6 +76,8 @@ export class Converter
                 return "scss";
             case FileTypes.html:
                 return "html";
+            case FileTypes.xml:
+                return "xml";
             default:
                 throw new Error("FileType not recognized");
         }

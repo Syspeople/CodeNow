@@ -45,3 +45,5 @@ export * from './ScriptedRestResource';
 export * from './ScriptedRestService';
 export * from './IAngularTemplate';
 export * from './AngularTemplate';
+export * from './IUiMacro';
+export * from './UiMacro';

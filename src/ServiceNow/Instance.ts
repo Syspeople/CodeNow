@@ -818,6 +818,11 @@ var current = current;
                     name: record.name,
                     script: ``
                 };
+            case SupportedRecords["UI Macro"]:
+                return {
+                    name: record.name,
+                    xml: ``
+                };
             case SupportedRecords["Fix Script"]:
                 return {
                     name: record.name,
@@ -833,7 +838,7 @@ var current = current;
                 return {
                     name: record.sys_name,
                     id: record.id,
-                    html: ``,
+                    template: ``,
                 };
             case SupportedRecords["Validation Script"]:
                 return {
