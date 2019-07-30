@@ -15,7 +15,7 @@ function addBuildNumber
 
         $splitVer = $pgkJson.version.split('.')
 
-        $pgkJson.version = "$($splitVer[0]).$($splitVer[1]).$($buildNo))"
+        $pgkJson.version = "$($splitVer[0]).$($splitVer[1]).$($buildNo)"
     
         $null = Set-Content -Path ".\package.json" -Value (ConvertTo-Json -InputObject $pgkJson -Depth 10)
     }
