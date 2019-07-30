@@ -1,24 +1,22 @@
 import * as assert from 'assert';
-import { Instance } from '../../ServiceNow/all';
-import { workspace, WorkspaceConfiguration, env, extensions } from "vscode";
-import { WorkspaceManager, WorkspaceStateManager, StatusBarManager } from '../../Manager/all';
+import { Instance, SupportedRecords } from '../../ServiceNow/all';
+import { workspace, WorkspaceConfiguration } from "vscode";
+import * as codeNow from '../../extension';
+import { URL } from 'url';
+
 
 // Defines a Mocha test suite to group tests of similar kind together
-suite("Instance Tests", function ()
+describe("ServiceNow Instanse", function ()
 {
-    let extension = extensions.getExtension("ambsoerensen.cn");
-
-    const nm = new StatusBarManager();
-    const wsm = new WorkspaceStateManager({
-        extensionPath: extension.extensionPath,
-
-    });
-    const wm = new WorkspaceManager(wsm);
+    let nm = codeNow.nm;
+    let wsm = codeNow.wsm;
+    let wm = codeNow.wm;
 
     let config: WorkspaceConfiguration;
     let instance: Instance;
 
-    test("Instantiates", () =>
+
+    it("Instantiates", () =>
     {
         assert.doesNotThrow(() =>
         {
@@ -27,8 +25,10 @@ suite("Instance Tests", function ()
         });
     });
 
-    test("instance Initializes", () =>
+
+    it("all record types cached", () =>
     {
-        instance.Initialize(i, u, p, wsm, nm);
+        suu
     });
+
 });
