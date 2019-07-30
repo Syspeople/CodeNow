@@ -299,8 +299,10 @@ export class Instance
     {
         return new Promise((resolve, reject) =>
         {
+
             if (this.ApiProxy)
             {
+
                 let p = this.ApiProxy.PatchRecord(record);
                 if (p)
                 {
@@ -374,7 +376,7 @@ export class Instance
     /**
     * GetRecord retrieves full record from instance
     */
-    public GetRecord(record: ISysMetadata): Promise<ISysMetadataIWorkspaceConvertable>
+    public GetRecord(record: IIdentifiable): Promise<ISysMetadataIWorkspaceConvertable>
     {
         return new Promise((resolve, reject) =>
         {

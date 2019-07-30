@@ -8,4 +8,7 @@ export interface ISysMetadata extends IIdentifiable
     sys_created_on: Date;
     sys_package: Relation;
     sys_scope: Relation;
+
+    canWrite: boolean;
+    canRead: boolean;
 }
