@@ -10,10 +10,5 @@
     "search.exclude": {
         "out": true // set this to false to include "out" folder in search results
     },
-    "TodoParser": {
-        "folderExclude": [
-            "node_modules",
-            "out"
-        ]
-    }
+    "debug.node.autoAttach": "on"
 }

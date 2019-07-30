@@ -24,6 +24,7 @@ const mixpanel = new Managers.Mixpanel(token);
 
 export function activate(context: vscode.ExtensionContext)
 {
+    var extCon = context;
     const wsm = new Managers.WorkspaceStateManager(context);
     const wm = new Managers.WorkspaceManager(wsm);
     const nm = new StatusBarManager();

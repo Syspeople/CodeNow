@@ -12,7 +12,7 @@ async function main()
 
         // The path to the extension test script
         // Passed to --extensionTestsPath
-        const extensionTestsPath = path.resolve(__dirname, './suite/index');
+        const extensionTestsPath = path.resolve(__dirname, './suite/index.js');
 
         let folder = fs.mkdtempSync("testRun");
 

@@ -1,16 +1,18 @@
 import * as assert from 'assert';
 import { Instance } from '../../ServiceNow/all';
-import { workspace, WorkspaceConfiguration, ExtensionContext } from "vscode";
+import { workspace, WorkspaceConfiguration, env, extensions } from "vscode";
 import { WorkspaceManager, WorkspaceStateManager, StatusBarManager } from '../../Manager/all';
 
 // Defines a Mocha test suite to group tests of similar kind together
 suite("Instance Tests", function ()
 {
-
-    let context = new ExtensionContext();
+    let extension = extensions.getExtension("ambsoerensen.cn");
 
     const nm = new StatusBarManager();
-    const wsm = new WorkspaceStateManager()
+    const wsm = new WorkspaceStateManager({
+        extensionPath: extension.extensionPath,
+
+    });
     const wm = new WorkspaceManager(wsm);
 
     let config: WorkspaceConfiguration;
