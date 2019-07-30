@@ -413,7 +413,7 @@ export class Api
                     url = url + `?sysparm_query=sys_policy=^sys_scope=global`;
                     break;
             }
-            return this.HttpClient.get(url);
+            return this.HttpClient.get(url, { timeout: 20000 });
         }
         else
         {
