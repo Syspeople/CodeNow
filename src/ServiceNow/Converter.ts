@@ -1,6 +1,8 @@
 import { ISysMetadata, ScriptInclude, ScriptedRestResource, ISysWsDefinition, ISysScriptInclude, Widget, ISpWidget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, SpHeaderFooter, ISpHeaderFooter, MailScript, ISysMailScript, ScriptAction, ISysEventScriptAction, Processor, ISysProcessor, UiAction, ISysUiAction, ScriptedRestService, AngularProvider, IAngularProvider, UiPage, IUiPage, FixScript, IFixScript, ValidationScript, IValidationScript, ISysWsOperation } from "./all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
 import { FileTypes } from "../Manager/all";
+import { AngularTemplate } from "./AngularTemplate";
+import { IAngularTemplate } from "./IAngularTemplate";
 
 
 export class Converter
@@ -47,6 +49,8 @@ export class Converter
                 return new FixScript(<IFixScript>c);
             case "sys_script_validator":
                 return new ValidationScript(<IValidationScript>c);
+            case "sp_ng_template":
+                return new AngularTemplate(<IAngularTemplate>c);
             default:
                 let msg = `GetRecord: Record ${record.sys_class_name} not recognized`;
                 console.warn(msg);

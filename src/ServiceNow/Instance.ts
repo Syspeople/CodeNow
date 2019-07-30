@@ -829,6 +829,12 @@ var current = current;
                     script: ``,
                     type: record.type
                 };
+            case SupportedRecords["Angular Template"]:
+                return {
+                    name: record.sys_name,
+                    id: record.id,
+                    html: ``,
+                };
             case SupportedRecords["Validation Script"]:
                 return {
                     description: record.description,

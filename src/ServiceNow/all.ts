@@ -43,3 +43,5 @@ export * from './ValidationScript';
 export * from './IValidationScript';
 export * from './ScriptedRestResource';
 export * from './ScriptedRestService';
+export * from './IAngularTemplate';
+export * from './AngularTemplate';
