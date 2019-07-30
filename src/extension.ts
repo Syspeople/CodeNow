@@ -679,52 +679,14 @@ export function activate(context: vscode.ExtensionContext)
     {
         console.log("Open the record in code");
         console.log(item);
-        throw new Error("Not implemented");
 
-        //@ts-ignore index error false
-        // let recordType: SupportedRecords = SupportedRecords[res];
-
-        // switch (recordType)
-        // {
-        //     //handle rest api identically
-        //     case SupportedRecords["Scripted Rest API"]:
-        //         let restDefs = await instance.GetRecords(SupportedRecords["Scripted Rest Definition"]);
-        //         let restDef = await vscode.window.showQuickPick(restDefs);
-
-        //         if (restDef)
-        //         {
-        //             let restOps = await instance.GetRecords(SupportedRecords["Scripted Rest API"]);
-
-        //             if (restOps)
-        //             {
-        //                 let ops = restOps as Array<ISysWsOperation>;
-
-        //                 let restOp = await vscode.window.showQuickPick(ops.filter((e) =>
-        //                 {
-        //                     //@ts-ignore restDef already nullchecked
-        //                     return e.web_service_definition.value === restDef.sys_id;
-        //                 }));
-
-        //                 if (restOp)
-        //                 {
-        //                     wm.AddRecord(restOp, instance);
-        //                     className = restOp.sys_class_name;
-        //                 }
-        //             }
-        //         }
-        //         break;
-        //     default:
-        //         let records = await instance.GetRecords(recordType);
-
-        //         let record = await vscode.window.showQuickPick(records);
-
-        //         if (record)
-        //         {
-        //             wm.AddRecord(record, instance);
-        //             className = record.sys_class_name;
-        //         }
-        //         break;
-        // }
+        let record = await instance.GetRecord(item);
+        console.log(record);
+        if (!record.canWrite)
+        {
+            vscode.window.showWarningMessage(`Record Read Only, Protection Policy: ${record.sys_policy}`);
+        }
+        wm.AddRecord(record, instance);
     });
 
     let createUpdateSet = vscode.commands.registerCommand("cn.createUpdateSet", async () =>
@@ -827,42 +789,53 @@ export function activate(context: vscode.ExtensionContext)
 
                     if (record)
                     {
-                        let p = instance.IsLatest(record);
-
-                        p.then((res) =>
+                        if (record.canWrite)
                         {
-                            vscode.window.showWarningMessage(`Newer Version of record ${res.sys_id} Found on instance`);
+                            let p = instance.IsLatest(record);
+
+                            p.then((res) =>
+                            {
+                                vscode.window.showWarningMessage(`Newer Version of record ${res.sys_id} Found on instance`);
+
+                                mixpanel.track('cn.extension.event.onDidSaveTextDocument.break', {
+                                    reason: "Local Record outdated"
+                                });
+                            }).catch((er) =>
+                            {
+                                if (record)
+                                {
+                                    let o = instance.SaveRecord(record);
+
+                                    if (o)
+                                    {
+                                        o.then((res) =>
+                                        {
+                                            vscode.window.showInformationMessage(`Saved`);
+                                            wm.UpdateRecord(res, e.uri);
+
+                                            mixpanel.track('cn.extension.event.onDidSaveTextDocument.success', {
+                                                sys_class_name: res.sys_class_name
+                                            });
+                                        }).catch((er) =>
+                                        {
+                                            vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
+
+                                            mixpanel.track('cn.extension.event.onDidSaveTextDocument.fail', {
+                                                error: er.error.message
+                                            });
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                        else
+                        {
+                            vscode.window.showWarningMessage(`Record Protection policy: ${record.sys_policy}, Not saved`);
 
                             mixpanel.track('cn.extension.event.onDidSaveTextDocument.break', {
-                                reason: "Local Record outdated"
+                                reason: "Record Policy Read Only"
                             });
-                        }).catch((er) =>
-                        {
-                            if (record)
-                            {
-                                let o = instance.SaveRecord(record);
-
-                                if (o)
-                                {
-                                    o.then((res) =>
-                                    {
-                                        vscode.window.showInformationMessage(`Saved`);
-                                        wm.UpdateRecord(res, e.uri);
-
-                                        mixpanel.track('cn.extension.event.onDidSaveTextDocument.success', {
-                                            sys_class_name: res.sys_class_name
-                                        });
-                                    }).catch((er) =>
-                                    {
-                                        vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
-
-                                        mixpanel.track('cn.extension.event.onDidSaveTextDocument.fail', {
-                                            error: er.error.message
-                                        });
-                                    });
-                                }
-                            }
-                        });
+                        }
                     }
                 }
             }).catch((err) =>
