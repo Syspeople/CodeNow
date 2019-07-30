@@ -1,5 +1,5 @@
 import * as Axios from "axios";
-import { Instance, ISysMetadata, ISysProperty, SysProperty, ISysUserSession, ISysUpdateSet, UpdateSet, SupportedRecords, ICodeSearchResult } from "../ServiceNow/all";
+import { Instance, ISysMetadata, ISysProperty, SysProperty, ISysUserSession, ISysUpdateSet, UpdateSet, SupportedRecords, ICodeSearchResult, IIdentifiable } from "../ServiceNow/all";
 import { IServiceNowResponse, ICookie } from "./all";
 import * as qs from "querystring";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
@@ -355,7 +355,7 @@ export class Api
      * return a promise with a single full Record
      * @param record 
      */
-    public GetRecord<T extends ISysMetadata>(record: ISysMetadata): Axios.AxiosPromise<IServiceNowResponse<T>> | undefined
+    public GetRecord<T extends ISysMetadata>(record: IIdentifiable): Axios.AxiosPromise<IServiceNowResponse<T>> | undefined
     {
         if (this.HttpClient)
         {
@@ -416,7 +416,7 @@ export class Api
                     url = url + `?sysparm_query=sys_policy=^sys_scope=global`;
                     break;
             }
-            return this.HttpClient.get(url);
+            return this.HttpClient.get(url, { timeout: 20000 });
         }
         else
         {

@@ -6,7 +6,7 @@ import { Md5 } from "md5-typescript";
 import * as ServiceNow from './ServiceNow/all';
 import * as Managers from './Manager/all';
 import { StatusBarManager, NotifationState } from './Manager/all';
-import { SupportedRecords, ISysWsOperation } from './ServiceNow/all';
+import { SupportedRecords, ISysWsOperation, SupportedRecordsHelper } from './ServiceNow/all';
 import { ISysMetadataIWorkspaceConvertable } from './MixIns/all';
 import { URL } from 'url';
 import { TreeDataProviderCodeSearch } from './Providers/all';
@@ -20,14 +20,18 @@ else
 {
     token = 'dd31fdbf95e8a0bfb560cb8219b672f2';
 }
+
 const mixpanel = new Managers.Mixpanel(token);
+export let wsm: Managers.WorkspaceStateManager;
+export let wm: Managers.WorkspaceManager;
+export let nm: StatusBarManager;
 
 export function activate(context: vscode.ExtensionContext)
 {
-    var extCon = context;
-    const wsm = new Managers.WorkspaceStateManager(context);
-    const wm = new Managers.WorkspaceManager(wsm);
-    const nm = new StatusBarManager();
+    wsm = new Managers.WorkspaceStateManager(context);
+    wm = new Managers.WorkspaceManager(wsm);
+    nm = new StatusBarManager();
+
     let instance: ServiceNow.Instance;
     let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration("cn");
     let searchProvider: TreeDataProviderCodeSearch = new TreeDataProviderCodeSearch();
@@ -231,13 +235,8 @@ export function activate(context: vscode.ExtensionContext)
     {
         if (instance.IsInitialized())
         {
-            let availableRecords = Object.keys(SupportedRecords);
-
             //remove Scripted rest definitions. Not selecetable but required for caching purposes. 
-            let availableRecordsFiltered = availableRecords.filter((i) =>
-            {
-                return i !== "Scripted Rest Definition";
-            });
+            let availableRecordsFiltered = SupportedRecordsHelper.GetRecordsDisplayValueFiltered();
 
             let p = vscode.window.showQuickPick(availableRecordsFiltered, { placeHolder: "Select Record" });
 
@@ -318,13 +317,8 @@ export function activate(context: vscode.ExtensionContext)
         //add rest
         if (instance.IsInitialized())
         {
-            let availableRecords = Object.keys(SupportedRecords);
-
             //remove Scripted rest definitions. Not selecetable but required for caching purposes. 
-            let availableRecordsFiltered = availableRecords.filter((i) =>
-            {
-                return i !== "Scripted Rest Definition";
-            });
+            let availableRecordsFiltered = SupportedRecordsHelper.GetRecordsDisplayValueFiltered();
 
             let p = vscode.window.showQuickPick(availableRecordsFiltered, { placeHolder: "Select Record" });
             p.then((recordtype) =>
@@ -677,16 +671,27 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-    let codeSearchOpenInPlatform = vscode.commands.registerCommand("cn.codeSearchOpenInPlatform", async () =>
+    let codeSearchOpenInPlatform = vscode.commands.registerCommand("cn.codeSearchOpenInPlatform", async (item) =>
     {
-        console.log("Open the record in platform");
-        throw new Error("Not implemented");
+        //command only available after successfull connection and retrival of search result.
+        if (instance.IsInitialized())
+        {
+            instance.OpenInPlatformRecord(item);
+        }
     });
 
-    let codeSearchOpenInCode = vscode.commands.registerCommand("cn.codeSearchOpenInCode", async () =>
+    let codeSearchOpenInCode = vscode.commands.registerCommand("cn.codeSearchOpenInCode", async (item) =>
     {
         console.log("Open the record in code");
-        throw new Error("Not implemented");
+        console.log(item);
+
+        let record = await instance.GetRecord(item);
+        console.log(record);
+        if (!record.canWrite)
+        {
+            vscode.window.showWarningMessage(`Record Read Only, Protection Policy: ${record.sys_policy}`);
+        }
+        wm.AddRecord(record, instance);
     });
 
     let createUpdateSet = vscode.commands.registerCommand("cn.createUpdateSet", async () =>
@@ -789,42 +794,53 @@ export function activate(context: vscode.ExtensionContext)
 
                     if (record)
                     {
-                        let p = instance.IsLatest(record);
-
-                        p.then((res) =>
+                        if (record.canWrite)
                         {
-                            vscode.window.showWarningMessage(`Newer Version of record ${res.sys_id} Found on instance`);
+                            let p = instance.IsLatest(record);
+
+                            p.then((res) =>
+                            {
+                                vscode.window.showWarningMessage(`Newer Version of record ${res.sys_id} Found on instance`);
+
+                                mixpanel.track('cn.extension.event.onDidSaveTextDocument.break', {
+                                    reason: "Local Record outdated"
+                                });
+                            }).catch((er) =>
+                            {
+                                if (record)
+                                {
+                                    let o = instance.SaveRecord(record);
+
+                                    if (o)
+                                    {
+                                        o.then((res) =>
+                                        {
+                                            vscode.window.showInformationMessage(`Saved`);
+                                            wm.UpdateRecord(res, e.uri);
+
+                                            mixpanel.track('cn.extension.event.onDidSaveTextDocument.success', {
+                                                sys_class_name: res.sys_class_name
+                                            });
+                                        }).catch((er) =>
+                                        {
+                                            vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
+
+                                            mixpanel.track('cn.extension.event.onDidSaveTextDocument.fail', {
+                                                error: er.error.message
+                                            });
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                        else
+                        {
+                            vscode.window.showWarningMessage(`Record Protection policy: ${record.sys_policy}, Not saved`);
 
                             mixpanel.track('cn.extension.event.onDidSaveTextDocument.break', {
-                                reason: "Local Record outdated"
+                                reason: "Record Policy Read Only"
                             });
-                        }).catch((er) =>
-                        {
-                            if (record)
-                            {
-                                let o = instance.SaveRecord(record);
-
-                                if (o)
-                                {
-                                    o.then((res) =>
-                                    {
-                                        vscode.window.showInformationMessage(`Saved`);
-                                        wm.UpdateRecord(res, e.uri);
-
-                                        mixpanel.track('cn.extension.event.onDidSaveTextDocument.success', {
-                                            sys_class_name: res.sys_class_name
-                                        });
-                                    }).catch((er) =>
-                                    {
-                                        vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
-
-                                        mixpanel.track('cn.extension.event.onDidSaveTextDocument.fail', {
-                                            error: er.error.message
-                                        });
-                                    });
-                                }
-                            }
-                        });
+                        }
                     }
                 }
             }).catch((err) =>

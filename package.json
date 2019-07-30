@@ -2,7 +2,7 @@
     "name": "cn",
     "displayName": "CodeNow",
     "description": "Write high quality code fast and intuitively with ServiceNow",
-    "version": "0.9.0",
+    "version": "0.10.0",
     "publisher": "ambsoerensen",
     "license": "MIT",
     "icon": "images/icons/icon.png",
@@ -94,12 +94,12 @@
             "view/item/context": [
                 {
                     "command": "cn.codeSearchOpenInPlatform",
-                    "when": "view == searchResults && viewItem == 'record'",
+                    "when": "view == searchResults && viewItem",
                     "group": "inline"
                 },
                 {
                     "command": "cn.codeSearchOpenInCode",
-                    "when": "view == searchResults && viewItem == 'record'",
+                    "when": "view == searchResults && viewItem == 'true'",
                     "group": "inline"
                 }
             ],
@@ -270,6 +270,7 @@
     "devDependencies": {
         "@types/mocha": "^2.2.42",
         "@types/node": "^7.0.43",
+        "memento": "0.0.8",
         "tslint": "^5.18.0",
         "typescript": "^3.0.0",
         "vscode": "^1.1.34"

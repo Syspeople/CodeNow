@@ -4,5 +4,6 @@ export enum FileTypes
     clientScript,
     styleSheet,
     html,
-    processingScript
+    processingScript,
+    xml
 }
