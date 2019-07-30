@@ -23,11 +23,6 @@ export class AngularTemplate extends Record implements IAngularTemplate
         return this.sys_name;
     }
 
-    public get description(): string
-    {
-        return "";
-    }
-
     SetAttribute(content: string, filetype: FileTypes): void
     {
         switch (filetype)
