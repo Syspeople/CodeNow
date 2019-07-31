@@ -1,5 +1,4 @@
 'use strict';
-
 import * as vscode from 'vscode';
 //import { URL } from 'url';
 import { Md5 } from "md5-typescript";
@@ -11,26 +10,13 @@ import { ISysMetadataIWorkspaceConvertable } from './MixIns/all';
 import { URL } from 'url';
 import { TreeDataProviderCodeSearch } from './Providers/all';
 
-let token;
-if (vscode.env.machineId === "someValue.machineId")
-{
-    token = '48ec45ce7cb17e257d933d9cab2e0665';
-}
-else
-{
-    token = 'dd31fdbf95e8a0bfb560cb8219b672f2';
-}
-
-const mixpanel = new Managers.Mixpanel(token);
-export let wsm: Managers.WorkspaceStateManager;
-export let wm: Managers.WorkspaceManager;
-export let nm: StatusBarManager;
+const mixpanel = new Managers.Mixpanel();
 
 export function activate(context: vscode.ExtensionContext)
 {
-    wsm = new Managers.WorkspaceStateManager(context);
-    wm = new Managers.WorkspaceManager(wsm);
-    nm = new StatusBarManager();
+    const wsm = new Managers.WorkspaceStateManager(context);
+    const wm = new Managers.WorkspaceManager(wsm);
+    const nm = new StatusBarManager();
 
     let instance: ServiceNow.Instance;
     let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration("cn");
