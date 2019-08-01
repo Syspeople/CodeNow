@@ -1,4 +1,4 @@
-import { Record, ISysMetadata, SupportedRecordsHelper } from "../ServiceNow/all";
+import { Record, ISysMetadata, SupportedRecordsHelper, Converter } from "../ServiceNow/all";
 import { KeyValuePair, ILocalMetaData } from "./all";
 import { Uri, workspace } from "vscode";
 import { FileTypes } from "./FileTypes";
@@ -97,7 +97,7 @@ export class MetaData extends Record implements ILocalMetaData
      */
     public ContainsFile(uri: Uri): boolean
     {
-        let fileTypes = MetaData.getFileTypes();
+        let fileTypes = Converter.getFileTypes();
 
         for (let i = 0; i < fileTypes.length; i++)
         {
@@ -111,13 +111,7 @@ export class MetaData extends Record implements ILocalMetaData
         return false;
     }
 
-    /**
-    * returns all suported file types in an array. 
-    */
-    public static getFileTypes()
-    {
-        return [FileTypes.clientScript, FileTypes.html, FileTypes.serverScript, FileTypes.styleSheet, FileTypes.processingScript];
-    }
+
 
     /**
      * Returns an instantiated metadata object from a json object.

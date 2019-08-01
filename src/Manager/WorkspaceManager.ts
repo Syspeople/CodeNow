@@ -63,7 +63,7 @@ export class WorkspaceManager
                 let record = Converter.CastSysMetaData(md);
 
                 //read files into object
-                let arrEnum = MetaData.getFileTypes();
+                let arrEnum = Converter.getFileTypes();
 
                 if (record)
                 {
@@ -104,7 +104,7 @@ export class WorkspaceManager
         if (meta)
         {
             //all supported files.
-            let arrEnum = MetaData.getFileTypes();
+            let arrEnum = Converter.getFileTypes();
 
             for (let index = 0; index < arrEnum.length; index++)
             {
@@ -188,11 +188,11 @@ export class WorkspaceManager
         if (options)
         {
             //all supported files.
-            let arrEnum = MetaData.getFileTypes();
+            let arrEnum = Converter.getFileTypes();
 
             for (let index = 0; index < arrEnum.length; index++)
             {
-                const element = arrEnum[index];
+                let element = arrEnum[index];
                 //create files.
                 let uri = options.getFileUri(element);
                 if (uri)

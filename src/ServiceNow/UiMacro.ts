@@ -54,7 +54,7 @@ export class UiMacro extends Record implements IUiMacro
         if (instance.IsInitialized() && instance.Url)
         {
             let f = new Array<KeyValuePair<FileTypes, Uri>>();
-            f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${record.name}.${Converter.getFileTypeExtension(FileTypes.xml)}`)));
+            f.push(new KeyValuePair(FileTypes.xml, Uri.parse(`/${record.name}.${Converter.getFileTypeExtension(FileTypes.xml)}`)));
             return new MetaData(record, f, instance.Url.host, record.name);
         }
         throw new Error("Instance not initialized");
