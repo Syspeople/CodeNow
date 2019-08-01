@@ -46,7 +46,7 @@ export function activate(context: vscode.ExtensionContext)
             {
                 wsm.SetUrl(`https://${test.instanceName}.service-now.com`);
                 wsm.SetUserName(test.userName);
-                pw = test.pw;
+                pw = test.password;
             }
 
             if (!wsm.HasInstanceInState())

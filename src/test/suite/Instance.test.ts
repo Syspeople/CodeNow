@@ -1,34 +1,43 @@
 import * as assert from 'assert';
-import { Instance, SupportedRecords } from '../../ServiceNow/all';
-import { workspace, WorkspaceConfiguration } from "vscode";
-import * as codeNow from '../../extension';
-import { URL } from 'url';
-
+import { Instance, SupportedRecordsHelper, SupportedRecords } from '../../ServiceNow/all';
+import { commands } from "vscode";
 
 // Defines a Mocha test suite to group tests of similar kind together
-describe("ServiceNow Instanse", function ()
+suite("CodeNow Integration", async function ()
 {
-    let nm = codeNow.nm;
-    let wsm = codeNow.wsm;
-    let wm = codeNow.wm;
+    this.timeout(10000);
 
-    let config: WorkspaceConfiguration;
-    let instance: Instance;
-
-
-    it("Instantiates", () =>
+    let instance: Instance | undefined;
+    test("Extension can connect", async () =>
     {
-        assert.doesNotThrow(() =>
+        instance = await commands.executeCommand<Instance>("cn.connect", { instanceName: process.env.npm_config_instanceName, userName: process.env.npm_config_userName, password: process.env.npm_config_password });
+        if (instance)
         {
-            config = workspace.getConfiguration("cn");
-            instance = new Instance(config);
+            assert.equal((instance.IsInitialized()), true);
+        }
+    });
+
+    suite("Record Caching", async () =>
+    {
+        let allSupported: Array<string> = SupportedRecordsHelper.GetRecordsDisplayValue();
+
+        test("Supported Records found", () =>
+        {
+            assert.ok(allSupported.length > 0);
+        });
+
+        allSupported.forEach(async (type) =>
+        {
+            test(`${type} cached`, async () =>
+            {
+                //@ts-ignore index error false
+                let recType: SupportedRecords = SupportedRecords[type];
+
+                //@ts-ignore
+                let cached = await instance.GetRecords(recType);
+
+                assert.ok(cached.length > 0, `${cached.length} found`);
+            });
         });
     });
-
-
-    it("all record types cached", () =>
-    {
-        suu
-    });
-
 });

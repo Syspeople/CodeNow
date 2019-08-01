@@ -5,6 +5,11 @@ import * as os from 'os';
 
 async function main()
 {
+    // npm run test --instanceName=Name --username=User --password=pass
+    // console.log(process.env.npm_config_instanceName);
+    // console.log(process.env.npm_config_username);
+    // console.log(process.env.npm_config_password);
+
     const testWorkspace = fs.mkdtempSync(path.resolve(__dirname, os.tmpdir(), "testRun-"));
     console.log("workspace: " + testWorkspace);
     try
@@ -17,15 +22,16 @@ async function main()
         // Passed to --extensionTestsPath
         const testRunnerPath = path.resolve(__dirname, './suite/');
 
-        console.log(extensionPath);
-        console.log(testRunnerPath);
-        console.log(testWorkspace);
-
         //Download VS Code, unzip it and run the integration test
         await runTests({
             extensionPath,
             testRunnerPath,
-            testWorkspace
+            testWorkspace,
+            testRunnerEnv: {
+                instanceName: process.env.npm_config_instanceName,
+                userName: process.env.npm_config_username,
+                password: process.env.npm_config_password
+            }
         });
     } catch (err)
     {
