@@ -90,7 +90,7 @@ export class Instance
     /**
      * Initialize
      */
-    public Initialize(Url: URL, UserName: string, Password: string, wsm: WorkspaceStateManager, nm: StatusBarManager): Promise<void>
+    public Initialize(Url: URL, UserName: string, Password: string, wsm: WorkspaceStateManager, nm: StatusBarManager): Promise<Promise<ISysMetadataIWorkspaceConvertable[][]>>
     {
         return new Promise((resolve, reject) =>
         {
@@ -103,8 +103,7 @@ export class Instance
 
             p.then(() =>
             {
-                this.Cache();
-                resolve();
+                resolve(this.Cache());
             }).catch((error) =>
             {
                 reject(error);
@@ -511,31 +510,31 @@ export class Instance
     /**
      * Caches and retrieves all supported records
      */
-    private Cache(): void
+    Cache(): Promise<Array<Array<ISysMetadataIWorkspaceConvertable>>>
     {
-        if (this.IsInitialized)
+        let promises = new Array<Promise<Array<ISysMetadataIWorkspaceConvertable>>>();
+        let availableRecords = SupportedRecordsHelper.GetRecordsDisplayValue();
+
+        availableRecords.forEach(element =>
         {
-            let availableRecords = SupportedRecordsHelper.GetRecordsDisplayValue();
+            //@ts-ignore Index error is false positive. 
+            let type = SupportedRecords[element];
+            let records = this.GetRecordsUpstream(type);
 
-            availableRecords.forEach(element =>
+            records.then((res) =>
             {
-                //@ts-ignore Index error is false positive. 
-                let type = SupportedRecords[element];
-                let records = this.GetRecordsUpstream(type);
-
-                records.then((res) =>
+                if (this._wsm)
                 {
-                    if (this._wsm)
-                    {
-                        //@ts-ignore Index error is false positive. 
-                        this._wsm.SetRecords(SupportedRecords[element], res);
-                    }
-                }).catch((e) =>
-                {
-                    console.error(e);
-                });
+                    //@ts-ignore Index error is false positive. 
+                    this._wsm.SetRecords(SupportedRecords[element], res);
+                }
+            }).catch((e) =>
+            {
+                throw e;
             });
-        }
+            promises.push(records);
+        });
+        return Promise.all(promises);
     }
 
     GetRecordsUpstream(type: SupportedRecords): Promise<Array<ISysMetadataIWorkspaceConvertable>>
@@ -555,7 +554,13 @@ export class Instance
                         let arrOut = new Array<ISysMetadataIWorkspaceConvertable>();
                         res.data.result.forEach((element) =>
                         {
-                            arrOut.push(Converter.CastSysMetaData(element));
+                            try
+                            {
+                                arrOut.push(Converter.CastSysMetaData(element));
+                            } catch (error)
+                            {
+                                reject(error);
+                            }
                         });
                         resolve(arrOut);
                     });

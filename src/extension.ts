@@ -1,6 +1,5 @@
 'use strict';
 import * as vscode from 'vscode';
-//import { URL } from 'url';
 import { Md5 } from "md5-typescript";
 import * as ServiceNow from './ServiceNow/all';
 import * as Managers from './Manager/all';
@@ -32,110 +31,78 @@ export function activate(context: vscode.ExtensionContext)
     }
 
     //Configure instance object
-    let connect = vscode.commands.registerCommand('cn.connect', () =>
+    let connect = vscode.commands.registerCommand('cn.connect', async (test) =>
     {
-        wm.ConfigureWorkspace(context);
-
-        let option = new Object() as vscode.InputBoxOptions;
-
-        if (wsm.HasInstanceInState())
+        try
         {
-            option.prompt = "Enter Password";
-            option.password = true;
-            let promisePassword = vscode.window.showInputBox(option);
+            wm.ConfigureWorkspace(context);
 
-            promisePassword.then((res) =>
+            let instanceName: string | undefined;
+            let us: string | undefined;
+            let pw: string | undefined;
+            let isNew: boolean = false;
+
+            if (test)
             {
-                if (res !== undefined)
+                wsm.SetUrl(`https://${test.instanceName}.service-now.com`);
+                wsm.SetUserName(test.userName);
+                pw = test.pw;
+            }
+
+            if (!wsm.HasInstanceInState())
+            {
+                instanceName = await vscode.window.showInputBox({ prompt: "ServiceNow Instance Name" });
+                if (!instanceName)
                 {
-                    let url = wsm.GetUrl();
-                    let usr = wsm.GetUserName();
-                    if (url && usr)
-                    {
-                        let p = instance.Initialize(new URL(url), usr, res, wsm, nm);
-                        nm.SetNotificationState(NotifationState.Downloading);
-                        p.then(() =>
-                        {
-                            wm.AddInstanceFolder(instance);
-                            nm.SetNotificationState(NotifationState.Connected);
-                            wm.RefreshRecords(instance);
-                            mixpanel.track("cn.extension.command.connect.success", {
-                                username: Md5.init(instance.UserName),
-                                instance: instance.Url,
-                                newWorkspace: false
-                            });
-                        }).catch((er) =>
-                        {
-                            nm.SetNotificationState(NotifationState.NotConnected);
-                            vscode.window.showErrorMessage(er.message);
-                            mixpanel.track("cn.extension.command.connect.fail", {
-                                error: er.message
-                            });
-                        });
-                    }
+                    return;
                 }
-            });
-        }
-        else
+                wsm.SetUrl(`https://${instanceName}.service-now.com`);
+
+                us = await vscode.window.showInputBox({ prompt: "Enter User Name" });
+                if (!us)
+                {
+                    return;
+                }
+                wsm.SetUserName(us);
+
+                isNew = true;
+            }
+
+            if (!pw)
+            {
+                pw = await vscode.window.showInputBox({ prompt: "Enter Password", password: true });
+                if (!pw)
+                {
+                    return;
+                }
+            }
+
+            let url = wsm.GetUrl();
+            let usr = wsm.GetUserName();
+
+            if (url && usr)
+            {
+                let p = instance.Initialize(new URL(url), usr, pw, wsm, nm);
+                nm.SetNotificationState(NotifationState.Downloading);
+                await p;
+
+                wm.AddInstanceFolder(instance);
+                nm.SetNotificationState(NotifationState.Connected);
+
+                mixpanel.track("cn.extension.command.connect.success", {
+                    username: Md5.init(instance.UserName),
+                    instance: instance.Url,
+                    newWorkspace: isNew
+                });
+                return instance;
+            }
+        } catch (error)
         {
-            option.prompt = "ServiceNow Instance Name";
-            let PromiseUrl = vscode.window.showInputBox(option);
-
-            PromiseUrl.then((res) =>
-            {
-                if (res !== undefined)
-                {
-                    wsm.SetUrl(`https://${res}.service-now.com`);
-
-                    option.prompt = "Enter User Name";
-                    let PromiseUserName = vscode.window.showInputBox(option);
-
-                    PromiseUserName.then((res) =>
-                    {
-                        if (res !== undefined)
-                        {
-                            wsm.SetUserName(res);
-
-                            option.prompt = "Enter Password";
-                            option.password = true;
-                            let PromisePassword = vscode.window.showInputBox(option);
-
-                            PromisePassword.then((res) =>
-                            {
-                                if (res !== undefined)
-                                {
-                                    let usr = wsm.GetUserName();
-                                    let url = wsm.GetUrl();
-                                    let pw = res;
-
-                                    if (url && usr)
-                                    {
-                                        let p = instance.Initialize(new URL(url), usr, pw, wsm, nm);
-                                        nm.SetNotificationState(NotifationState.Downloading);
-                                        p.then(() =>
-                                        {
-                                            wm.AddInstanceFolder(instance);
-                                            nm.SetNotificationState(NotifationState.Connected);
-                                            mixpanel.track("cn.extension.command.connect.success", {
-                                                username: Md5.init(instance.UserName),
-                                                instance: instance.Url,
-                                                newWorkspace: true
-                                            });
-                                        }).catch((er) =>
-                                        {
-                                            wsm.ClearState();
-                                            nm.SetNotificationState(NotifationState.NotConnected);
-                                            vscode.window.showErrorMessage(er.message);
-                                            mixpanel.track("cn.extension.command.connect.fail", {
-                                                error: er.message
-                                            });
-                                        });
-                                    }
-                                }
-                            });
-                        }
-                    });
-                }
+            wsm.ClearState();
+            nm.SetNotificationState(NotifationState.NotConnected);
+            vscode.window.showErrorMessage(error.message);
+            mixpanel.track("cn.extension.command.connect.fail", {
+                error: error.message
             });
         }
     });

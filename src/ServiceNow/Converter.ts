@@ -53,7 +53,7 @@ export class Converter
                 return new AngularTemplate(<IAngularTemplate>c);
             default:
                 let msg = `GetRecord: Record ${record.sys_class_name} not recognized`;
-                console.warn(msg);
+                console.error(msg);
                 throw new Error(msg);
         }
     }
