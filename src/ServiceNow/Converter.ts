@@ -83,4 +83,11 @@ export class Converter
         }
     }
 
+    /**
+       * returns all suported file types in an array. 
+       */
+    public static getFileTypes()
+    {
+        return [FileTypes.clientScript, FileTypes.html, FileTypes.serverScript, FileTypes.styleSheet, FileTypes.processingScript, FileTypes.xml];
+    }
 }

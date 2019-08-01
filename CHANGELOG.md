@@ -1,7 +1,9 @@
 ## 0.10.
 * **Feature** Codesearch is now available through the extension.
 * Issue with retrieval of script includes that caused periodic caching issues resolved.
-* 
+* Added support for:
+  * UI Macroes
+  * Angular Templates
 
 ## 0.9.20190628
 * Fix issue were retrieval of UI Actions would time out causing caching issues. 

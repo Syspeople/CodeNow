@@ -413,7 +413,7 @@ export class Api
                     url = url + `?sysparm_query=sys_policy=&sysparm_fields=table,order,comments,active,script,condition,hint,name,sys_class_name,sys_id,sys_policy,sys_updated_on,sys_created_on,sys_package,sys_scope`;
                     break;
                 default:
-                    url = url + `?sysparm_query=sys_policy=^sys_scope=global`;
+                    url = url + `?sysparm_query=sys_policy=^sys_scope=global^sys_class_name=${type}`;
                     break;
             }
             return this.HttpClient.get(url, { timeout: 20000 });

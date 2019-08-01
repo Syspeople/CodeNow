@@ -520,7 +520,8 @@ export class Instance
             availableRecords.forEach(element =>
             {
                 //@ts-ignore Index error is false positive. 
-                let records = this.GetRecordsUpstream(SupportedRecords[element]);
+                let type = SupportedRecords[element];
+                let records = this.GetRecordsUpstream(type);
 
                 records.then((res) =>
                 {
