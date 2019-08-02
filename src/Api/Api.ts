@@ -1,5 +1,5 @@
 import * as Axios from "axios";
-import { Instance, ISysMetadata, ISysProperty, SysProperty, ISysUserSession, ISysUpdateSet, UpdateSet, SupportedRecords } from "../ServiceNow/all";
+import { Instance, ISysMetadata, ISysProperty, SysProperty, ISysUserSession, ISysUpdateSet, UpdateSet, SupportedRecords, ICodeSearchResult, IIdentifiable } from "../ServiceNow/all";
 import { IServiceNowResponse, ICookie } from "./all";
 import * as qs from "querystring";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
@@ -77,7 +77,7 @@ export class Api
             }
             else
             {
-                timeout = 3000;
+                timeout = 10000;
             }
 
             this._HttpClient = Axios.default.create({
@@ -108,12 +108,15 @@ export class Api
                 }
 
                 //add auth for apis where required.
-                if (r.url && r.url.startsWith(this._SNTableSuffix))
+                if (r.url)
                 {
-                    r.auth = {
-                        username: this._username,
-                        password: this._password
-                    };
+                    if (r.url.startsWith(this._SNTableSuffix) || r.url.startsWith(this._SNCodeSearchSuffix))
+                    {
+                        r.auth = {
+                            username: this._username,
+                            password: this._password
+                        };
+                    }
                 }
                 return r;
             });
@@ -352,7 +355,7 @@ export class Api
      * return a promise with a single full Record
      * @param record 
      */
-    public GetRecord<T extends ISysMetadata>(record: ISysMetadata): Axios.AxiosPromise<IServiceNowResponse<T>> | undefined
+    public GetRecord<T extends ISysMetadata>(record: IIdentifiable): Axios.AxiosPromise<IServiceNowResponse<T>> | undefined
     {
         if (this.HttpClient)
         {
@@ -410,10 +413,10 @@ export class Api
                     url = url + `?sysparm_query=sys_policy=&sysparm_fields=table,order,comments,active,script,condition,hint,name,sys_class_name,sys_id,sys_policy,sys_updated_on,sys_created_on,sys_package,sys_scope`;
                     break;
                 default:
-                    url = url + `?sysparm_query=sys_policy=^sys_scope=global`;
+                    url = url + `?sysparm_query=sys_policy=^sys_scope=global^sys_class_name=${type}`;
                     break;
             }
-            return this.HttpClient.get(url);
+            return this.HttpClient.get(url, { timeout: 20000 });
         }
         else
         {
@@ -477,19 +480,15 @@ export class Api
     }
 
     /**
-     * search
+     * Performs a code search accross all scopes.
+     * Might take a while to finish.
      */
-    public search(term: string)
+    public search(term: string): Axios.AxiosPromise<IServiceNowResponse<Array<ICodeSearchResult>>> | undefined
     {
         if (this.HttpClient)
         {
-            let url = `${this._SNCodeSearch}`;
-            return this.HttpClient.get(url, {
-                params: {
-                    term: term,
-                    search_all_scopes: true
-                }
-            });
+            let url = `${this._SNCodeSearch}?term=${term}&search_all_scopes=true`;
+            return this.HttpClient.get(url, { timeout: 20000 });
         }
     }
 }

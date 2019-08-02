@@ -1,31 +1,26 @@
-import { Record, IAngularProvider, Instance, Converter } from "./all";
+import { Record, IAngularTemplate, Instance, Converter } from "./all";
 import { FileTypes, MetaData, KeyValuePair } from '../Manager/all';
 import { Uri } from "vscode";
 
-export class AngularProvider extends Record implements IAngularProvider
+export class AngularTemplate extends Record implements IAngularTemplate
 {
-    constructor(ap: IAngularProvider)
+    constructor(at: AngularTemplate)
     {
-        super(ap);
-        this.script = ap.script;
-        this.name = ap.name;
-        this.sys_name = ap.sys_name;
-        this.type = ap.type;
+        super(at);
+        this.template = at.template;
+        this.name = at.sys_name;
+        this.sys_name = at.sys_name;
+        this.id = at.id;
     }
 
-    script: string;
+    template: string;
     name: string;
     sys_name: string;
-    type: string;
+    id: string;
 
     public get label(): string
     {
-        return this.name;
-    }
-
-    public get description(): string
-    {
-        return "";
+        return this.sys_name;
     }
 
     SetAttribute(content: string, filetype: FileTypes): void
@@ -33,7 +28,7 @@ export class AngularProvider extends Record implements IAngularProvider
         switch (filetype)
         {
             case FileTypes.serverScript:
-                this.script = content;
+                this.template = content;
                 break;
             default:
                 break;
@@ -45,7 +40,7 @@ export class AngularProvider extends Record implements IAngularProvider
         switch (filetype)
         {
             case FileTypes.serverScript:
-                return this.script;
+                return this.template;
             default:
                 break;
         }
@@ -53,15 +48,15 @@ export class AngularProvider extends Record implements IAngularProvider
 
     GetPatchable(): Object
     {
-        return { script: this.script };
+        return { template: this.template };
     }
 
-    GetMetadata(record: IAngularProvider, instance: Instance): MetaData
+    GetMetadata(record: IAngularTemplate, instance: Instance): MetaData
     {
         if (instance.IsInitialized() && instance.Url)
         {
             let f = new Array<KeyValuePair<FileTypes, Uri>>();
-            f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${record.name}.${Converter.getFileTypeExtension(FileTypes.serverScript)}`)));
+            f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${record.name}.${Converter.getFileTypeExtension(FileTypes.html)}`)));
             return new MetaData(record, f, instance.Url.host, record.name);
         }
         throw new Error("Instance not initialized");

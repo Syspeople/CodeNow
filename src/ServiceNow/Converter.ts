@@ -1,4 +1,4 @@
-import { ISysMetadata, ScriptInclude, ScriptedRestResource, ISysWsDefinition, ISysScriptInclude, Widget, ISpWidget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, SpHeaderFooter, ISpHeaderFooter, MailScript, ISysMailScript, ScriptAction, ISysEventScriptAction, Processor, ISysProcessor, UiAction, ISysUiAction, ScriptedRestService, AngularProvider, IAngularProvider, UiPage, IUiPage, FixScript, IFixScript, ValidationScript, IValidationScript, ISysWsOperation } from "./all";
+import { ISysMetadata, ScriptInclude, ScriptedRestResource, ISysWsDefinition, ISysScriptInclude, Widget, ISpWidget, Theme, ISpTheme, StyleSheet, ISpCss, UiScript, ISysUiScript, SpHeaderFooter, ISpHeaderFooter, MailScript, ISysMailScript, ScriptAction, ISysEventScriptAction, Processor, ISysProcessor, UiAction, ISysUiAction, ScriptedRestService, AngularProvider, IAngularProvider, UiPage, IUiPage, FixScript, IFixScript, ValidationScript, IValidationScript, ISysWsOperation, AngularTemplate, IAngularTemplate, UiMacro, IUiMacro } from "./all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
 import { FileTypes } from "../Manager/all";
 
@@ -41,12 +41,16 @@ export class Converter
                 return new AngularProvider(<IAngularProvider>c);
             case "sys_ui_page":
                 return new UiPage(<IUiPage>c);
+            case "sys_ui_macro":
+                return new UiMacro(<IUiMacro>c);
             case "sys_ui_action":
                 return new UiAction(<ISysUiAction>c);
             case "sys_script_fix":
                 return new FixScript(<IFixScript>c);
             case "sys_script_validator":
                 return new ValidationScript(<IValidationScript>c);
+            case "sp_ng_template":
+                return new AngularTemplate(<IAngularTemplate>c);
             default:
                 let msg = `GetRecord: Record ${record.sys_class_name} not recognized`;
                 console.warn(msg);
@@ -72,9 +76,18 @@ export class Converter
                 return "scss";
             case FileTypes.html:
                 return "html";
+            case FileTypes.xml:
+                return "xml";
             default:
                 throw new Error("FileType not recognized");
         }
     }
 
+    /**
+       * returns all suported file types in an array. 
+       */
+    public static getFileTypes()
+    {
+        return [FileTypes.clientScript, FileTypes.html, FileTypes.serverScript, FileTypes.styleSheet, FileTypes.processingScript, FileTypes.xml];
+    }
 }

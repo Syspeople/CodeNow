@@ -1,9 +1,10 @@
 # CodeNow
-Empower your ServiceNow Development with no instance configuration.
+Empower your ServiceNow development with no instance configuration.
 
 - Save time by pushing and pulling changes directly to your instance.
 - Improve quality with autocomplete and snippets.
-- Always get your updates to the right place by changing and creating updatesets. 
+- Always get your updates to the right place by changing and creating updatesets.
+- Quickly find what you need with codesearch. 
 - No configuration required. Simply Install, Connect and Code.
 
 ## Credits
@@ -37,7 +38,7 @@ Comprehensive intellisense and snippets for ServiceNow API's and widgets.
 
 ![intellisense](/images/intelliSnip.gif)
 
-## Create and change Update sets
+## Create and change Updatesets
 Create and change update sets directly from code
 
 ![updatesets](/images/updateset.gif)
@@ -46,3 +47,8 @@ Create and change update sets directly from code
 Fast access to records in the ServiceNow platform.
 
 ![quickaccess](/images/quickAccess.gif)
+
+## Use Codesearch straight from Code
+Quick and easy search across all scopes. Open results in web ui or add it to your workspace.
+
+![codesearch](/images/codesearch.gif)

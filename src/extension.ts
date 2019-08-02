@@ -6,9 +6,10 @@ import { Md5 } from "md5-typescript";
 import * as ServiceNow from './ServiceNow/all';
 import * as Managers from './Manager/all';
 import { StatusBarManager, NotifationState } from './Manager/all';
-import { SupportedRecords, ISysWsOperation } from './ServiceNow/all';
+import { SupportedRecords, ISysWsOperation, SupportedRecordsHelper } from './ServiceNow/all';
 import { ISysMetadataIWorkspaceConvertable } from './MixIns/all';
 import { URL } from 'url';
+import { TreeDataProviderCodeSearch } from './Providers/all';
 
 let token;
 if (vscode.env.machineId === "someValue.machineId")
@@ -28,6 +29,7 @@ export function activate(context: vscode.ExtensionContext)
     const nm = new StatusBarManager();
     let instance: ServiceNow.Instance;
     let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration("cn");
+    let searchProvider: TreeDataProviderCodeSearch = new TreeDataProviderCodeSearch();
 
     mixpanel.track("cn.extension.activated");
 
@@ -228,13 +230,8 @@ export function activate(context: vscode.ExtensionContext)
     {
         if (instance.IsInitialized())
         {
-            let availableRecords = Object.keys(SupportedRecords);
-
             //remove Scripted rest definitions. Not selecetable but required for caching purposes. 
-            let availableRecordsFiltered = availableRecords.filter((i) =>
-            {
-                return i !== "Scripted Rest Definition";
-            });
+            let availableRecordsFiltered = SupportedRecordsHelper.GetRecordsDisplayValueFiltered();
 
             let p = vscode.window.showQuickPick(availableRecordsFiltered, { placeHolder: "Select Record" });
 
@@ -315,13 +312,8 @@ export function activate(context: vscode.ExtensionContext)
         //add rest
         if (instance.IsInitialized())
         {
-            let availableRecords = Object.keys(SupportedRecords);
-
             //remove Scripted rest definitions. Not selecetable but required for caching purposes. 
-            let availableRecordsFiltered = availableRecords.filter((i) =>
-            {
-                return i !== "Scripted Rest Definition";
-            });
+            let availableRecordsFiltered = SupportedRecordsHelper.GetRecordsDisplayValueFiltered();
 
             let p = vscode.window.showQuickPick(availableRecordsFiltered, { placeHolder: "Select Record" });
             p.then((recordtype) =>
@@ -630,6 +622,73 @@ export function activate(context: vscode.ExtensionContext)
         mixpanel.track('cn.extension.command.rebuildCache.success');
     });
 
+    let codeSearch = vscode.commands.registerCommand("cn.codeSearch", async () =>
+    {
+        if (instance.IsInitialized())
+        {
+            var term = await vscode.window.showInputBox({ placeHolder: "Search Term" });
+
+            if (term)
+            {
+                vscode.window.withProgress<number>({
+                    location: vscode.ProgressLocation.Notification,
+                    title: "Code Search"
+                }, async (progress) =>
+                    {
+                        progress.report({ message: `Searching for: ${term}` });
+
+                        //@ts-ignore term already null checked
+                        var res = await instance.search(term);
+
+                        mixpanel.track('cn.extension.command.codeSearch.success');
+
+                        //@ts-ignore term already null checked
+                        return searchProvider.addSearch(res, term);
+                    });
+            }
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance");
+        }
+    });
+
+    let codeSearchClear = vscode.commands.registerCommand("cn.codeSearchClear", async () =>
+    {
+        if (instance.IsInitialized())
+        {
+            searchProvider.clearSearch();
+            mixpanel.track('cn.extension.command.codeSearchClear.success');
+        }
+        else
+        {
+            vscode.window.showErrorMessage("Connect to an instance");
+        }
+    });
+
+    let codeSearchOpenInPlatform = vscode.commands.registerCommand("cn.codeSearchOpenInPlatform", async (item) =>
+    {
+        //command only available after successfull connection and retrival of search result.
+        if (instance.IsInitialized())
+        {
+            instance.OpenInPlatformRecord(item);
+        }
+    });
+
+    let codeSearchOpenInCode = vscode.commands.registerCommand("cn.codeSearchOpenInCode", async (item) =>
+    {
+        console.log("Open the record in code");
+        console.log(item);
+
+        let record = await instance.GetRecord(item);
+        console.log(record);
+        if (!record.canWrite)
+        {
+            vscode.window.showWarningMessage(`Record Read Only, Protection Policy: ${record.sys_policy}`);
+        }
+        wm.AddRecord(record, instance);
+    });
+
     let createUpdateSet = vscode.commands.registerCommand("cn.createUpdateSet", async () =>
     {
         //vscode.window.showInformationMessage('Hello World!');
@@ -730,42 +789,53 @@ export function activate(context: vscode.ExtensionContext)
 
                     if (record)
                     {
-                        let p = instance.IsLatest(record);
-
-                        p.then((res) =>
+                        if (record.canWrite)
                         {
-                            vscode.window.showWarningMessage(`Newer Version of record ${res.sys_id} Found on instance`);
+                            let p = instance.IsLatest(record);
+
+                            p.then((res) =>
+                            {
+                                vscode.window.showWarningMessage(`Newer Version of record ${res.sys_id} Found on instance`);
+
+                                mixpanel.track('cn.extension.event.onDidSaveTextDocument.break', {
+                                    reason: "Local Record outdated"
+                                });
+                            }).catch((er) =>
+                            {
+                                if (record)
+                                {
+                                    let o = instance.SaveRecord(record);
+
+                                    if (o)
+                                    {
+                                        o.then((res) =>
+                                        {
+                                            vscode.window.showInformationMessage(`Saved`);
+                                            wm.UpdateRecord(res, e.uri);
+
+                                            mixpanel.track('cn.extension.event.onDidSaveTextDocument.success', {
+                                                sys_class_name: res.sys_class_name
+                                            });
+                                        }).catch((er) =>
+                                        {
+                                            vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
+
+                                            mixpanel.track('cn.extension.event.onDidSaveTextDocument.fail', {
+                                                error: er.error.message
+                                            });
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                        else
+                        {
+                            vscode.window.showWarningMessage(`Record Protection policy: ${record.sys_policy}, Not saved`);
 
                             mixpanel.track('cn.extension.event.onDidSaveTextDocument.break', {
-                                reason: "Local Record outdated"
+                                reason: "Record Policy Read Only"
                             });
-                        }).catch((er) =>
-                        {
-                            if (record)
-                            {
-                                let o = instance.SaveRecord(record);
-
-                                if (o)
-                                {
-                                    o.then((res) =>
-                                    {
-                                        vscode.window.showInformationMessage(`Saved`);
-                                        wm.UpdateRecord(res, e.uri);
-
-                                        mixpanel.track('cn.extension.event.onDidSaveTextDocument.success', {
-                                            sys_class_name: res.sys_class_name
-                                        });
-                                    }).catch((er) =>
-                                    {
-                                        vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
-
-                                        mixpanel.track('cn.extension.event.onDidSaveTextDocument.fail', {
-                                            error: er.error.message
-                                        });
-                                    });
-                                }
-                            }
-                        });
+                        }
                     }
                 }
             }).catch((err) =>
@@ -835,19 +905,24 @@ export function activate(context: vscode.ExtensionContext)
     {
         config = vscode.workspace.getConfiguration("cn");
 
-        if (instance.IsInitialized())
-        {
-            instance.setConfig(config);
-        }
+        instance.setConfig(config);
+
         //config setup. 
         mixpanel.track('cn.extension.event.onDidChangeConfiguration', config);
     });
+
+    let codeSearchProvider = vscode.window.registerTreeDataProvider('searchResults', searchProvider);
 
     context.subscriptions.push(addRecord);
     context.subscriptions.push(openInPlatformRecord);
     context.subscriptions.push(openInPlatformList);
     context.subscriptions.push(deleteRecord);
     context.subscriptions.push(setUpdateSet);
+    context.subscriptions.push(codeSearch);
+    context.subscriptions.push(codeSearchClear);
+    context.subscriptions.push(codeSearchProvider);
+    context.subscriptions.push(codeSearchOpenInPlatform);
+    context.subscriptions.push(codeSearchOpenInCode);
     context.subscriptions.push(connect);
     context.subscriptions.push(createRecord);
     context.subscriptions.push(createUpdateSet);

@@ -1,11 +1,16 @@
 import { URL } from "url";
-import { Record, ISysMetadata, UpdateSet, Converter, SupportedRecords } from "./all";
+import { Record, ISysMetadata, UpdateSet, Converter, SupportedRecords, SearchResponse, IIdentifiable, SupportedRecordsHelper } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
 import opn = require('open');
 import { WorkspaceConfiguration } from "vscode";
 
+/**
+ * Instance class
+ * Type casting, validation of operations and initialization of connection to ServiceNow.
+ * All communication is handled through the API proxy class. 
+ */
 export class Instance
 {
 
@@ -264,7 +269,7 @@ export class Instance
     /**
      * OpenInPlatform Opens a record in hte default browser
      */
-    public OpenInPlatformRecord(record: ISysMetadata): void
+    public OpenInPlatformRecord(record: IIdentifiable): void
     {
         if (this._url)
         {
@@ -276,7 +281,7 @@ export class Instance
     /**
      * OpenInPlatform open the list for a specified table in the default browser
      */
-    public OpenInPlatformList(record: ISysMetadata): void
+    public OpenInPlatformList(record: IIdentifiable): void
     {
         if (this._url)
         {
@@ -294,8 +299,10 @@ export class Instance
     {
         return new Promise((resolve, reject) =>
         {
+
             if (this.ApiProxy)
             {
+
                 let p = this.ApiProxy.PatchRecord(record);
                 if (p)
                 {
@@ -338,9 +345,38 @@ export class Instance
     }
 
     /**
+     * Performs a codesearch on connected instance
+     */
+    public async search(term: string): Promise<SearchResponse>
+    {
+        return new Promise(async (resolve, reject) =>
+        {
+            try
+            {
+                if (this.IsInitialized())
+                {
+                    if (this.ApiProxy)
+                    {
+                        let res = await this.ApiProxy.search(term);
+                        if (res)
+                        {
+                            resolve(new SearchResponse(res.data));
+                        }
+                    }
+                }
+                reject();
+            }
+            catch (er)
+            {
+                reject(er);
+            }
+        });
+    }
+
+    /**
     * GetRecord retrieves full record from instance
     */
-    public GetRecord(record: ISysMetadata): Promise<ISysMetadataIWorkspaceConvertable>
+    public GetRecord(record: IIdentifiable): Promise<ISysMetadataIWorkspaceConvertable>
     {
         return new Promise((resolve, reject) =>
         {
@@ -479,12 +515,13 @@ export class Instance
     {
         if (this.IsInitialized)
         {
-            let availableRecords = Object.keys(SupportedRecords);
+            let availableRecords = SupportedRecordsHelper.GetRecordsDisplayValue();
 
             availableRecords.forEach(element =>
             {
                 //@ts-ignore Index error is false positive. 
-                let records = this.GetRecordsUpstream(SupportedRecords[element]);
+                let type = SupportedRecords[element];
+                let records = this.GetRecordsUpstream(type);
 
                 records.then((res) =>
                 {
@@ -818,6 +855,11 @@ var current = current;
                     name: record.name,
                     script: ``
                 };
+            case SupportedRecords["UI Macro"]:
+                return {
+                    name: record.name,
+                    xml: ``
+                };
             case SupportedRecords["Fix Script"]:
                 return {
                     name: record.name,
@@ -828,6 +870,12 @@ var current = current;
                     name: record.name,
                     script: ``,
                     type: record.type
+                };
+            case SupportedRecords["Angular Template"]:
+                return {
+                    name: record.sys_name,
+                    id: record.id,
+                    template: ``,
                 };
             case SupportedRecords["Validation Script"]:
                 return {
