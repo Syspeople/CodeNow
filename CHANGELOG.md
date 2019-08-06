@@ -1,6 +1,6 @@
-## 0.10.
-* **Feature** Codesearch is now available through the extension.
-* Issue with retrieval of script includes that caused periodic caching issues resolved.
+## 0.10.20190802
+* Codesearch is now available through the extension.
+* improve caching on slow network connections. 
 * Added support for:
   * UI Macroes
   * Angular Templates
