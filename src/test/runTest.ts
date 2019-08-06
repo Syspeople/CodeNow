@@ -22,6 +22,11 @@ async function main()
         // Passed to --extensionTestsPath
         const testRunnerPath = path.resolve(__dirname, './suite/');
 
+        if (!process.env.npm_config_instanceName || !process.env.npm_config_username || !process.env.npm_config_password)
+        {
+            throw new Error("Missing parameter: npm run test --instanceName=Name --username=User --password=pass");
+        }
+
         //Download VS Code, unzip it and run the integration test
         await runTests({
             extensionPath,

@@ -181,32 +181,41 @@ export class WorkspaceManager
     /**
      * AddRecord a new record. 
      */
-    public AddRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T, instance: Instance): MetaData | undefined
+    public AddRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T, instance: Instance): Promise<MetaData>
     {
-        let options = this.createMetadata(record, instance);
-
-        if (options)
+        return new Promise(async (resolve, reject) =>
         {
-            //all supported files.
-            let arrEnum = Converter.getFileTypes();
-
-            for (let index = 0; index < arrEnum.length; index++)
+            try
             {
-                let element = arrEnum[index];
-                //create files.
-                let uri = options.getFileUri(element);
-                if (uri)
+                let options = this.createMetadata(record, instance);
+
+                if (options)
                 {
-                    this.ensurePath(uri, instance);
-                    let content = record.GetAttribute(element);
-                    if (content || content === "")
+                    //all supported files.
+                    let arrEnum = Converter.getFileTypes();
+
+                    for (let index = 0; index < arrEnum.length; index++)
                     {
-                        this.CreateFile(uri.fsPath, content);
+                        let element = arrEnum[index];
+                        //create files.
+                        let uri = options.getFileUri(element);
+                        if (uri)
+                        {
+                            await this.ensurePath(uri, instance);
+                            let content = record.GetAttribute(element);
+                            if (content || content === "")
+                            {
+                                await this.CreateFile(uri.fsPath, content);
+                            }
+                        }
                     }
+                    resolve(options);
                 }
+            } catch (error)
+            {
+                reject(error);
             }
-            return options;
-        }
+        });
     }
 
     /**
@@ -214,29 +223,35 @@ export class WorkspaceManager
      * Only creates folders from the workspace root and downward.
      * @param uri 
      */
-    private ensurePath(uri: Uri, instance: Instance)
+    private ensurePath(uri: Uri, instance: Instance): Promise<void>
     {
-        if (this._delimiter)
+        return new Promise(async (resolve, reject) =>
         {
-            let pathWorkspace = this.GetPathWorkspace();
-            if (pathWorkspace)
+            if (this._delimiter)
             {
-
-                let folders = uri.fsPath.replace(pathWorkspace.uri.fsPath, '').trim().split(this._delimiter);
-
-                let path = pathWorkspace.uri.fsPath;
-
-                for (let index = 0; index < folders.length - 1; index++)
+                let pathWorkspace = this.GetPathWorkspace();
+                if (pathWorkspace)
                 {
-                    const element = folders[index];
-                    if (element)
+
+                    let folders = uri.fsPath.replace(pathWorkspace.uri.fsPath, '').trim().split(this._delimiter);
+
+                    let path = pathWorkspace.uri.fsPath;
+
+                    for (let index = 0; index < folders.length - 1; index++)
                     {
-                        path = path + `${this._delimiter}${element}`;
-                        this.CreateFolder(path);
+                        const element = folders[index];
+                        if (element)
+                        {
+                            path = path + `${this._delimiter}${element}`;
+                            await this.CreateFolder(path);
+
+                        }
                     }
+                    resolve();
                 }
+                reject(new Error("Unable to get workspace"));
             }
-        }
+        });
     }
 
     public DeleteRecord(uri: string): void
@@ -260,17 +275,18 @@ export class WorkspaceManager
      */
     private createMetadata(record: IWorkspaceConvertable, instance: Instance): MetaData | undefined
     {
-
-        let meta = record.GetMetadata(record, instance);
-
-        if (meta)
+        try
         {
-            this._wsm.AddMetaData(meta);
-            return meta;
-        }
-        else
+            let meta = record.GetMetadata(record, instance);
+
+            if (meta)
+            {
+                this._wsm.AddMetaData(meta);
+                return meta;
+            }
+        } catch (error)
         {
-            console.warn("Metadata undefined");
+            throw error;
         }
     }
 
@@ -368,22 +384,23 @@ export class WorkspaceManager
         }
     }
 
-    private CreateFolder(path: string)
+    private CreateFolder(path: string): Promise<void>
     {
-        if (typeof String)
+        return new Promise((resolve, reject) =>
         {
-            if (!this.FolderExist(path))
+            try
             {
-                fileSystem.mkdir(path, (res) =>
+                if (!this.FolderExist(path))
                 {
-                    //only exceptions is parsed on callback 
-                    if (res)
-                    {
-                        window.showErrorMessage(res.message);
-                    }
-                });
+                    fileSystem.mkdirSync(path);
+                }
+                //all oaky if already exist. 
+                resolve();
+            } catch (error)
+            {
+                reject(error);
             }
-        }
+        });
     }
 
     private DeleteFolder(path: string)
@@ -408,15 +425,12 @@ export class WorkspaceManager
     {
         try
         {
-            fileSystem.readdirSync(path);
-            console.warn(`Folder Already Exist: ${path}`);
-            return true;
+            return fileSystem.existsSync(path);
         }
         //throws if no folder by that name exist
         catch (error)
         {
-
-            return false;
+            throw error;
         }
     }
 
@@ -451,12 +465,20 @@ export class WorkspaceManager
         }
     }
 
-    private CreateFile(path: string, value: string): void
+    private async CreateFile(path: string, value: string): Promise<void>
     {
-        if (!this.FileExist(path))
+        return new Promise(async (resolve, reject) =>
         {
-            this.WriteFile(path, value);
-        }
+            if (!this.FileExist(path))
+            {
+                await this.WriteFile(path, value);
+                resolve();
+            }
+            else
+            {
+                reject(new Error("Path to do not exist"));
+            }
+        });
     }
 
     // Get all files from directory and sub-directories.
@@ -479,35 +501,32 @@ export class WorkspaceManager
         return files_;
     }
 
-    private WriteFile(path: string, value: string): void
+    private WriteFile(path: string, value: string): Promise<void>
     {
-        try
-        {//message is null
-            fileSystem.writeFile(path, value, 'utf8', (err) =>
-            {
-                if (err) 
-                {
-                    console.error(err);
-                }
-            });
-        }
-        catch (error)
+        return new Promise((resolve, reject) =>
         {
-            console.error(error);
-        }
+            try
+            {//message is null
+                fileSystem.writeFileSync(path, value);
+                resolve();
+            }
+            catch (error)
+            {
+                reject(error);
+            }
+        });
+
     }
 
     private FileExist(path: string): boolean
     {
         try
         {
-            fileSystem.readFileSync(path);
-            console.warn(`File Already Exist: ${path}`);
-            return true;
+            return fileSystem.existsSync(path);
         }
         catch (error)
         {
-            return false;
+            throw error;
         }
     }
 }

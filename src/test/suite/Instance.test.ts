@@ -1,11 +1,20 @@
 import * as assert from 'assert';
-import { Instance, SupportedRecordsHelper, SupportedRecords } from '../../ServiceNow/all';
+import { Instance, SupportedRecordsHelper, SupportedRecords, Converter } from '../../ServiceNow/all';
+//import { } from "../../MixIns/all";
 import { commands } from "vscode";
+import { WorkspaceManager, MetaData } from '../../Manager/all';
+import * as path from 'path';
+import * as fs from 'fs';
+
+//surpress log output
+//console.log = function () { };
+console.warn = function () { };
+console.error = function () { };
 
 // Defines a Mocha test suite to group tests of similar kind together
 suite("CodeNow Integration", async function ()
 {
-    this.timeout(10000);
+    this.timeout(30000);
 
     let instance: Instance | undefined;
     test("Extension can connect", async () =>
@@ -17,10 +26,10 @@ suite("CodeNow Integration", async function ()
         }
     });
 
+    let allSupported: Array<string> = SupportedRecordsHelper.GetRecordsDisplayValue();
+
     suite("Record Caching", async () =>
     {
-        let allSupported: Array<string> = SupportedRecordsHelper.GetRecordsDisplayValue();
-
         test("Supported Records found", () =>
         {
             assert.ok(allSupported.length > 0);
@@ -33,10 +42,67 @@ suite("CodeNow Integration", async function ()
                 //@ts-ignore index error false
                 let recType: SupportedRecords = SupportedRecords[type];
 
-                //@ts-ignore
-                let cached = await instance.GetRecords(recType);
+                if (instance)
+                {
+                    let cached = await instance.GetRecords(recType);
 
-                assert.ok(cached.length > 0, `${cached.length} found`);
+                    assert.ok(cached.length > 0, `${cached.length} found`);
+                }
+            });
+        });
+    });
+
+    suite("Add Records to WorkSpace", async () =>
+    {
+        test("Supported Records found", () =>
+        {
+            assert.ok(allSupported.length > 0);
+        });
+
+        allSupported.forEach(async (type) =>
+        {
+            let added: MetaData | undefined;
+
+            test(`${type} Added`, async () =>
+            {
+                //@ts-ignore index error false
+                let recType: SupportedRecords = SupportedRecords[type];
+
+                if (instance)
+                {
+                    let wm = new WorkspaceManager(instance.WorkspaceStateManager);
+
+                    let cached = await instance.GetRecords(recType);
+
+                    added = await wm.AddRecord(cached[0], instance);
+
+                    test('Record have been Added', () =>
+                    {
+                        assert.equal(added === undefined, false);
+                    });
+                }
+            });
+
+            test(`${type} Files Created properly`, () =>
+            {
+                this.retries(3);
+                if (added)
+                {
+                    let files = added.Files;
+                    let basedir = added.getRecordUri();
+
+                    files.forEach((kv) =>
+                    {
+                        let fullPath = `${basedir.fsPath}${kv.value.fsPath}`;
+                        console.error(fullPath);
+                        assert.equal(fs.existsSync(fullPath), true, `file exist at: ${fullPath}`);
+
+                        let ext = Converter.getFileTypeExtension(kv.key);
+                        let baseName = path.basename(fullPath);
+
+                        assert.equal(baseName.endsWith(ext), true, `Extension is: ${ext}`);
+                    });
+                }
             });
         });
     });

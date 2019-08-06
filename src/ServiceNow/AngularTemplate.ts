@@ -27,7 +27,7 @@ export class AngularTemplate extends Record implements IAngularTemplate
     {
         switch (filetype)
         {
-            case FileTypes.serverScript:
+            case FileTypes.html:
                 this.template = content;
                 break;
             default:
@@ -39,7 +39,7 @@ export class AngularTemplate extends Record implements IAngularTemplate
     {
         switch (filetype)
         {
-            case FileTypes.serverScript:
+            case FileTypes.html:
                 return this.template;
             default:
                 break;

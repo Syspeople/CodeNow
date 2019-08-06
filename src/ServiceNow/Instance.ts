@@ -1,10 +1,11 @@
 import { URL } from "url";
 import { Record, ISysMetadata, UpdateSet, Converter, SupportedRecords, SearchResponse, IIdentifiable, SupportedRecordsHelper } from "./all";
 import { Api } from "../Api/all";
-import { WorkspaceStateManager, StatusBarManager } from "../Manager/all";
+import { WorkspaceStateManager, StatusBarManager, Mixpanel } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
 import opn = require('open');
 import { WorkspaceConfiguration } from "vscode";
+
 
 /**
  * Instance class
@@ -17,14 +18,30 @@ export class Instance
     /**
      * Initialize() have to be invoked.
      */
-    constructor(config: WorkspaceConfiguration)
+    constructor(config: WorkspaceConfiguration, mixpanel: Mixpanel)
     {
         this.Config = config;
+        this._mp = mixpanel;
     }
 
     Config: WorkspaceConfiguration;
 
+    private _mp: Mixpanel;
+
     private _wsm: WorkspaceStateManager | undefined;
+
+    public get WorkspaceStateManager(): WorkspaceStateManager
+    {
+        if (this.IsInitialized() && this._wsm)
+        {
+            return this._wsm;
+        }
+        else
+        {
+            throw new Error("WorkspaceStateManager undefined");
+        }
+    }
+
 
     private _userName: string | undefined;
     public get UserName(): string | undefined
@@ -76,7 +93,7 @@ export class Instance
      */
     public IsInitialized(): boolean
     {
-        if (this._url && this._userName)
+        if (this._url && this._userName && this._wsm)
         {
             return true;
         }
@@ -421,6 +438,11 @@ export class Instance
                 }
                 else
                 {
+                    this._mp.track("Records not cached", {
+                        class: "instance",
+                        method: "GetRecords",
+                        type: type
+                    });
                     reject("No records found");
                 }
             } else
