@@ -56,7 +56,7 @@ export class AngularTemplate extends Record implements IAngularTemplate
         if (instance.IsInitialized() && instance.Url)
         {
             let f = new Array<KeyValuePair<FileTypes, Uri>>();
-            f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${record.name}.${Converter.getFileTypeExtension(FileTypes.html)}`)));
+            f.push(new KeyValuePair(FileTypes.html, Uri.parse(`/${record.name}.${Converter.getFileTypeExtension(FileTypes.html)}`)));
             return new MetaData(record, f, instance.Url.host, record.name);
         }
         throw new Error("Instance not initialized");
