@@ -76,7 +76,8 @@ export class ScriptedRestResource extends Record implements ISysWsOperation, Qui
     {
         if (instance.IsInitialized() && instance.Url)
         {
-            let uriElements = this.operation_uri.split('/');
+            //Remove path variables.
+            let uriElements = this.operation_uri.replace(this.relative_path, '').split('/');
             let parent = uriElements[uriElements.length - 1];
 
             let f = new Array<KeyValuePair<FileTypes, Uri>>();
