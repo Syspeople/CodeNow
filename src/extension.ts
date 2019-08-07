@@ -4,7 +4,7 @@ import { Md5 } from "md5-typescript";
 import * as ServiceNow from './ServiceNow/all';
 import * as Managers from './Manager/all';
 import { StatusBarManager, NotifationState } from './Manager/all';
-import { SupportedRecords, ISysWsOperation, SupportedRecordsHelper } from './ServiceNow/all';
+import { SupportedRecords, ISysWsOperation, SupportedRecordsHelper, AngularProvider } from './ServiceNow/all';
 import { ISysMetadataIWorkspaceConvertable } from './MixIns/all';
 import { URL } from 'url';
 import { TreeDataProviderCodeSearch } from './Providers/all';
@@ -291,7 +291,7 @@ export function activate(context: vscode.ExtensionContext)
                                 switch (recordtype)
                                 {
                                     case "Angular Provider": {
-                                        vscode.window.showQuickPick(["Directive", "Service", "Factory"], {
+                                        vscode.window.showQuickPick(AngularProvider.getTypes(), {
                                             placeHolder: "Choose Type"
                                         }).then((item) =>
                                         {

@@ -29,10 +29,6 @@ export class Api
 
     private _SNCodeSearch: string = `${this._SNCodeSearchSuffix}/search`;
 
-
-
-
-
     private get _session_store(): string | undefined
     {
         if (this._Cookies.length > 0)
@@ -365,12 +361,13 @@ export class Api
 
     /**
     */
-    public DeleteRecord<T extends ISysMetadata>(record: ISysMetadata): Axios.AxiosPromise<IServiceNowResponse<T>> | undefined
+    public DeleteRecord(record: ISysMetadata): Axios.AxiosPromise<IServiceNowResponse<void>>
     {
         if (this.HttpClient)
         {
             return this.HttpClient.delete(`${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`);
         }
+        throw new Error("HTTPClient undefined");
     }
 
     /**
@@ -418,10 +415,7 @@ export class Api
             }
             return this.HttpClient.get(url, { timeout: 20000 });
         }
-        else
-        {
-            throw new Error("HTTP Client not initialized");
-        }
+        throw new Error("HTTP Client not initialized");
     }
 
     /**
@@ -439,13 +433,14 @@ export class Api
         }
     }
 
-    public CreateRecord(type: SupportedRecords, body: object): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>> | undefined
+    public CreateRecord(type: SupportedRecords, body: object): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>>
     {
         if (this.HttpClient)
         {
             let url = `${this._SNTableSuffix}/${type}`;
             return this.HttpClient.post(url, body);
         }
+        throw new Error("HTTP Client not initialized");
     }
 
     public CreateUpdateSet(name: string, parent: string): Axios.AxiosPromise<IServiceNowResponse<any>> | undefined

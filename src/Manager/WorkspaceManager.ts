@@ -1,5 +1,4 @@
 import * as fileSystem from 'fs';
-import * as path from 'path';
 
 import { Instance, Converter } from '../ServiceNow/all';
 import { MetaData, WorkspaceStateManager, IWorkspaceConvertable } from './all';
@@ -201,7 +200,7 @@ export class WorkspaceManager
                         let uri = options.getFileUri(element);
                         if (uri)
                         {
-                            await this.ensurePath(uri, instance);
+                            await this.ensurePath(uri);
                             let content = record.GetAttribute(element);
                             if (content || content === "")
                             {
@@ -223,7 +222,7 @@ export class WorkspaceManager
      * Only creates folders from the workspace root and downward.
      * @param uri 
      */
-    private ensurePath(uri: Uri, instance: Instance): Promise<void>
+    private ensurePath(uri: Uri): Promise<void>
     {
         return new Promise(async (resolve, reject) =>
         {
@@ -254,24 +253,34 @@ export class WorkspaceManager
         });
     }
 
-    public DeleteRecord(uri: string): void
+    /**
+     * Deletes all files assoicated with a record from the workspace
+     */
+    public DeleteRecord(r: MetaData): Promise<void>
     {
-        var parentFolder = path.dirname(uri);
-        var allFiles = this.getFiles(parentFolder);
-
-
-        allFiles.forEach(filePath =>
+        return new Promise((resolve, reject) =>
         {
-            this.DeleteFile(filePath);
-        });
+            try
+            {
+                var parentFolder = r.getRecordUri();
+                var allFiles = this.getFiles(parentFolder.fsPath);
 
-        this.DeleteFolder(path.dirname(uri));
+                allFiles.forEach(filePath =>
+                {
+                    this.DeleteFile(filePath);
+                });
+
+                this.DeleteFolder(parentFolder.fsPath);
+                resolve();
+            } catch (error)
+            {
+                reject(reject);
+            }
+        });
     }
 
     /**
      * Creates a metadata object for local reference from a record. 
-     * @param record 
-     * @param instance 
      */
     private createMetadata(record: IWorkspaceConvertable, instance: Instance): MetaData | undefined
     {
@@ -405,20 +414,20 @@ export class WorkspaceManager
 
     private DeleteFolder(path: string)
     {
-        if (typeof String)
+        try
         {
-            if (this.FolderExist(path))
+            if (typeof String)
             {
-                fileSystem.rmdir(path, (res) =>
+                if (this.FolderExist(path))
                 {
-                    //only exceptions is parsed on callback 
-                    if (res)
-                    {
-                        window.showErrorMessage(res.message);
-                    }
-                });
+                    fileSystem.rmdirSync(path);
+                }
             }
+        } catch (error)
+        {
+            throw error;
         }
+
     }
 
     private FolderExist(path: string): boolean
@@ -448,21 +457,21 @@ export class WorkspaceManager
 
     private DeleteFile(path: string): void
     {
-        if (this.FileExist(path))
+        try
         {
-            fileSystem.unlink(path, (res) =>
+            if (this.FileExist(path))
             {
-                //only exceptions is parsed on callback 
-                if (res)
-                {
-                    window.showErrorMessage(res.message);
-                }
-            });
-        }
-        else
+                fileSystem.unlinkSync(path);
+            }
+            else
+            {
+                console.warn(`File not found: ${path}`);
+            }
+        } catch (error)
         {
-            console.warn(`File not found: ${path}`);
+            throw error;
         }
+
     }
 
     private async CreateFile(path: string, value: string): Promise<void>

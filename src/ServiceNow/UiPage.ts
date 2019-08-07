@@ -31,6 +31,14 @@ export class UiPage extends Record implements IUiPage
 
     detail?: string | undefined;
 
+    /**
+     * Returns avilable categories for IU Pages.
+     */
+    public static getCategory(): Array<string>
+    {
+        return ["Content Management", "General", "Home Pages", "HTML Editor", "Knowledge Base", "Service Catalog"];
+    }
+
     SetAttribute(content: string, filetype: FileTypes): void
     {
         switch (filetype)

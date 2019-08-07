@@ -337,25 +337,23 @@ export class Instance
     /**
      * Deletes the record to from instance and workspace
      * @param record 
-     * @returns new record object from instance. if failed undefined.
+     * @returns deleted record object from instance. if failed undefined.
      */
-    public DeleteRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Promise<any> | undefined
+    public async DeleteRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Promise<void>
     {
-        return new Promise((resolve, reject) =>
+        return new Promise(async (resolve, reject) =>
         {
-            if (this.ApiProxy)
+            try
             {
-                let p = this.ApiProxy.DeleteRecord(record);
-                if (p)
+                if (this.ApiProxy)
                 {
-                    p.then((res) =>
-                    {
-                        resolve(true);
-                    }).catch((er) =>
-                    {
-                        reject(er);
-                    });
+                    await this.ApiProxy.DeleteRecord(record);
+                    resolve();
                 }
+                throw new Error("API proxy not found");
+            } catch (error)
+            {
+                reject(error);
             }
         });
     }
@@ -707,31 +705,29 @@ export class Instance
      * @param record 
      * @param template 
      */
-    public CreateRecord(type: SupportedRecords, record: any): Promise<ISysMetadataIWorkspaceConvertable>
+    public async CreateRecord(type: SupportedRecords, record: any): Promise<ISysMetadataIWorkspaceConvertable>
     {
-        return new Promise((resolve, reject) =>
+        return new Promise(async (resolve, reject) =>
         {
-            //get template
-            let r = this.getTemplate(type, record);
-
-            //create record upstream and return converted class
-            if (r)
+            try
             {
-                if (this.ApiProxy)
+                //get template
+                let r = this.getTemplate(type, record);
+
+                //create record upstream and return converted class
+                if (r)
                 {
-                    let p = this.ApiProxy.CreateRecord(type, r);
-                    if (p)
+                    if (this.ApiProxy)
                     {
-                        p.then((res) =>
-                        {
-                            resolve(Converter.CastSysMetaData(res.data.result));
-                        }).catch((err) =>
-                        {
-                            console.error(err);
-                            reject(err);
-                        });
+                        let p = await this.ApiProxy.CreateRecord(type, r);
+                        resolve(Converter.CastSysMetaData(p.data.result));
                     }
+                    throw new Error("API proxy not found");
                 }
+                throw new Error("Template not found");
+            } catch (error)
+            {
+                reject(error);
             }
         });
     }

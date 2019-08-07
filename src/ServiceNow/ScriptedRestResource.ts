@@ -37,6 +37,14 @@ export class ScriptedRestResource extends Record implements ISysWsOperation, Qui
     relative_path: string;
     operation_script: string;
 
+    /**
+     * Returns all available http operations. 
+     */
+    public static getOperations(): Array<string>
+    {
+        return ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
+    }
+
     public get description(): string
     {
         return this.http_method;

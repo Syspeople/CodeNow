@@ -35,7 +35,8 @@ async function main()
             testRunnerEnv: {
                 instanceName: process.env.npm_config_instanceName,
                 userName: process.env.npm_config_username,
-                password: process.env.npm_config_password
+                password: process.env.npm_config_password,
+                workspaceName: path.basename(testWorkspace)
             }
         });
     } catch (err)

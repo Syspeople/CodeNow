@@ -158,6 +158,10 @@
                 {
                     "command": "cn.codeSearchClear",
                     "when": "false"
+                },
+                {
+                    "command": "cn.codeSearchOpenInPlatform",
+                    "when": "false"
                 }
             ]
         },
