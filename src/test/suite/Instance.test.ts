@@ -1,36 +1,28 @@
 import * as assert from 'assert';
 import { Instance, SupportedRecordsHelper, SupportedRecords, Converter, AngularProvider, UiPage, ValidationScript, ScriptedRestResource } from '../../ServiceNow/all';
-import { ISysMetadataIWorkspaceConvertable } from "../../MixIns/all";
+//import { ISysMetadataIWorkspaceConvertable } from "../../MixIns/all";
 import { commands } from "vscode";
 import { WorkspaceManager, MetaData } from '../../Manager/all';
 import * as path from 'path';
 import * as fs from 'fs';
+import { ISysMetadataIWorkspaceConvertable } from '../../MixIns/all';
+import * as chai from 'chai';
+import * as chaiAsPromised from 'chai-as-promised';
+
+chai.use(chaiAsPromised);
 
 //surpress log output
-//console.log = function () { };
+// console.log = function () { };
 // console.warn = function () { };
 console.error = function () { };
 
-/**
- * Ensure: 
- * Deleted on instance false positive. 
- * UI Pages
- * Validation script
- * Rest operations
- * angular providers
- * 
- * NB: Got throttled for in one test run, mught be why there is above where not deleted., either way the test case should still fail. 
- * Promise reject for 403 status code is not caught properly. 
- * 
- * stack trace: Error: Request failed with status code 403
-    at createError (C:\Users\AsbjørnSørensen\Repo\CodeNow\node_modules\axios\lib\core\createError.js:16:15)
-    at settle (C:\Users\AsbjørnSørensen\Repo\CodeNow\node_modules\axios\lib\core\settle.js:17:12)
-    at IncomingMessage.handleStreamEnd (C:\Users\AsbjørnSørensen\Repo\CodeNow\node_modules\axios\lib\adapters\http.js:237:11)
-    at IncomingMessage.emit (events.js:187:15)
-    at endReadableNT (_stream_readable.js:1092:12)
-    at process._tickCallback (internal/process/next_tick.js:63:19)
- */
 
+/** todo
+ * 
+ * update set validation
+ * 
+ * save record validation
+ */
 
 // Defines a Mocha test suite to group tests of similar kind together
 suite("CodeNow Integration", async function ()
@@ -76,8 +68,6 @@ suite("CodeNow Integration", async function ()
 
     suite("Add/remove Records in WorkSpace", async () =>
     {
-        this.retries(3);
-
         test("Supported Records found", () =>
         {
             assert.ok(allSupported.length > 0);
@@ -132,6 +122,11 @@ suite("CodeNow Integration", async function ()
                 }
             });
 
+            test.skip(`Update saved properly: ${type}`, () =>
+            {
+                //implement me ensure updates are saved on instance
+            });
+
             test(`Delete ${type} from workspace`, async () =>
             {
                 if (instance && added)
@@ -160,9 +155,8 @@ suite("CodeNow Integration", async function ()
         });
     });
 
-    suite('Create and Delete records on instance', async () =>
+    suite('Record Operations  - instance', async () =>
     {
-        this.retries(3);
         test("Supported Records found", () =>
         {
             assert.ok(allSupported.length > 0);
@@ -173,124 +167,258 @@ suite("CodeNow Integration", async function ()
             assert.equal(instance !== undefined, true);
         });
 
-        let WsName = process.env.npm_config_workspaceName;
-        //let additionalRecordsToDelete: Array<ISysMetadataIWorkspaceConvertable> = new Array<ISysMetadataIWorkspaceConvertable>();
 
-        allSupported.forEach(async (type) =>
+        for (let index = 0; index < allSupported.length; index++) 
         {
+            const recordType = allSupported[index];
+
             //@ts-ignore index error false
-            let recType: SupportedRecords = SupportedRecords[type];
+            let recType: SupportedRecords = SupportedRecords[recordType];
 
             let availableTypes: Array<string>;
-            let shouldContain: number = 0;
-            let createdRecords: Array<ISysMetadataIWorkspaceConvertable> = new Array<ISysMetadataIWorkspaceConvertable>();
 
-            test(`Create ${type} on instance`, async () =>
+            let name = `${process.env.workspaceName}_${recType}`;
+
+            //handle record types with special requiements.
+            switch (recType)
             {
-                let name = `${WsName}_${recType}`;
+                case SupportedRecords["Angular Provider"]:
 
-                //handle record types with special requiements.
-                switch (recType)
-                {
-                    case SupportedRecords["Angular Provider"]:
-
+                    suite(`CRUD for ${recType}`, () =>
+                    {
                         availableTypes = AngularProvider.getTypes();
 
-                        availableTypes.forEach(async (apType) =>
+                        availableTypes.forEach(async (type) =>
                         {
-                            //@ts-ignore
-                            let r = await instance.CreateRecord(recType, {
-                                'name': `${name}_${apType}`,
-                                'category': apType
+                            let createdRecord: ISysMetadataIWorkspaceConvertable;
+                            test(`Create: ${type}`, async () =>
+                            {
+                                if (instance)
+                                {
+                                    createdRecord = await instance.CreateRecord(recType, {
+                                        'name': `${name}_${type}`,
+                                        'type': type
+                                    });
+
+                                    assert.equal(createdRecord !== undefined, true, `Record not Created`);
+
+                                    let createdRecordFromInstance = await instance.GetRecord(createdRecord);
+
+                                    assert.equal(createdRecordFromInstance !== undefined, true, `Unable to retrieve the created record from instance`);
+                                }
                             });
-                            createdRecords.push(r);
-                            shouldContain++;
+
+                            test.skip(`Update: ${type}`, () =>
+                            {
+                                //implement me ensure updates are saved on instance
+                            });
+
+                            test(`Delete: ${type}`, async () =>
+                            {
+                                if (instance)
+                                {
+                                    await chai.expect(instance.DeleteRecord(createdRecord)).to.be.fulfilled;
+
+                                    await chai.expect(instance.GetRecord(createdRecord)).to.be.rejectedWith('status code 404');
+                                }
+                            });
                         });
-                        break;
+                    });
 
-                    case SupportedRecords["UI Page"]:
+                    break;
 
+                case SupportedRecords["UI Page"]:
+                    suite(`CRUD for ${recType}`, () =>
+                    {
                         availableTypes = UiPage.getCategory();
 
-                        availableTypes.forEach(async (uipType) =>
+                        availableTypes.forEach(async (type) =>
                         {
-                            //@ts-ignore
-                            let r = await instance.CreateRecord(recType, {
-                                'name': `${name}_${uipType}`,
-                                'category': uipType
-                            });
-                            createdRecords.push(r);
-                            shouldContain++;
-                        });
-                        break;
+                            let createdRecord: ISysMetadataIWorkspaceConvertable;
+                            test(`Create: ${type}`, async () =>
+                            {
+                                if (instance)
+                                {
+                                    createdRecord = await instance.CreateRecord(recType, {
+                                        'name': `${name}_${type}`,
+                                        'category': type
+                                    });
 
-                    case SupportedRecords["Validation Script"]:
+                                    assert.equal(createdRecord !== undefined, true, `Record not Created`);
+
+                                    let createdRecordFromInstance = await instance.GetRecord(createdRecord);
+
+                                    assert.equal(createdRecordFromInstance !== undefined, true, `Unable to retrieve the created record from instance`);
+                                }
+                            });
+
+                            test.skip(`Update: ${type}`, () =>
+                            {
+                                //implement me
+                            });
+
+                            test(`Delete: ${type}`, async () =>
+                            {
+                                if (instance)
+                                {
+                                    await chai.expect(instance.DeleteRecord(createdRecord)).to.be.fulfilled;
+
+                                    await chai.expect(instance.GetRecord(createdRecord)).to.be.rejectedWith('status code 404');
+                                }
+                            });
+                        });
+                    });
+
+                    break;
+
+                case SupportedRecords["Validation Script"]:
+
+                    suite(`CRUD for ${recType}`, () =>
+                    {
                         availableTypes = ValidationScript.getTypes();
 
-                        availableTypes.forEach(async (vsType) =>
+                        //only subset of types
+                        availableTypes.slice(0, 10).forEach(async (type) =>
                         {
-                            //@ts-ignore
-                            let r = await instance.CreateRecord(recType, {
-                                'name': `${name}_${vsType}`,
-                                'internal_type': vsType
+                            let createdRecord: ISysMetadataIWorkspaceConvertable;
+                            test(`Create: ${type}`, async () =>
+                            {
+                                if (instance)
+                                {
+                                    createdRecord = await instance.CreateRecord(recType, {
+                                        'description': `${name}_${type}`,
+                                        'internal_type': type
+                                    });
+
+                                    assert.equal(createdRecord !== undefined, true, `Record not Created`);
+
+                                    let createdRecordFromInstance = await instance.GetRecord(createdRecord);
+
+                                    assert.equal(createdRecordFromInstance !== undefined, true, `Unable to retrieve the created record from instance`);
+                                }
                             });
 
-                            createdRecords.push(r);
-                            shouldContain++;
+                            test.skip(`Update: ${type}`, () =>
+                            {
+                                //implement me
+                            });
+
+                            test(`Delete: ${type}`, async () =>
+                            {
+                                if (instance)
+                                {
+                                    await chai.expect(instance.DeleteRecord(createdRecord)).to.be.fulfilled;
+
+                                    await chai.expect(instance.GetRecord(createdRecord)).to.be.rejectedWith('status code 404');
+                                }
+                            });
                         });
-                        break;
+                    });
+                    break;
 
-                    case SupportedRecords["Scripted Rest API"]:
+                case SupportedRecords["Scripted Rest API"]:
 
-                        //create service
-                        //@ts-ignore
-                        let definition = await instance.CreateRecord(SupportedRecords["Scripted Rest Definition"], {
-                            'name': name
+                    suite(`CRUD for ${recType}`, () =>
+                    {
+                        let definition: ISysMetadataIWorkspaceConvertable;
+                        test('Create Definition', async () =>
+                        {
+                            if (instance)
+                            {
+                                definition = await instance.CreateRecord(SupportedRecords["Scripted Rest Definition"], {
+                                    'name': name
+                                });
+                            }
+                            return chai.expect(definition).exist;
                         });
 
-                        createdRecords.push(definition);
-                        shouldContain++;
 
                         availableTypes = ScriptedRestResource.getOperations();
-
-                        availableTypes.forEach(async (apiOp) =>
+                        availableTypes.forEach(async (type) =>
                         {
-                            //@ts-ignore
-                            let r = await instance.CreateRecord(recType, {
-                                'name': `${name}_${apiOp}`,
-                                'web_service_definition': definition.sys_id,
-                                'http_method': apiOp,
+                            let createdRecord: ISysMetadataIWorkspaceConvertable;
+                            test(`Create Operation: ${type}`, async () =>
+                            {
+                                if (instance)
+                                {
+                                    createdRecord = await instance.CreateRecord(recType, {
+                                        'name': `${name}_${type}`,
+                                        'category': type
+                                    });
+
+                                    assert.equal(createdRecord !== undefined, true, `Record not Created`);
+
+                                    let createdRecordFromInstance = await instance.GetRecord(createdRecord);
+
+                                    assert.equal(createdRecordFromInstance !== undefined, true, `Unable to retrieve the created record from instance`);
+                                }
                             });
-                            createdRecords.push(r);
-                            shouldContain++;
+
+                            test.skip(`Update: ${type}`, () =>
+                            {
+                                //implement me
+                            });
+
+                            test(`Delete Operation: ${type}`, async () =>
+                            {
+                                if (instance)
+                                {
+                                    await chai.expect(instance.DeleteRecord(createdRecord)).to.be.fulfilled;
+
+                                    await chai.expect(instance.GetRecord(createdRecord)).to.be.rejectedWith('status code 404');
+                                }
+                            });
                         });
 
-                        break;
-                    default:
-                        //@ts-ignore
-                        createdRecords.push(await instance.CreateRecord(recType, {
-                            'name': name
-                        }));
-                        shouldContain++;
-                        break;
-                }
-                assert.equal(shouldContain, createdRecords.length, `Expected ${shouldContain}, ${createdRecords.length} have been created`);
-            });
-
-            test(`Can delete ${type} records`, () =>
-            {
-                createdRecords.forEach(async (r) =>
-                {
-                    assert.doesNotThrow(async () =>
-                    {
-                        if (instance)
+                        test(`Delete Definition:`, async () =>
                         {
-                            await instance.DeleteRecord(r);
-                        }
-                    }, `Deletion of record ${r.sys_class_name}\\${r.sys_id} failed`);
-                });
-            });
-            //adding files to workspace tested through integration tests for adding records. No need to test twice. 
-        });
+                            if (instance)
+                            {
+                                await chai.expect(instance.DeleteRecord(definition)).to.be.fulfilled;
+
+                                await chai.expect(instance.GetRecord(definition)).to.be.rejectedWith('status code 404');
+                            }
+                        });
+                    });
+                    break;
+                default:
+                    suite(`CRUD for ${recType}`, () =>
+                    {
+                        let createdRecord: ISysMetadataIWorkspaceConvertable;
+                        test(`Create`, async () =>
+                        {
+                            if (instance)
+                            {
+                                createdRecord = await instance.CreateRecord(recType, {
+                                    'name': `${name}`
+                                });
+
+                                assert.equal(createdRecord !== undefined, true, `Record not Created`);
+
+                                let createdRecordFromInstance = await instance.GetRecord(createdRecord);
+
+                                assert.equal(createdRecordFromInstance !== undefined, true, `Unable to retrieve the created record from instance`);
+                            }
+                        });
+
+                        test.skip(`Update`, () =>
+                        {
+                            //implement me
+                        });
+
+                        test(`Delete`, async () =>
+                        {
+                            if (instance)
+                            {
+                                await instance.DeleteRecord(createdRecord);
+
+                                await chai.expect(instance.GetRecord(createdRecord)).to.be.rejectedWith('status code 404');
+                            }
+                        });
+                    });
+                    break;
+            }
+        }
+        //add/remove files to workspace tested through integration tests for adding records. No need to test twice. 
     });
 });
