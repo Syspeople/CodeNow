@@ -62,14 +62,18 @@ export class Instance
     }
 
     private _ApiProxy: Api | undefined;
-    public get ApiProxy(): Api | undefined
+    public get ApiProxy(): Api
     {
-        if (this.IsInitialized())
+        if (this.IsInitialized() && this._ApiProxy)
         {
             return this._ApiProxy;
         }
+        else
+        {
+            throw new Error("API proxy undefined, Ensure intance class is initialized");
+        }
     }
-    public set ApiProxy(v: Api | undefined)
+    public set ApiProxy(v: Api)
     {
         this._ApiProxy = v;
     }
@@ -99,7 +103,6 @@ export class Instance
         }
         else
         {
-            console.warn("Instance not initalized");
             return false;
         }
     }
@@ -232,10 +235,7 @@ export class Instance
 
         if (this.IsInitialized())
         {
-            if (this._ApiProxy)
-            {
-                this._ApiProxy.setTimeout(config);
-            }
+            this.ApiProxy.setTimeout(config);
         }
     }
 
@@ -315,10 +315,8 @@ export class Instance
     {
         return new Promise((resolve, reject) =>
         {
-
-            if (this.ApiProxy)
+            try
             {
-
                 let p = this.ApiProxy.PatchRecord(record);
                 if (p)
                 {
@@ -330,6 +328,9 @@ export class Instance
                         reject(er);
                     });
                 }
+            } catch (error)
+            {
+                reject(error);
             }
         });
     }
@@ -339,20 +340,17 @@ export class Instance
      * @param record 
      * @returns deleted record object from instance. if failed undefined.
      */
-    public async DeleteRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Promise<void>
+    public async DeleteRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Promise<object>
     {
         return new Promise(async (resolve, reject) =>
         {
             try
             {
-                if (this.ApiProxy)
-                {
-                    await this.ApiProxy.DeleteRecord(record);
-                    resolve();
-                }
-                throw new Error("API proxy not found");
+                let res = await this.ApiProxy.DeleteRecord(record);
+                resolve(res);
             } catch (error)
             {
+                console.log(error);
                 reject(error);
             }
         });
@@ -369,16 +367,13 @@ export class Instance
             {
                 if (this.IsInitialized())
                 {
-                    if (this.ApiProxy)
+                    let res = await this.ApiProxy.search(term);
+                    if (res)
                     {
-                        let res = await this.ApiProxy.search(term);
-                        if (res)
-                        {
-                            resolve(new SearchResponse(res.data));
-                        }
+                        resolve(new SearchResponse(res.data));
                     }
                 }
-                reject();
+                throw new Error("Instance not initialized");
             }
             catch (er)
             {
@@ -392,22 +387,15 @@ export class Instance
     */
     public GetRecord(record: IIdentifiable): Promise<ISysMetadataIWorkspaceConvertable>
     {
-        return new Promise((resolve, reject) =>
+        return new Promise(async (resolve, reject) =>
         {
-            if (this.ApiProxy)
+            try
             {
-                let p = this.ApiProxy.GetRecord(record);
-                if (p)
-                {
-                    p.then((res) =>
-                    {
-                        resolve(Converter.CastSysMetaData(res.data.result));
-                    }).catch((er) =>
-                    {
-                        console.error(er);
-                        reject(er);
-                    });
-                }
+                let p = await this.ApiProxy.GetRecord(record);
+                resolve(Converter.CastSysMetaData(p.data.result));
+            } catch (error)
+            {
+                reject(error);
             }
         });
     }
@@ -626,7 +614,7 @@ export class Instance
     {
         return new Promise((resolve, reject) =>
         {
-            if (this.ApiProxy)
+            try
             {
                 let p = this.ApiProxy.CreateUpdateSet(name, parent);
 
@@ -645,16 +633,16 @@ export class Instance
                         }
                     }).catch((er) =>
                     {
-                        console.error(er);
+                        reject(er);
                     });
                 }
                 else
                 {
                     reject("axios Promise is null or undefined");
                 }
-            } else
+            } catch (error)
             {
-                reject("API Proxy is null or undefined");
+                reject(error);
             }
         });
     }
@@ -666,7 +654,7 @@ export class Instance
     {
         return new Promise((resolve, reject) =>
         {
-            if (this.ApiProxy)
+            try
             {
                 let p = this.ApiProxy.GetRecordMetadata(record);
                 if (p)
@@ -684,17 +672,16 @@ export class Instance
                         }
                     }).catch((er) =>
                     {
-                        console.error(er);
+                        throw er;
                     });
                 }
                 else
                 {
-                    reject("axios Promise is null or undefined");
+                    throw new Error("axios Promise is null or undefined");
                 }
-            }
-            else
+            } catch (error)
             {
-                reject("API Proxy is null or undefined");
+                reject(error);
             }
         });
     }

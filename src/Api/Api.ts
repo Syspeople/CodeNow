@@ -315,7 +315,7 @@ export class Api
             }
             else
             {
-                reject("HTTPClient undefined");
+                reject(new Error("HTTPClient undefined"));
             }
         });
     }
@@ -351,23 +351,32 @@ export class Api
      * return a promise with a single full Record
      * @param record 
      */
-    public GetRecord<T extends ISysMetadata>(record: IIdentifiable): Axios.AxiosPromise<IServiceNowResponse<T>> | undefined
+    public GetRecord<T extends ISysMetadata>(record: IIdentifiable): Axios.AxiosPromise<IServiceNowResponse<T>>
     {
         if (this.HttpClient)
         {
             return this.HttpClient.get<IServiceNowResponse<T>>(`${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`);
         }
+        else
+        {
+            throw new Error("Httpclient not found");
+        }
     }
 
     /**
+     * Deletes the record.
     */
-    public DeleteRecord(record: ISysMetadata): Axios.AxiosPromise<IServiceNowResponse<void>>
+    public DeleteRecord(record: ISysMetadata): Axios.AxiosPromise<IServiceNowResponse<object>>
     {
         if (this.HttpClient)
         {
-            return this.HttpClient.delete(`${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`);
+            let url = `${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`;
+            return this.HttpClient.delete(url);
         }
-        throw new Error("HTTPClient undefined");
+        else
+        {
+            throw new Error("Httpclient not found");
+        }
     }
 
     /**
@@ -415,7 +424,10 @@ export class Api
             }
             return this.HttpClient.get(url, { timeout: 20000 });
         }
-        throw new Error("HTTP Client not initialized");
+        else
+        {
+            throw new Error("Httpclient not found");
+        }
     }
 
     /**
@@ -440,7 +452,10 @@ export class Api
             let url = `${this._SNTableSuffix}/${type}`;
             return this.HttpClient.post(url, body);
         }
-        throw new Error("HTTP Client not initialized");
+        else
+        {
+            throw new Error("Httpclient not found");
+        }
     }
 
     public CreateUpdateSet(name: string, parent: string): Axios.AxiosPromise<IServiceNowResponse<any>> | undefined
