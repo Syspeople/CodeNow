@@ -33,30 +33,30 @@ stages:
           inputs:
             targetType: inline
             script: 'npm install && npm run test --instanceName=$(instanceName) --username=$(UserName) --password=$(password)' # Required when targetType == Inline
-    - job: testMac
-      pool:
-        vmImage: 'macOS-latest'
-      steps:
-        - task: NodeTool@0
-          inputs:
-            versionSpec: '8.x'
-          displayName: 'Install Node.js'
-        - task: Bash@3
-          inputs:
-            targetType: inline
-            script: 'npm install && npm run test --instanceName=$(instanceName) --username=$(UserName) --password=$(password)' # Required when targetType == Inline
-    - job: testUbuntu
-      pool:
-        vmImage: 'ubuntu-latest'
-      steps:
-        - task: NodeTool@0
-          inputs:
-            versionSpec: '8.x'
-          displayName: 'Install Node.js'
-        - task: Bash@3
-          inputs:
-            targetType: inline
-            script: 'npm install && npm run test --instanceName=$(instanceName) --username=$(UserName) --password=$(password)' # Required when targetType == Inline
+    # - job: testMac
+    #   pool:
+    #     vmImage: 'macOS-latest'
+    #   steps:
+    #     - task: NodeTool@0
+    #       inputs:
+    #         versionSpec: '8.x'
+    #       displayName: 'Install Node.js'
+    #     - task: Bash@3
+    #       inputs:
+    #         targetType: inline
+    #         script: 'npm install && npm run test --instanceName=$(instanceName) --username=$(UserName) --password=$(password)' # Required when targetType == Inline
+    # - job: testUbuntu
+    #   pool:
+    #     vmImage: 'ubuntu-latest'
+    #   steps:
+    #     - task: NodeTool@0
+    #       inputs:
+    #         versionSpec: '8.x'
+    #       displayName: 'Install Node.js'
+    #     - task: Bash@3
+    #       inputs:
+    #         targetType: inline
+    #         script: 'npm install && npm run test --instanceName=$(instanceName) --username=$(UserName) --password=$(password)' # Required when targetType == Inline
 - stage: "deploy"
   dependsOn: test
 #Build from dev
