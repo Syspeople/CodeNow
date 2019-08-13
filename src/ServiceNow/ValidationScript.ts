@@ -70,7 +70,7 @@ export class ValidationScript extends Record implements IValidationScript
 
     GetPatchable(): Object
     {
-        return { script: this.validator };
+        return { validator: this.validator };
     }
 
     GetMetadata(record: ISysScriptInclude, instance: Instance): MetaData
