@@ -1,32 +1,22 @@
 'use strict';
-
 import * as vscode from 'vscode';
-//import { URL } from 'url';
 import { Md5 } from "md5-typescript";
 import * as ServiceNow from './ServiceNow/all';
 import * as Managers from './Manager/all';
 import { StatusBarManager, NotifationState } from './Manager/all';
-import { SupportedRecords, ISysWsOperation, SupportedRecordsHelper } from './ServiceNow/all';
+import { SupportedRecords, ISysWsOperation, SupportedRecordsHelper, AngularProvider } from './ServiceNow/all';
 import { ISysMetadataIWorkspaceConvertable } from './MixIns/all';
 import { URL } from 'url';
 import { TreeDataProviderCodeSearch } from './Providers/all';
 
-let token;
-if (vscode.env.machineId === "someValue.machineId")
-{
-    token = '48ec45ce7cb17e257d933d9cab2e0665';
-}
-else
-{
-    token = 'dd31fdbf95e8a0bfb560cb8219b672f2';
-}
-const mixpanel = new Managers.Mixpanel(token);
+const mixpanel = new Managers.Mixpanel();
 
 export function activate(context: vscode.ExtensionContext)
 {
     const wsm = new Managers.WorkspaceStateManager(context);
     const wm = new Managers.WorkspaceManager(wsm);
     const nm = new StatusBarManager();
+
     let instance: ServiceNow.Instance;
     let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration("cn");
     let searchProvider: TreeDataProviderCodeSearch = new TreeDataProviderCodeSearch();
@@ -35,116 +25,84 @@ export function activate(context: vscode.ExtensionContext)
 
     if (wsm.HasInstanceInState)
     {
-        instance = new ServiceNow.Instance(config);
+        instance = new ServiceNow.Instance(config, mixpanel);
 
         vscode.window.showWarningMessage("Not connected to an instanse - Record synchronization disabled");
     }
 
     //Configure instance object
-    let connect = vscode.commands.registerCommand('cn.connect', () =>
+    let connect = vscode.commands.registerCommand('cn.connect', async (test) =>
     {
-        wm.ConfigureWorkspace(context);
-
-        let option = new Object() as vscode.InputBoxOptions;
-
-        if (wsm.HasInstanceInState())
+        try
         {
-            option.prompt = "Enter Password";
-            option.password = true;
-            let promisePassword = vscode.window.showInputBox(option);
+            wm.ConfigureWorkspace(context);
 
-            promisePassword.then((res) =>
+            let instanceName: string | undefined;
+            let us: string | undefined;
+            let pw: string | undefined;
+            let isNew: boolean = false;
+
+            if (test)
             {
-                if (res !== undefined)
+                wsm.SetUrl(`https://${test.instanceName}.service-now.com`);
+                wsm.SetUserName(test.userName);
+                pw = test.password;
+            }
+
+            if (!wsm.HasInstanceInState())
+            {
+                instanceName = await vscode.window.showInputBox({ prompt: "ServiceNow Instance Name" });
+                if (!instanceName)
                 {
-                    let url = wsm.GetUrl();
-                    let usr = wsm.GetUserName();
-                    if (url && usr)
-                    {
-                        let p = instance.Initialize(new URL(url), usr, res, wsm, nm);
-                        nm.SetNotificationState(NotifationState.Downloading);
-                        p.then(() =>
-                        {
-                            wm.AddInstanceFolder(instance);
-                            nm.SetNotificationState(NotifationState.Connected);
-                            wm.RefreshRecords(instance);
-                            mixpanel.track("cn.extension.command.connect.success", {
-                                username: Md5.init(instance.UserName),
-                                instance: instance.Url,
-                                newWorkspace: false
-                            });
-                        }).catch((er) =>
-                        {
-                            nm.SetNotificationState(NotifationState.NotConnected);
-                            vscode.window.showErrorMessage(er.message);
-                            mixpanel.track("cn.extension.command.connect.fail", {
-                                error: er.message
-                            });
-                        });
-                    }
+                    return;
                 }
-            });
-        }
-        else
+                wsm.SetUrl(`https://${instanceName}.service-now.com`);
+
+                us = await vscode.window.showInputBox({ prompt: "Enter User Name" });
+                if (!us)
+                {
+                    return;
+                }
+                wsm.SetUserName(us);
+
+                isNew = true;
+            }
+
+            if (!pw)
+            {
+                pw = await vscode.window.showInputBox({ prompt: "Enter Password", password: true });
+                if (!pw)
+                {
+                    return;
+                }
+            }
+
+            let url = wsm.GetUrl();
+            let usr = wsm.GetUserName();
+
+            if (url && usr)
+            {
+                let p = instance.Initialize(new URL(url), usr, pw, wsm, nm);
+                nm.SetNotificationState(NotifationState.Downloading);
+                await p;
+
+                wm.AddInstanceFolder(instance);
+                nm.SetNotificationState(NotifationState.Connected);
+
+                mixpanel.track("cn.extension.command.connect.success", {
+                    username: Md5.init(instance.UserName),
+                    instance: instance.Url,
+                    newWorkspace: isNew
+                });
+                return instance;
+            }
+        } catch (error)
         {
-            option.prompt = "ServiceNow Instance Name";
-            let PromiseUrl = vscode.window.showInputBox(option);
-
-            PromiseUrl.then((res) =>
-            {
-                if (res !== undefined)
-                {
-                    wsm.SetUrl(`https://${res}.service-now.com`);
-
-                    option.prompt = "Enter User Name";
-                    let PromiseUserName = vscode.window.showInputBox(option);
-
-                    PromiseUserName.then((res) =>
-                    {
-                        if (res !== undefined)
-                        {
-                            wsm.SetUserName(res);
-
-                            option.prompt = "Enter Password";
-                            option.password = true;
-                            let PromisePassword = vscode.window.showInputBox(option);
-
-                            PromisePassword.then((res) =>
-                            {
-                                if (res !== undefined)
-                                {
-                                    let usr = wsm.GetUserName();
-                                    let url = wsm.GetUrl();
-                                    let pw = res;
-
-                                    if (url && usr)
-                                    {
-                                        let p = instance.Initialize(new URL(url), usr, pw, wsm, nm);
-                                        nm.SetNotificationState(NotifationState.Downloading);
-                                        p.then(() =>
-                                        {
-                                            wm.AddInstanceFolder(instance);
-                                            nm.SetNotificationState(NotifationState.Connected);
-                                            mixpanel.track("cn.extension.command.connect.success", {
-                                                username: Md5.init(instance.UserName),
-                                                instance: instance.Url,
-                                                newWorkspace: true
-                                            });
-                                        }).catch((er) =>
-                                        {
-                                            wsm.ClearState();
-                                            nm.SetNotificationState(NotifationState.NotConnected);
-                                            vscode.window.showErrorMessage(er.message);
-                                            mixpanel.track("cn.extension.command.connect.fail", {
-                                                error: er.message
-                                            });
-                                        });
-                                    }
-                                }
-                            });
-                        }
-                    });
-                }
+            wsm.ClearState();
+            nm.SetNotificationState(NotifationState.NotConnected);
+            vscode.window.showErrorMessage(error.message);
+            mixpanel.track("cn.extension.command.connect.fail", {
+                error: error.message
             });
         }
     });
@@ -226,80 +184,83 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-    let addRecord = vscode.commands.registerCommand("cn.addRecord", () =>
+    let addRecord = vscode.commands.registerCommand("cn.addRecord", async () =>
     {
         if (instance.IsInitialized())
         {
             //remove Scripted rest definitions. Not selecetable but required for caching purposes. 
             let availableRecordsFiltered = SupportedRecordsHelper.GetRecordsDisplayValueFiltered();
 
-            let p = vscode.window.showQuickPick(availableRecordsFiltered, { placeHolder: "Select Record" });
+            let res = await vscode.window.showQuickPick(availableRecordsFiltered, { placeHolder: "Select Record" });
 
-            p.then(async (res) =>
+            if (res)
             {
-                if (res)
+                try
                 {
-                    try
+                    let className: string = "";
+
+                    //@ts-ignore index error false
+                    let recordType: SupportedRecords = SupportedRecords[res];
+
+                    let added: Managers.MetaData | undefined;
+
+                    switch (recordType)
                     {
-                        let className: string = "";
+                        //handle rest api identically
+                        case SupportedRecords["Scripted Rest API"]:
+                            let restDefs = await instance.GetRecords(SupportedRecords["Scripted Rest Definition"]);
+                            let restDef = await vscode.window.showQuickPick(restDefs);
 
-                        //@ts-ignore index error false
-                        let recordType: SupportedRecords = SupportedRecords[res];
+                            if (restDef)
+                            {
+                                let restOps = await instance.GetRecords(SupportedRecords["Scripted Rest API"]);
 
-                        switch (recordType)
-                        {
-                            //handle rest api identically
-                            case SupportedRecords["Scripted Rest API"]:
-                                let restDefs = await instance.GetRecords(SupportedRecords["Scripted Rest Definition"]);
-                                let restDef = await vscode.window.showQuickPick(restDefs);
-
-                                if (restDef)
+                                if (restOps)
                                 {
-                                    let restOps = await instance.GetRecords(SupportedRecords["Scripted Rest API"]);
+                                    let ops = restOps as Array<ISysWsOperation>;
 
-                                    if (restOps)
+                                    let record = await vscode.window.showQuickPick(ops.filter((e) =>
                                     {
-                                        let ops = restOps as Array<ISysWsOperation>;
+                                        //@ts-ignore restDef already nullchecked
+                                        let id = restDef.sys_id;
+                                        return e.web_service_definition.value === id;
+                                    }));
 
-                                        let restOp = await vscode.window.showQuickPick(ops.filter((e) =>
-                                        {
-                                            //@ts-ignore restDef already nullchecked
-                                            return e.web_service_definition.value === restDef.sys_id;
-                                        }));
-
-                                        if (restOp)
-                                        {
-                                            wm.AddRecord(restOp, instance);
-                                            className = restOp.sys_class_name;
-                                        }
+                                    if (record)
+                                    {
+                                        added = await wm.AddRecord(record, instance);
+                                        className = record.sys_class_name;
                                     }
                                 }
-                                break;
-                            default:
-                                let records = await instance.GetRecords(recordType);
+                            }
+                            break;
+                        default:
+                            let records = await instance.GetRecords(recordType);
 
-                                let record = await vscode.window.showQuickPick(records);
+                            let record = await vscode.window.showQuickPick(records);
 
-                                if (record)
-                                {
-                                    wm.AddRecord(record, instance);
-                                    className = record.sys_class_name;
-                                }
-                                break;
-                        }
-                        mixpanel.track('cn.extension.command.addRecord.success', {
-                            sys_class_name: className
-                        });
+                            if (record)
+                            {
+                                added = await wm.AddRecord(record, instance);
+                                className = record.sys_class_name;
+                            }
+                            break;
                     }
-                    catch (error)
-                    {
-                        console.error(error);
-                        mixpanel.track('cn.extension.command.addRecord.fail', {
-                            error: error
-                        });
-                    }
+
+                    mixpanel.track('cn.extension.command.addRecord.success', {
+                        sys_class_name: className
+                    });
+
+                    return added;
                 }
-            });
+                catch (error)
+                {
+                    console.error(error);
+                    mixpanel.track('cn.extension.command.addRecord.fail', {
+                        error: error
+                    });
+                }
+            }
         }
         else
         {
@@ -330,7 +291,7 @@ export function activate(context: vscode.ExtensionContext)
                                 switch (recordtype)
                                 {
                                     case "Angular Provider": {
-                                        vscode.window.showQuickPick(["Directive", "Service", "Factory"], {
+                                        vscode.window.showQuickPick(AngularProvider.getTypes(), {
                                             placeHolder: "Choose Type"
                                         }).then((item) =>
                                         {
@@ -461,7 +422,6 @@ export function activate(context: vscode.ExtensionContext)
                                         let r = instance.CreateRecord(SupportedRecords[recordtype], {
                                             'name': name
                                         });
-                                        //@ts-ignore already null checked
 
                                         r.then((newRecord) =>
                                         {
@@ -611,7 +571,7 @@ export function activate(context: vscode.ExtensionContext)
     let clearWorkState = vscode.commands.registerCommand("cn.clearWorkSpaceState", () =>
     {
         wsm.ClearState();
-        instance = new ServiceNow.Instance(config);
+        instance = new ServiceNow.Instance(config, mixpanel);
         nm.SetNotificationState(NotifationState.NotConnected);
         mixpanel.track('cn.extension.command.clearWorkSpaceState.success');
     });

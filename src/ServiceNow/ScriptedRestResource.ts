@@ -37,6 +37,14 @@ export class ScriptedRestResource extends Record implements ISysWsOperation, Qui
     relative_path: string;
     operation_script: string;
 
+    /**
+     * Returns all available http operations. 
+     */
+    public static getOperations(): Array<string>
+    {
+        return ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
+    }
+
     public get description(): string
     {
         return this.http_method;
@@ -76,7 +84,8 @@ export class ScriptedRestResource extends Record implements ISysWsOperation, Qui
     {
         if (instance.IsInitialized() && instance.Url)
         {
-            let uriElements = this.operation_uri.split('/');
+            //Remove path variables.
+            let uriElements = this.operation_uri.replace(this.relative_path, '').split('/');
             let parent = uriElements[uriElements.length - 1];
 
             let f = new Array<KeyValuePair<FileTypes, Uri>>();

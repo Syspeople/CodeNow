@@ -50,6 +50,18 @@ specific query parameters for record type. only if required. in **Api.ts**
 ### Step 9 Optional
 Add custom handling of creation if required.
 
+### Step 10
+Run Integration Test.
+
+Start your favorite terminal, go to the repo directory and execute 
+```terminal
+npm run test --instanceName=Name --username=User --password=pass
+```
+
+**Important** tests will not be able to execute while you have vscode open.
+Running the tests from inside VsCode do not work properly at the moment... 
+
+All tests should pass.
 
 ## Add class declarations
 **[Back to top](#table-of-contents)**
@@ -58,7 +70,7 @@ Typescript declaration files and JsDoc is what drive the intellisense provided b
 
 It is important to understand that the declarations simply mimicks the real class available in ServiceNow.
 
-this means it is very important that class', methods, and variables is named so that they can executed in servicenow without any modifications.
+This means it is very important that class', methods, and variables is named so that they can be executed in servicenow without any modifications.
 
 ## General
 Watch your casing as javascript is sensitive to that stuff.

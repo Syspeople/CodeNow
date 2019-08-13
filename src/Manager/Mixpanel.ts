@@ -3,8 +3,19 @@ import * as mp from 'mixpanel';
 
 export class Mixpanel
 {
-    constructor(token: string)
+    constructor()
     {
+        let token;
+        if (vscode.env.machineId === "someValue.machineId")
+        {
+            token = '48ec45ce7cb17e257d933d9cab2e0665';
+        }
+        else
+        {
+            token = 'dd31fdbf95e8a0bfb560cb8219b672f2';
+        }
+
+
         this.mixpanel = mp.init(token, {
             protocol: 'https'
         });
