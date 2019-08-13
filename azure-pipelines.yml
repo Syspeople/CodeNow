@@ -74,7 +74,6 @@ stages:
 #Build from dev
   jobs: 
     - job: PackageVsix
-      dependsOn: 'test'
       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
       pool:
         vmImage: 'vs2017-win2016'
@@ -97,7 +96,6 @@ stages:
             targetPath: "./$(vsix)"
   #publish from master
     - job: PublishMarketPlace 
-      dependsOn: 'test'
       condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
       pool:
         vmImage: 'vs2017-win2016'
