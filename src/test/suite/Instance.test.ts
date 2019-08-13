@@ -66,7 +66,7 @@ suite("CodeNow Integration", async function ()
         });
     });
 
-    suite("Add/remove Records in WorkSpace", async () =>
+    suite("CRUD Operations in Workspace", async () =>
     {
         test("Supported Records found", () =>
         {
@@ -122,7 +122,7 @@ suite("CodeNow Integration", async function ()
                 }
             });
 
-            test.skip(`Update saved properly: ${type}`, () =>
+            test(`Update saved properly: ${type}`, () =>
             {
                 //implement me ensure updates are saved on instance
             });
@@ -208,9 +208,32 @@ suite("CodeNow Integration", async function ()
                                 }
                             });
 
-                            test.skip(`Update: ${type}`, () =>
+                            test(`Update: ${type}`, async () =>
                             {
-                                //implement me ensure updates are saved on instance
+                                if (instance)
+                                {
+                                    //implement me ensure updates are saved on instance
+                                    let fileTypes = Converter.getFileTypes();
+
+                                    let testValue = "testvalue";
+
+                                    fileTypes.forEach(element =>
+                                    {
+                                        createdRecord.SetAttribute(testValue, element);
+                                    });
+
+                                    await chai.expect(instance.SaveRecord(createdRecord)).to.be.fulfilled.and.exist;
+
+                                    let createdRecordFromInstance = await instance.GetRecord(createdRecord);
+                                    assert.equal(createdRecordFromInstance !== undefined, true, `Unable to retrieve the created record from instance`);
+
+                                    let promises = Array<Object>();
+                                    fileTypes.forEach(async element =>
+                                    {
+                                        promises.push(chai.expect(Promise.resolve(createdRecordFromInstance.GetAttribute(element))).to.be.fulfilled.and.eventually.be.oneOf([testValue, undefined]));
+                                    });
+                                    return Promise.all(promises);
+                                }
                             });
 
                             test(`Delete: ${type}`, async () =>
@@ -252,9 +275,33 @@ suite("CodeNow Integration", async function ()
                                 }
                             });
 
-                            test.skip(`Update: ${type}`, () =>
+
+                            test(`Update: ${type}`, async () =>
                             {
-                                //implement me
+                                if (instance)
+                                {
+                                    //implement me ensure updates are saved on instance
+                                    let fileTypes = Converter.getFileTypes();
+
+                                    let testValue = "testvalue";
+
+                                    fileTypes.forEach(element =>
+                                    {
+                                        createdRecord.SetAttribute(testValue, element);
+                                    });
+
+                                    await chai.expect(instance.SaveRecord(createdRecord)).to.be.fulfilled.and.exist;
+
+                                    let createdRecordFromInstance = await instance.GetRecord(createdRecord);
+                                    assert.equal(createdRecordFromInstance !== undefined, true, `Unable to retrieve the created record from instance`);
+
+                                    let promises = Array<Object>();
+                                    fileTypes.forEach(async element =>
+                                    {
+                                        promises.push(chai.expect(Promise.resolve(createdRecordFromInstance.GetAttribute(element))).to.eventually.be.oneOf([testValue, undefined]));
+                                    });
+                                    return Promise.all(promises);
+                                }
                             });
 
                             test(`Delete: ${type}`, async () =>
@@ -298,9 +345,33 @@ suite("CodeNow Integration", async function ()
                                 }
                             });
 
-                            test.skip(`Update: ${type}`, () =>
+
+                            test(`Update: ${type}`, async () =>
                             {
-                                //implement me
+                                if (instance)
+                                {
+                                    //implement me ensure updates are saved on instance
+                                    let fileTypes = Converter.getFileTypes();
+
+                                    let testValue = "testvalue";
+
+                                    fileTypes.forEach(element =>
+                                    {
+                                        createdRecord.SetAttribute(testValue, element);
+                                    });
+
+                                    await chai.expect(instance.SaveRecord(createdRecord)).to.eventually.not.become(undefined);
+
+                                    let createdRecordFromInstance = await instance.GetRecord(createdRecord);
+                                    assert.equal(createdRecordFromInstance !== undefined, true, `Unable to retrieve the created record from instance`);
+
+                                    let promises = Array<Object>();
+                                    fileTypes.forEach(async element =>
+                                    {
+                                        promises.push(chai.expect(Promise.resolve(createdRecordFromInstance.GetAttribute(element))).to.be.fulfilled.and.eventually.be.oneOf([testValue, undefined]));
+                                    });
+                                    return Promise.all(promises);
+                                }
                             });
 
                             test(`Delete: ${type}`, async () =>
@@ -354,9 +425,32 @@ suite("CodeNow Integration", async function ()
                                 }
                             });
 
-                            test.skip(`Update: ${type}`, () =>
+                            test(`Update: ${type}`, async () =>
                             {
-                                //implement me
+                                if (instance)
+                                {
+                                    //implement me ensure updates are saved on instance
+                                    let fileTypes = Converter.getFileTypes();
+
+                                    let testValue = "testvalue";
+
+                                    fileTypes.forEach(element =>
+                                    {
+                                        createdRecord.SetAttribute(testValue, element);
+                                    });
+
+                                    await chai.expect(instance.SaveRecord(createdRecord)).to.be.fulfilled.and.exist;
+
+                                    let createdRecordFromInstance = await instance.GetRecord(createdRecord);
+                                    assert.equal(createdRecordFromInstance !== undefined, true, `Unable to retrieve the created record from instance`);
+
+                                    let promises = Array<Object>();
+                                    fileTypes.forEach(async element =>
+                                    {
+                                        promises.push(chai.expect(Promise.resolve(createdRecordFromInstance.GetAttribute(element))).to.be.fulfilled.and.eventually.be.oneOf([testValue, undefined]));
+                                    });
+                                    return Promise.all(promises);
+                                }
                             });
 
                             test(`Delete Operation: ${type}`, async () =>
@@ -401,10 +495,35 @@ suite("CodeNow Integration", async function ()
                             }
                         });
 
-                        test.skip(`Update`, () =>
+
+                        test(`Update`, async () =>
                         {
-                            //implement me
+                            if (instance)
+                            {
+                                //implement me ensure updates are saved on instance
+                                let fileTypes = Converter.getFileTypes();
+
+                                let testValue = "testvalue";
+
+                                fileTypes.forEach(element =>
+                                {
+                                    createdRecord.SetAttribute(testValue, element);
+                                });
+
+                                await chai.expect(instance.SaveRecord(createdRecord)).to.be.fulfilled.and.exist;
+
+                                let createdRecordFromInstance = await instance.GetRecord(createdRecord);
+                                assert.equal(createdRecordFromInstance !== undefined, true, `Unable to retrieve the created record from instance`);
+
+                                let promises = Array<Object>();
+                                fileTypes.forEach(async element =>
+                                {
+                                    promises.push(chai.expect(Promise.resolve(createdRecordFromInstance.GetAttribute(element))).to.be.fulfilled.and.eventually.be.oneOf([testValue, undefined]));
+                                });
+                                return Promise.all(promises);
+                            }
                         });
+
 
                         test(`Delete`, async () =>
                         {
