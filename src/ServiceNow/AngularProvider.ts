@@ -28,6 +28,14 @@ export class AngularProvider extends Record implements IAngularProvider
         return "";
     }
 
+    /**
+     * returns a available types for creating a AngularProvider
+     */
+    public static getTypes(): Array<string>
+    {
+        return ["Directive", "Service", "Factory"];
+    }
+
     SetAttribute(content: string, filetype: FileTypes): void
     {
         switch (filetype)

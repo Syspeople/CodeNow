@@ -29,10 +29,6 @@ export class Api
 
     private _SNCodeSearch: string = `${this._SNCodeSearchSuffix}/search`;
 
-
-
-
-
     private get _session_store(): string | undefined
     {
         if (this._Cookies.length > 0)
@@ -319,7 +315,7 @@ export class Api
             }
             else
             {
-                reject("HTTPClient undefined");
+                reject(new Error("HTTPClient undefined"));
             }
         });
     }
@@ -355,21 +351,31 @@ export class Api
      * return a promise with a single full Record
      * @param record 
      */
-    public GetRecord<T extends ISysMetadata>(record: IIdentifiable): Axios.AxiosPromise<IServiceNowResponse<T>> | undefined
+    public GetRecord<T extends ISysMetadata>(record: IIdentifiable): Axios.AxiosPromise<IServiceNowResponse<T>>
     {
         if (this.HttpClient)
         {
             return this.HttpClient.get<IServiceNowResponse<T>>(`${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`);
         }
+        else
+        {
+            throw new Error("Httpclient not found");
+        }
     }
 
     /**
+     * Deletes the record.
     */
-    public DeleteRecord<T extends ISysMetadata>(record: ISysMetadata): Axios.AxiosPromise<IServiceNowResponse<T>> | undefined
+    public DeleteRecord(record: ISysMetadata): Axios.AxiosPromise<IServiceNowResponse<object>>
     {
         if (this.HttpClient)
         {
-            return this.HttpClient.delete(`${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`);
+            let url = `${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`;
+            return this.HttpClient.delete(url);
+        }
+        else
+        {
+            throw new Error("Httpclient not found");
         }
     }
 
@@ -420,7 +426,7 @@ export class Api
         }
         else
         {
-            throw new Error("HTTP Client not initialized");
+            throw new Error("Httpclient not found");
         }
     }
 
@@ -439,12 +445,16 @@ export class Api
         }
     }
 
-    public CreateRecord(type: SupportedRecords, body: object): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>> | undefined
+    public CreateRecord(type: SupportedRecords, body: object): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>>
     {
         if (this.HttpClient)
         {
             let url = `${this._SNTableSuffix}/${type}`;
             return this.HttpClient.post(url, body);
+        }
+        else
+        {
+            throw new Error("Httpclient not found");
         }
     }
 

@@ -1,3 +1,13 @@
+## 0.10.xxx
+* Bug fixes:
+  * Angular templates: Incorrect file extension used.
+  * Scripted Rest Api: local path created can now handle relative uri and path variables.
+  * extension: Caching indicator now updates properly.
+  * Validation script: Wrong field patched on save. 
+* Added integration test for the extension.
+  * CRUD operations in local file system for all supported records.
+  * CRUD operations on instance for all supported records.
+
 ## 0.10.20190802
 * Codesearch is now available through the extension.
 * improve caching on slow network connections. 
@@ -26,6 +36,5 @@
 * Incorrect notifications when clearing workspace state have been corrected.
 * Clearing local workspace have been refactored to only remove instance specifik keys. 
 * License added.
-
 
 ## Initial Release

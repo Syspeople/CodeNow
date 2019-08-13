@@ -27,7 +27,7 @@ export class AngularTemplate extends Record implements IAngularTemplate
     {
         switch (filetype)
         {
-            case FileTypes.serverScript:
+            case FileTypes.html:
                 this.template = content;
                 break;
             default:
@@ -39,7 +39,7 @@ export class AngularTemplate extends Record implements IAngularTemplate
     {
         switch (filetype)
         {
-            case FileTypes.serverScript:
+            case FileTypes.html:
                 return this.template;
             default:
                 break;
@@ -56,7 +56,7 @@ export class AngularTemplate extends Record implements IAngularTemplate
         if (instance.IsInitialized() && instance.Url)
         {
             let f = new Array<KeyValuePair<FileTypes, Uri>>();
-            f.push(new KeyValuePair(FileTypes.serverScript, Uri.parse(`/${record.name}.${Converter.getFileTypeExtension(FileTypes.html)}`)));
+            f.push(new KeyValuePair(FileTypes.html, Uri.parse(`/${record.name}.${Converter.getFileTypeExtension(FileTypes.html)}`)));
             return new MetaData(record, f, instance.Url.host, record.name);
         }
         throw new Error("Instance not initialized");

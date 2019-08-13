@@ -88,7 +88,6 @@ export class MetaData extends Record implements ILocalMetaData
             default:
                 return Uri.parse(`${this.basePath}/${displayValue}/${this.RecordName}`);
         }
-
     }
 
     /**
