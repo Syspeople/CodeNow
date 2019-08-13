@@ -1,4 +1,4 @@
-## 0.10.xxx
+## 0.10.20190813
 * Bug fixes:
   * Angular templates: Incorrect file extension used.
   * Scripted Rest Api: local path created can now handle relative uri and path variables.
