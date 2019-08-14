@@ -20,6 +20,7 @@ export class Api
     private _SNTableSuffix: string = `${this._SNApiEndpoint}/now/table`;
     private _SNCodeSearchSuffix: string = `${this._SNApiEndpoint}/sn_codesearch/code_search`;
     private _SNXmlHttp: string = `xmlhttp.do`;
+    private _SNUISuffix: string = `${this._SNApiEndpoint}/now/ui`;
 
     private _SNUserTable: string = `${this._SNTableSuffix}/sys_user`;
     private _SNMetaData: string = `${this._SNTableSuffix}/sys_metadata`;
@@ -28,6 +29,8 @@ export class Api
     private _SNSysUpdateSet: string = `${this._SNTableSuffix}/sys_update_set`;
 
     private _SNCodeSearch: string = `${this._SNCodeSearchSuffix}/search`;
+
+    private _SNApplication: string = `${this._SNUISuffix}/concoursepicker/application`;
 
     private get _session_store(): string | undefined
     {
@@ -431,6 +434,56 @@ export class Api
     }
 
     /**
+     * Creates a new record on instance
+     * @param type record type
+     * @param body object representing the record to create
+     */
+    public CreateRecord(type: SupportedRecords, body: object): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>>
+    {
+        if (this.HttpClient)
+        {
+            let url = `${this._SNTableSuffix}/${type}`;
+            return this.HttpClient.post(url, body);
+        }
+        else
+        {
+            throw new Error("Httpclient not found");
+        }
+    }
+
+    /**
+     * returns the list of applications.
+     */
+    public getApplication(): Axios.AxiosPromise<IServiceNowResponse<Array<{ current: string, list: Array<{ sysId: string, scopeName: string, name: string }> }>>>
+    {
+        if (this.HttpClient)
+        {
+            let url = `${this._SNApplication}`;
+            return this.HttpClient.get(url);
+        }
+        else
+        {
+            throw new Error("Httpclient not found");
+        }
+    }
+
+    /**
+     * Sets the current application
+     */
+    public setApplication(app_id: string): Axios.AxiosPromise<IServiceNowResponse<{ app_id: string }>>
+    {
+        if (this.HttpClient)
+        {
+            let url = `${this._SNApplication}`;
+            return this.HttpClient.put(url, { app_id: app_id });
+        }
+        else
+        {
+            throw new Error("Httpclient not found");
+        }
+    }
+
+    /**
      * GetUpdateSets
      * 
      * Returns all update sets that are in progress, limited to global scope
@@ -442,19 +495,6 @@ export class Api
             //update sets in global and in progress
             let url = `${this._SNSysUpdateSet}?sysparm_query=state=in progress^application.scope=global`;
             return this.HttpClient.get(url);
-        }
-    }
-
-    public CreateRecord(type: SupportedRecords, body: object): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>>
-    {
-        if (this.HttpClient)
-        {
-            let url = `${this._SNTableSuffix}/${type}`;
-            return this.HttpClient.post(url, body);
-        }
-        else
-        {
-            throw new Error("Httpclient not found");
         }
     }
 
