@@ -1,5 +1,5 @@
 import * as Axios from "axios";
-import { Instance, ISysMetadata, ISysProperty, SysProperty, ISysUserSession, ISysUpdateSet, UpdateSet, SupportedRecords, ICodeSearchResult, IIdentifiable } from "../ServiceNow/all";
+import { Instance, ISysMetadata, ISysProperty, SysProperty, ISysUserSession, ISysUpdateSet, UpdateSet, SupportedRecords, ICodeSearchResult, IIdentifiable, ApplicationCollection } from "../ServiceNow/all";
 import { IServiceNowResponse, ICookie } from "./all";
 import * as qs from "querystring";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
@@ -32,7 +32,9 @@ export class Api
 
     private _SNApplication: string = `${this._SNUISuffix}/concoursepicker/application`;
 
-    private get _session_store(): string | undefined
+    public storeCookies: boolean = true;
+
+    private get _session_store(): string
     {
         if (this._Cookies.length > 0)
         {
@@ -45,6 +47,7 @@ export class Api
                 return cookie.value;
             }
         }
+        throw new Error("Cookie not set: glide_session_store");
     }
 
     /**
@@ -86,30 +89,22 @@ export class Api
 
             this._HttpClient.interceptors.request.use((r) =>
             {
-                //set cookies if any is stored. 
-
-                if (this._Cookies.length > 0)
+                let cookie: string = "";
+                this._Cookies.forEach(element =>
                 {
+                    cookie = cookie + `${element.name}=${element.value}; `;
+                });
 
-                    let cookie: string = "";
+                r.headers["Cookie"] = cookie;
 
-                    this._Cookies.forEach(element =>
-                    {
-                        cookie = cookie + `${element.name}=${element.value}; `;
-                    });
-
-                    r.headers["Cookie"] = cookie;
-                }
-
+                //use cookie/token auth if csrf token is set. 
                 if (this._csrfToken)
                 {
                     r.headers["X-UserToken"] = `${this._csrfToken} `;
                 }
-
-                //add auth for apis where required.
-                if (r.url)
+                else
                 {
-                    if (r.url.startsWith(this._SNTableSuffix) || r.url.startsWith(this._SNCodeSearchSuffix))
+                    if (r.url)
                     {
                         r.auth = {
                             username: this._username,
@@ -117,6 +112,16 @@ export class Api
                         };
                     }
                 }
+                return r;
+            });
+
+            this._HttpClient.interceptors.response.use((r) =>
+            {
+                if (this.storeCookies)
+                {
+                    this.UpdateSessionCookies(<Array<string>>r.headers["set-cookie"]);
+                }
+
                 return r;
             });
         }
@@ -135,21 +140,37 @@ export class Api
 
     private UpdateSessionCookies(cookies: Array<string>): void
     {
-        this._Cookies = [];
-
-        cookies.forEach(element =>
+        if (cookies)
         {
-            let cookie = element.split(";")[0];
-            this._Cookies.push({
-                name: cookie.split("=")[0],
-                value: cookie.split("=")[1]
+            cookies.forEach(newCookie =>
+            {
+                let splitcookie = newCookie.split(";")[0];
+
+                let cookieobject = {
+                    name: splitcookie.split("=")[0],
+                    value: splitcookie.split("=")[1]
+                };
+
+                let index = this._Cookies.findIndex((cookie) =>
+                {
+                    return cookie.name === cookieobject.name;
+                });
+
+                if (index === -1)
+                {
+                    this._Cookies.push(cookieobject);
+                }
+                else
+                {
+                    this._Cookies[index] = cookieobject;
+                }
             });
-        });
+        }
     }
 
-    private ClearSessionCookies(): void
+    private clearCookieAuth(): void
     {
-        this._Cookies = [];
+        this._csrfToken = "";
     }
 
     /**
@@ -158,41 +179,23 @@ export class Api
      * Required for cookie based authentication. persistent Session is used for all subsequent request. 
      * Remember to clear session afterwards.
      */
-    private NewSession(): Promise<void>
+    private useCookieAuth(): Promise<void>
     {
-        return new Promise((resolve, reject) =>
+        return new Promise(async (resolve, reject) =>
         {
-            if (this.HttpClient)
+            try
             {
-                let p = this.HttpClient.get(`${this._SNSysUserSession}?sysparm_limit=1`);
-
-                if (p)
+                if (this.HttpClient)
                 {
-                    p.then((res) =>
-                    {
-                        if (this.HttpClient)
-                        {
-                            this.UpdateSessionCookies(<Array<string>>res.headers["set-cookie"]);
-                            let pToken = this.HttpClient.get<IServiceNowResponse<Array<ISysUserSession>>>(`${this._SNSysUserSession}?id=${this._session_store} `);
-                            //let pToken = this.GetCsrfToken(this._session_store);
-                            if (pToken)
-                            {
-                                pToken.then((resToken) =>
-                                {
-                                    this.UpdateSessionCookies(<Array<string>>res.headers["set-cookie"]);
-                                    this._csrfToken = resToken.data.result[0].csrf_token;
-                                    resolve();
-                                }).catch((er) =>
-                                {
-                                    console.error(er);
-                                });
-                            }
-                        }
-                    }).catch((er) =>
-                    {
-                        reject(er);
-                    });
+                    let ResponseCsrfToken = await this.HttpClient.get<IServiceNowResponse<Array<ISysUserSession>>>(`${this._SNSysUserSession}?id=${this._session_store}`);
+                    this._csrfToken = ResponseCsrfToken.data.result[0].csrf_token;
+                    resolve();
                 }
+                throw new Error("Httpclient undefined");
+            }
+            catch (error)
+            {
+                reject(error);
             }
         });
     }
@@ -210,7 +213,7 @@ export class Api
 
             if (this.HttpClient)
             {
-                var i = this.NewSession();
+                var i = this.useCookieAuth();
 
                 i.then((res) =>
                 {
@@ -232,11 +235,11 @@ export class Api
 
                         setUpdateSet.then((result) =>
                         {
-                            this.ClearSessionCookies();
+                            this.clearCookieAuth();
                             resolve(<UpdateSet>us);
                         }).catch((err) =>
                         {
-                            this.ClearSessionCookies();
+                            this.clearCookieAuth();
                             console.error(err);
                             reject(err);
                         });
@@ -454,7 +457,7 @@ export class Api
     /**
      * returns the list of applications.
      */
-    public getApplication(): Axios.AxiosPromise<IServiceNowResponse<Array<{ current: string, list: Array<{ sysId: string, scopeName: string, name: string }> }>>>
+    public getApplication(): Axios.AxiosPromise<IServiceNowResponse<ApplicationCollection>>
     {
         if (this.HttpClient)
         {
@@ -507,7 +510,7 @@ export class Api
                 let url = `${this._SNSysUpdateSet}`;
                 if (this.HttpClient)
                 {
-                    await this.NewSession();
+                    await this.useCookieAuth();
 
                     //@ts-ignore already null checked
                     let response = await this.HttpClient.post(url, {
@@ -516,7 +519,7 @@ export class Api
                     });
 
                     resolve(response);
-                    this.ClearSessionCookies();
+                    this.clearCookieAuth();
                 }
                 else
                 {

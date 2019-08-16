@@ -1,5 +1,5 @@
 import { URL } from "url";
-import { Record, ISysMetadata, UpdateSet, Converter, SupportedRecords, SearchResponse, IIdentifiable, SupportedRecordsHelper } from "./all";
+import { Record, ISysMetadata, UpdateSet, Converter, SupportedRecords, SearchResponse, IIdentifiable, SupportedRecordsHelper, ApplicationCollection, Application } from "./all";
 import { Api } from "../Api/all";
 import { WorkspaceStateManager, StatusBarManager, Mixpanel } from "../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
@@ -14,6 +14,7 @@ import { WorkspaceConfiguration } from "vscode";
  */
 export class Instance
 {
+
 
     /**
      * Initialize() have to be invoked.
@@ -110,25 +111,48 @@ export class Instance
     /**
      * Initialize
      */
-    public Initialize(Url: URL, UserName: string, Password: string, wsm: WorkspaceStateManager, nm: StatusBarManager): Promise<Promise<ISysMetadataIWorkspaceConvertable[][]>>
+    public Initialize(Url: URL, UserName: string, Password: string, wsm: WorkspaceStateManager, nm: StatusBarManager): Promise<ISysMetadataIWorkspaceConvertable[][]>
     {
-        return new Promise((resolve, reject) =>
+        return new Promise(async (resolve, reject) =>
         {
-            this._url = Url;
-            this._userName = UserName;
-            this._wsm = wsm;
-
-            this._ApiProxy = new Api(this, Password);
-            let p = this.InitializeUpdateSet(wsm, nm);
-
-            p.then(() =>
+            try
             {
-                resolve(this.Cache());
-            }).catch((error) =>
+                this._url = Url;
+                this._userName = UserName;
+                this._wsm = wsm;
+
+                this._ApiProxy = new Api(this, Password);
+
+                //disable cookies. in lack of a better way to handle cookkies with concurrent http requests.
+                this.ApiProxy.storeCookies = false;
+                let cached = await this.Cache();
+                this.ApiProxy.storeCookies = true;
+
+                await this.initializeApplication(wsm, nm);
+
+                await this.InitializeUpdateSet(wsm, nm);
+
+                resolve(cached);
+            } catch (error)
             {
                 reject(error);
-            });
+            }
         });
+    }
+
+    private async initializeApplication(wsm: WorkspaceStateManager, nm: StatusBarManager)
+    {
+        let apps = await this.ApiProxy.getApplication();
+
+        let currentApp = apps.data.result.list.find(element =>
+        {
+            return apps.data.result.current === element.sysId;
+        });
+
+        if (currentApp)
+        {
+            nm.setNotificationApplication(currentApp);
+        }
     }
 
     /**set last update or revert to default update set */
@@ -516,13 +540,45 @@ export class Instance
     }
 
     /**
+     * Returns a list of applications including the current set. 
+     */
+    getApplication(): Promise<ApplicationCollection>
+    {
+        return new Promise(async (resolve, reject) =>
+        {
+            try
+            {
+                let app = await this.ApiProxy.getApplication();
+                resolve(new ApplicationCollection(app.data.result));
+            } catch (error)
+            {
+                reject(error);
+            }
+        });
+    }
+
+    setApplication(selectedApp: Application): Promise<string>
+    {
+        return new Promise(async (resolve, reject) =>
+        {
+            try
+            {
+                let appRefreshed = await this.ApiProxy.setApplication(selectedApp.sysId);
+                resolve(appRefreshed.data.result.app_id);
+            } catch (error)
+            {
+                reject(error);
+            }
+        });
+    }
+
+    /**
      * Caches and retrieves all supported records
      */
     Cache(): Promise<Array<Array<ISysMetadataIWorkspaceConvertable>>>
     {
         let promises = new Array<Promise<Array<ISysMetadataIWorkspaceConvertable>>>();
         let availableRecords = SupportedRecordsHelper.GetRecordsDisplayValue();
-
         availableRecords.forEach(element =>
         {
             //@ts-ignore Index error is false positive. 
@@ -549,44 +605,57 @@ export class Instance
     {
         return new Promise((resolve, reject) =>
         {
-            let errMsg: string | undefined;
-
-            if (this.ApiProxy)
+            try
             {
-                let records = this.ApiProxy.GetRecords(type);
+                let errMsg: string | undefined;
 
-                if (records)
+                if (this.ApiProxy)
                 {
-                    records.then((res) =>
+                    let records = this.ApiProxy.GetRecords(type);
+
+                    if (records)
                     {
-                        let arrOut = new Array<ISysMetadataIWorkspaceConvertable>();
-                        res.data.result.forEach((element) =>
+                        records.then((res) =>
                         {
                             try
                             {
-                                arrOut.push(Converter.CastSysMetaData(element));
+                                let arrOut = new Array<ISysMetadataIWorkspaceConvertable>();
+                                res.data.result.forEach((element) =>
+                                {
+                                    try
+                                    {
+                                        arrOut.push(Converter.CastSysMetaData(element));
+                                    } catch (error)
+                                    {
+                                        reject(error);
+                                    }
+                                });
+                                resolve(arrOut);
                             } catch (error)
                             {
                                 reject(error);
                             }
+
                         });
-                        resolve(arrOut);
-                    });
+                    }
+                    else
+                    {
+                        errMsg = "Get Records returned undefined";
+                    }
                 }
                 else
                 {
-                    errMsg = "Get Records returned undefined";
+                    errMsg = "API not initilized";
                 }
-            }
-            else
-            {
-                errMsg = "API not initilized";
-            }
 
-            if (errMsg)
+                if (errMsg)
+                {
+                    console.error(errMsg);
+                    reject(errMsg);
+                }
+            } catch (error)
             {
-                console.error(errMsg);
-                reject(errMsg);
+                reject(error);
             }
         });
     }

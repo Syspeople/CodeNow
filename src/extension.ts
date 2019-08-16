@@ -4,7 +4,7 @@ import { Md5 } from "md5-typescript";
 import * as ServiceNow from './ServiceNow/all';
 import * as Managers from './Manager/all';
 import { StatusBarManager, NotifationState } from './Manager/all';
-import { SupportedRecords, ISysWsOperation, SupportedRecordsHelper, AngularProvider } from './ServiceNow/all';
+import { SupportedRecords, ISysWsOperation, SupportedRecordsHelper, AngularProvider, Application } from './ServiceNow/all';
 import { ISysMetadataIWorkspaceConvertable } from './MixIns/all';
 import { URL } from 'url';
 import { TreeDataProviderCodeSearch } from './Providers/all';
@@ -181,6 +181,21 @@ export function activate(context: vscode.ExtensionContext)
                     error: er
                 });
             });
+        }
+    });
+
+    let setApplication = vscode.commands.registerCommand("cn.setApplication", async () =>
+    {
+        if (instance)
+        {
+            let app = await instance.getApplication();
+
+            let selectedApp = await vscode.window.showQuickPick(app.list);
+            if (selectedApp)
+            {
+                await instance.setApplication(selectedApp);
+                nm.setNotificationApplication(selectedApp);
+            }
         }
     });
 
@@ -878,6 +893,7 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(openInPlatformList);
     context.subscriptions.push(deleteRecord);
     context.subscriptions.push(setUpdateSet);
+    context.subscriptions.push(setApplication);
     context.subscriptions.push(codeSearch);
     context.subscriptions.push(codeSearchClear);
     context.subscriptions.push(codeSearchProvider);
