@@ -302,12 +302,19 @@ export class Api
         }
     }
 
-    public get HttpClient(): Axios.AxiosInstance | undefined
+    public get HttpClient(): Axios.AxiosInstance
     {
-        return this._HttpClient;
+        if (this._HttpClient)
+        {
+            return this._HttpClient;
+        }
+        else
+        {
+            throw new Error("Http Clinet undefined");
+        }
     }
 
-    public set HttpClient(v: Axios.AxiosInstance | undefined)
+    public set HttpClient(v: Axios.AxiosInstance)
     {
         this._HttpClient = v;
     }
@@ -508,14 +515,11 @@ export class Api
      * 
      * Returns all update sets that are in progress, limited to global scope
      */
-    public GetUpdateSets(scopeId: string): Axios.AxiosPromise<IServiceNowResponse<Array<ISysUpdateSet>>> | undefined
+    public async GetUpdateSets(scopeId: string): Promise<Axios.AxiosResponse<IServiceNowResponse<Array<ISysUpdateSet>>>>
     {
-        if (this.HttpClient)
-        {
-            //update sets in global and in progress
-            let url = `${this._SNSysUpdateSet}?sysparm_query=state=in progress^sys_scope=${scopeId}`;
-            return this.HttpClient.get(url);
-        }
+        //update sets in global and in progress
+        let url = `${this._SNSysUpdateSet}?sysparm_query=state=in progress^sys_scope=${scopeId}`;
+        return await this.HttpClient.get(url);
     }
 
     /**

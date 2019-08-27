@@ -14,8 +14,6 @@ import { WorkspaceConfiguration } from "vscode";
  */
 export class Instance
 {
-
-
     /**
      * Initialize() have to be invoked.
      */
@@ -167,7 +165,7 @@ export class Instance
         {
             let LocalUpdateSetSysId = wsm.GetUpdateSet();
 
-            let p = this.GetUpdateSets(app.sysId);
+            let p = this.GetUpdateSets();
 
             p.then((res) =>
             {
@@ -281,7 +279,7 @@ export class Instance
             app = await this.getCurrentApplication();
         }
 
-        let us = await this.GetUpdateSets(app.sysId);
+        let us = await this.GetUpdateSets();
 
         let set: UpdateSet | undefined;
 
@@ -466,31 +464,19 @@ export class Instance
      * resolves if newer is found upstream
      * rejects if latest
      */
-    public IsLatest(record: ISysMetadata): Promise<ISysMetadata>
+    public async IsLatest(record: ISysMetadata): Promise<ISysMetadata>
     {
-        return new Promise((resolve, reject) =>
+        try
         {
             //get upstream record
-            let p = this.GetRecordMetadata(record);
+            let p = await this.GetRecordMetadata(record);
 
-            p.then((res) =>
-            {
-                //fix this comparison
-                if (res.sys_updated_on > record.sys_updated_on)
-                {
-                    //upstream newest
-                    resolve(res);
-                }
-                else
-                {
-                    reject(res);
-                }
-            }).catch((e) =>
-            {
-                console.error(e);
-                throw e;
-            });
-        });
+            return p;
+        } catch (error)
+        {
+            console.error(error);
+            throw error;
+        }
     }
 
     /**
@@ -506,38 +492,28 @@ export class Instance
      * 
      * Retrieves all updates sets that are in progress.
      */
-    public GetUpdateSets(): Promise<Array<UpdateSet>>
+    public async GetUpdateSets(): Promise<Array<UpdateSet>>
     {
-        return new Promise(async (resolve, reject) =>
+        try
         {
-            if (this.ApiProxy)
+            //get current app.
+            let app = await this.getCurrentApplication();
+
+            let p = await this.ApiProxy.GetUpdateSets(app.sysId);
+
+            let arr: Array<UpdateSet> = [];
+            p.data.result.forEach((element) =>
             {
-                //get current app.
+                arr.push(new UpdateSet(element));
+            });
 
-                let p = this.ApiProxy.GetUpdateSets(scopeId);
+            return arr;
+        } catch (error)
+        {
+            console.error(error);
+            throw error;
+        }
 
-                if (p)
-                {
-                    p.then((res) =>
-                    {
-                        let arr: Array<UpdateSet> = [];
-
-                        res.data.result.forEach((element) =>
-                        {
-                            arr.push(new UpdateSet(element));
-                        });
-
-                        resolve(arr);
-                    }).catch((er) =>
-                    {
-                        reject(er);
-                    });
-                } else
-                {
-                    reject("API proxy not initialized");
-                }
-            }
-        });
     }
 
     /**
