@@ -111,58 +111,63 @@ export class Instance
     /**
      * Initialize
      */
-    public Initialize(Url: URL, UserName: string, Password: string, wsm: WorkspaceStateManager, nm: StatusBarManager): Promise<ISysMetadataIWorkspaceConvertable[][]>
+    public async Initialize(Url: URL, UserName: string, Password: string, wsm: WorkspaceStateManager, nm: StatusBarManager): Promise<ISysMetadataIWorkspaceConvertable[][]>
     {
-        return new Promise(async (resolve, reject) =>
+        try
         {
-            try
-            {
-                this._url = Url;
-                this._userName = UserName;
-                this._wsm = wsm;
+            this._url = Url;
+            this._userName = UserName;
+            this._wsm = wsm;
 
-                this._ApiProxy = new Api(this, Password);
+            this._ApiProxy = new Api(this, Password);
 
-                //disable cookies. in lack of a better way to handle cookkies with concurrent http requests.
-                this.ApiProxy.storeCookies = false;
-                let cached = await this.Cache();
-                this.ApiProxy.storeCookies = true;
+            //disable cookies. in lack of a better way to handle cookkies with concurrent http requests.
+            this.ApiProxy.storeCookies = false;
+            let cached = await this.Cache();
+            //this fucker rejects without being catched.
+            this.ApiProxy.storeCookies = true;
 
-                await this.initializeApplication(wsm, nm);
+            let app = await this.initializeApplication(wsm, nm);
 
-                await this.InitializeUpdateSet(wsm, nm);
+            await this.InitializeUpdateSet(wsm, nm, app);
 
-                resolve(cached);
-            } catch (error)
-            {
-                reject(error);
-            }
-        });
-    }
-
-    private async initializeApplication(wsm: WorkspaceStateManager, nm: StatusBarManager)
-    {
-        let apps = await this.ApiProxy.getApplication();
-
-        let currentApp = apps.data.result.list.find(element =>
+            return (cached);
+        } catch (error)
         {
-            return apps.data.result.current === element.sysId;
-        });
-
-        if (currentApp)
-        {
-            nm.setNotificationApplication(currentApp);
+            //nm.SetNotificationState(NotifationState.NotConnected);
+            throw error;
         }
     }
 
+    private async initializeApplication(wsm: WorkspaceStateManager, nm: StatusBarManager): Promise<Application>
+    {
+        let lastApp = wsm.getApplication();
+
+        let currentApp: Application;
+
+        if (lastApp)
+        {
+            currentApp = await this.setApplication(lastApp);
+        }
+        else
+        {
+            //take instance default
+            currentApp = await this.getCurrentApplication();
+        }
+
+        nm.setNotificationApplication(currentApp);
+
+        return currentApp;
+    }
+
     /**set last update or revert to default update set */
-    private InitializeUpdateSet(wsm: WorkspaceStateManager, nm: StatusBarManager): Promise<void>
+    private InitializeUpdateSet(wsm: WorkspaceStateManager, nm: StatusBarManager, app: Application): Promise<void>
     {
         return new Promise((resolve, reject) =>
         {
             let LocalUpdateSetSysId = wsm.GetUpdateSet();
 
-            let p = this.GetUpdateSets();
+            let p = this.GetUpdateSets(app.sysId);
 
             p.then((res) =>
             {
@@ -266,44 +271,38 @@ export class Instance
     /**
      * Verifies current update set. Ensures update set is still in progress before saving.
      */
-    public UpdateSetIsValid(): Promise<Boolean>
+    public async UpdateSetIsValid(): Promise<Boolean>
     {
-        return new Promise((resolve, reject) =>
+        let app = this.WorkspaceStateManager.getApplication();
+
+        if (!app)
         {
-            let p = this.GetUpdateSets();
+            //get current from instance.
+            app = await this.getCurrentApplication();
+        }
 
-            p.then((us) =>
+        let us = await this.GetUpdateSets(app.sysId);
+
+        let set: UpdateSet | undefined;
+
+        //only gets in progress update set.
+        set = this.WorkspaceStateManager.GetUpdateSet();
+
+        let index: number = -1;
+        if (set)
+        {
+            index = us.findIndex((element) =>
             {
-                let set: UpdateSet | undefined;
-                if (this._wsm)
-                {
-                    //only gets in progress update set.
-                    set = this._wsm.GetUpdateSet();
-                }
-
-                let index: number = -1;
-                if (set)
-                {
-                    index = us.findIndex((element) =>
-                    {
-                        //@ts-ignore variable set already null checked
-                        return element.sys_id === set.sys_id;
-                    });
-                }
-
-                if (index !== -1)
-                {
-                    resolve(true);
-                }
-                else
-                {
-                    reject(false);
-                }
-            }).catch((r) =>
-            {
-                reject(r);
+                //@ts-ignore variable set already null checked
+                return element.sys_id === set.sys_id;
             });
-        });
+        }
+
+        if (index !== -1)
+        {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -509,11 +508,13 @@ export class Instance
      */
     public GetUpdateSets(): Promise<Array<UpdateSet>>
     {
-        return new Promise((resolve, reject) =>
+        return new Promise(async (resolve, reject) =>
         {
             if (this.ApiProxy)
             {
-                let p = this.ApiProxy.GetUpdateSets();
+                //get current app.
+
+                let p = this.ApiProxy.GetUpdateSets(scopeId);
 
                 if (p)
                 {
@@ -549,6 +550,7 @@ export class Instance
             try
             {
                 let app = await this.ApiProxy.getApplication();
+                console.log(app.data.result);
                 resolve(new ApplicationCollection(app.data.result));
             } catch (error)
             {
@@ -557,14 +559,35 @@ export class Instance
         });
     }
 
-    setApplication(selectedApp: Application): Promise<string>
+    public async getCurrentApplication(): Promise<Application>
+    {
+        let apps = await this.ApiProxy.getApplication();
+        let current = apps.data.result.list.find(element =>
+        {
+            return apps.data.result.current === element.sysId;
+        });
+
+        if (!current)
+        {
+            throw new Error("Unable to get current App");
+        }
+
+        return current;
+    }
+
+    setApplication(selectedApp: Application): Promise<Application>
     {
         return new Promise(async (resolve, reject) =>
         {
             try
             {
-                let appRefreshed = await this.ApiProxy.setApplication(selectedApp.sysId);
-                resolve(appRefreshed.data.result.app_id);
+                await this.ApiProxy.setApplication(selectedApp.sysId);
+
+                let currentApp = await this.getCurrentApplication();
+
+                this.WorkspaceStateManager.setApplication(currentApp);
+                resolve(currentApp);
+
             } catch (error)
             {
                 reject(error);
@@ -584,6 +607,7 @@ export class Instance
             //@ts-ignore Index error is false positive. 
             let type = SupportedRecords[element];
             let records = this.GetRecordsUpstream(type);
+            promises.push(records);
 
             records.then((res) =>
             {
@@ -596,7 +620,7 @@ export class Instance
             {
                 throw e;
             });
-            promises.push(records);
+
         });
         return Promise.all(promises);
     }

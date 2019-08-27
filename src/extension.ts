@@ -4,7 +4,7 @@ import { Md5 } from "md5-typescript";
 import * as ServiceNow from './ServiceNow/all';
 import * as Managers from './Manager/all';
 import { StatusBarManager, NotifationState } from './Manager/all';
-import { SupportedRecords, ISysWsOperation, SupportedRecordsHelper, AngularProvider, Application } from './ServiceNow/all';
+import { SupportedRecords, ISysWsOperation, SupportedRecordsHelper, AngularProvider } from './ServiceNow/all';
 import { ISysMetadataIWorkspaceConvertable } from './MixIns/all';
 import { URL } from 'url';
 import { TreeDataProviderCodeSearch } from './Providers/all';
@@ -137,51 +137,51 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-    let setUpdateSet = vscode.commands.registerCommand("cn.setUpdateset", () =>
+    let setUpdateSet = vscode.commands.registerCommand("cn.setUpdateset", async () =>
     {
-        if (instance.IsInitialized())
+        try
         {
-            let us = instance.GetUpdateSets();
-
-            us.then((res) =>
+            if (instance.IsInitialized())
             {
-                vscode.window.showQuickPick(res).then((item) =>
+                let us = await instance.GetUpdateSets();
+
+                let setPicked = await vscode.window.showQuickPick(us);
+
+                if (setPicked)
                 {
-                    if (item)
+                    let set = instance.SetUpdateSet(setPicked);
+
+                    if (set)
                     {
-                        let set = instance.SetUpdateSet(item);
-
-                        if (set)
+                        set.then((us) =>
                         {
-                            set.then((us) =>
-                            {
-                                wsm.SetUpdateSet(us);
+                            wsm.SetUpdateSet(us);
 
-                                nm.SetNotificationUpdateSet(us);
-                                let msg = `UpdateSet Changed: ${us.name}`;
-                                console.log(msg);
-                                vscode.window.showInformationMessage(msg);
+                            nm.SetNotificationUpdateSet(us);
+                            let msg = `UpdateSet Changed: ${us.name}`;
+                            console.log(msg);
+                            vscode.window.showInformationMessage(msg);
 
-                                mixpanel.track('cn.extension.command.setUpdateSet.success');
-                            }).catch((er) =>
-                            {
-                                console.error(er);
+                            mixpanel.track('cn.extension.command.setUpdateSet.success');
+                        }).catch((er) =>
+                        {
+                            console.error(er);
 
-                                mixpanel.track('cn.extension.command.setUpdateSet.fail', {
-                                    error: er
-                                });
+                            mixpanel.track('cn.extension.command.setUpdateSet.fail', {
+                                error: er
                             });
-                        }
+                        });
                     }
-                });
-            }).catch((er) =>
-            {
-                console.error(er);
-                mixpanel.track('cn.extension.command.setUpdateSet.fail', {
-                    error: er
-                });
+                }
+            }
+        } catch (error)
+        {
+            console.error(error);
+            mixpanel.track('cn.extension.command.setUpdateSet.fail', {
+                error: error
             });
         }
+
     });
 
     let setApplication = vscode.commands.registerCommand("cn.setApplication", async () =>
@@ -793,7 +793,7 @@ export function activate(context: vscode.ExtensionContext)
                                             });
                                         }).catch((er) =>
                                         {
-                                            vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
+                                            vscode.window.showErrorMessage(`Save Failed: ${er.error}`);
 
                                             mixpanel.track('cn.extension.event.onDidSaveTextDocument.fail', {
                                                 error: er.error.message

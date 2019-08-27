@@ -34,6 +34,7 @@ export class Api
 
     public storeCookies: boolean = true;
 
+
     private get _session_store(): string
     {
         if (this._Cookies.length > 0)
@@ -87,6 +88,19 @@ export class Api
                 timeout: timeout
             });
 
+            /**
+             * Keep session alive every 1.5 s. 
+             */
+            setInterval(async () =>
+            {
+                let apps = await this.getApplication();
+                console.log(`keepAlive:`);
+                console.log(apps);
+                console.log('Current');
+                console.log(apps.data.result.current);
+            }, 10000);
+
+
             this._HttpClient.interceptors.request.use((r) =>
             {
                 let cookie: string = "";
@@ -121,7 +135,6 @@ export class Api
                 {
                     this.UpdateSessionCookies(<Array<string>>r.headers["set-cookie"]);
                 }
-
                 return r;
             });
         }
@@ -138,6 +151,10 @@ export class Api
         }
     }
 
+    /**
+     * Add or update cokkies.
+     * @param cookies 
+     */
     private UpdateSessionCookies(cookies: Array<string>): void
     {
         if (cookies)
@@ -177,7 +194,7 @@ export class Api
      * configures a persistent session for the api client. 
      * 
      * Required for cookie based authentication. persistent Session is used for all subsequent request. 
-     * Remember to clear session afterwards.
+     * Remember to clearCookieAuth afterwards.
      */
     private useCookieAuth(): Promise<void>
     {
@@ -491,16 +508,21 @@ export class Api
      * 
      * Returns all update sets that are in progress, limited to global scope
      */
-    public GetUpdateSets(): Axios.AxiosPromise<IServiceNowResponse<Array<ISysUpdateSet>>> | undefined
+    public GetUpdateSets(scopeId: string): Axios.AxiosPromise<IServiceNowResponse<Array<ISysUpdateSet>>> | undefined
     {
         if (this.HttpClient)
         {
             //update sets in global and in progress
-            let url = `${this._SNSysUpdateSet}?sysparm_query=state=in progress^application.scope=global`;
+            let url = `${this._SNSysUpdateSet}?sysparm_query=state=in progress^sys_scope=${scopeId}`;
             return this.HttpClient.get(url);
         }
     }
 
+    /**
+     * Create updateset on instance
+     * @param name 
+     * @param parent 
+     */
     public CreateUpdateSet(name: string, parent: string): Axios.AxiosPromise<IServiceNowResponse<any>> | undefined
     {
         return new Promise(async (resolve, reject) =>
