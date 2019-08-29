@@ -85,7 +85,6 @@ export function activate(context: vscode.ExtensionContext)
                 let p = instance.Initialize(new URL(url), usr, pw, wsm, nm);
                 nm.SetNotificationState(NotifationState.Downloading);
                 await p;
-
                 wm.AddInstanceFolder(instance);
                 nm.SetNotificationState(NotifationState.Connected);
 
@@ -98,8 +97,13 @@ export function activate(context: vscode.ExtensionContext)
             }
         } catch (error)
         {
-            wsm.ClearState();
+            if (error.code === "ENOTFOUND")
+            {
+                wsm.ClearState();
+            }
+
             nm.SetNotificationState(NotifationState.NotConnected);
+
             vscode.window.showErrorMessage(error.message);
             mixpanel.track("cn.extension.command.connect.fail", {
                 error: error.message

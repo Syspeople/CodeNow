@@ -13,6 +13,7 @@ export class Api
     private _Cookies: Array<ICookie> = [];
     private _csrfToken: string = "";
     private _Properties: Array<ISysProperty> = new Array<ISysProperty>();
+    private _keepAlive = false;
 
     private _SNHost: string = "";
     private _SNApiEndpoint = "/api";
@@ -93,11 +94,14 @@ export class Api
              */
             setInterval(async () =>
             {
-                let apps = await this.getApplication();
-                console.log(`keepAlive:`);
-                console.log(apps);
-                console.log('Current');
-                console.log(apps.data.result.current);
+                if (this._keepAlive)
+                {
+                    let apps = await this.getApplication();
+                    console.log(`keepAlive:`);
+                    console.log(apps);
+                    console.log('Current');
+                    console.log(apps.data.result.current);
+                }
             }, 10000);
 
 
@@ -424,40 +428,34 @@ export class Api
     /**
      * Retrieves all eligible records of a specific type. 
      */
-    public GetRecords(type: SupportedRecords): Axios.AxiosPromise<IServiceNowResponse<Array<ISysMetadata>>>
+    public async GetRecords(type: SupportedRecords): Promise<Axios.AxiosResponse<IServiceNowResponse<Array<ISysMetadata>>>>
     {
-        if (this.HttpClient)
+        let url = `${this._SNTableSuffix}/${type}`;
+        //set specific queries where necessary
+        //defualt is all writable elements.
+        switch (type)
         {
-            let url = `${this._SNTableSuffix}/${type}`;
-            //set specific queries where necessary
-            //defualt is all writable elements.
-            switch (type)
-            {
-                case SupportedRecords.Widget:
-                    url = url + `?sysparm_query=internal=false^sys_policy=^sys_scope=global`;
-                    break;
-                case SupportedRecords["Header or Footer Widget"]:
-                    url = url + `?sysparm_query=internal=false^sys_policy=^sys_scope=global`;
-                    break;
-                case SupportedRecords.Processor:
-                    url = url + `?sysparm_query=sys_policy=^type=script^sys_scope=global`;
-                    break;
-                case SupportedRecords["Scripted Rest API"]:
-                    url = url + `?sysparm_query=sys_policy=`;
-                    break;
-                case SupportedRecords["UI Action"]:
-                    url = url + `?sysparm_query=sys_policy=&sysparm_fields=table,order,comments,active,script,condition,hint,name,sys_class_name,sys_id,sys_policy,sys_updated_on,sys_created_on,sys_package,sys_scope`;
-                    break;
-                default:
-                    url = url + `?sysparm_query=sys_policy=^sys_scope=global^sys_class_name=${type}`;
-                    break;
-            }
-            return this.HttpClient.get(url, { timeout: 20000 });
+            case SupportedRecords.Widget:
+                url = url + `?sysparm_query=internal=false^sys_policy=^sys_scope=global`;
+                break;
+            case SupportedRecords["Header or Footer Widget"]:
+                url = url + `?sysparm_query=internal=false^sys_policy=^sys_scope=global`;
+                break;
+            case SupportedRecords.Processor:
+                url = url + `?sysparm_query=sys_policy=^type=script^sys_scope=global`;
+                break;
+            case SupportedRecords["Scripted Rest API"]:
+                url = url + `?sysparm_query=sys_policy=`;
+                break;
+            case SupportedRecords["UI Action"]:
+                url = url + `?sysparm_query=sys_policy=&sysparm_fields=table,order,comments,active,script,condition,hint,name,sys_class_name,sys_id,sys_policy,sys_updated_on,sys_created_on,sys_package,sys_scope`;
+                break;
+            default:
+                url = url + `?sysparm_query=sys_policy=^sys_scope=global^sys_class_name=${type}`;
+                break;
         }
-        else
-        {
-            throw new Error("Httpclient not found");
-        }
+
+        return this.HttpClient.get<IServiceNowResponse<Array<ISysMetadata>>>(url, { timeout: 20000 });
     }
 
     /**

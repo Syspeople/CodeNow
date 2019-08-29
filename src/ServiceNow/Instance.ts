@@ -109,7 +109,7 @@ export class Instance
     /**
      * Initialize
      */
-    public async Initialize(Url: URL, UserName: string, Password: string, wsm: WorkspaceStateManager, nm: StatusBarManager): Promise<ISysMetadataIWorkspaceConvertable[][]>
+    public async Initialize(Url: URL, UserName: string, Password: string, wsm: WorkspaceStateManager, nm: StatusBarManager): Promise<void>
     {
         try
         {
@@ -121,18 +121,18 @@ export class Instance
 
             //disable cookies. in lack of a better way to handle cookkies with concurrent http requests.
             this.ApiProxy.storeCookies = false;
-            let cached = await this.Cache();
-            //this fucker rejects without being catched.
+            let all = this.Cache();
+            await all;
             this.ApiProxy.storeCookies = true;
 
-            let app = await this.initializeApplication(wsm, nm);
+            await this.initializeApplication(wsm, nm);
 
-            await this.InitializeUpdateSet(wsm, nm, app);
+            await this.InitializeUpdateSet(wsm, nm);
 
-            return (cached);
+            return;
         } catch (error)
         {
-            //nm.SetNotificationState(NotifationState.NotConnected);
+            console.error(error);
             throw error;
         }
     }
@@ -159,7 +159,7 @@ export class Instance
     }
 
     /**set last update or revert to default update set */
-    private InitializeUpdateSet(wsm: WorkspaceStateManager, nm: StatusBarManager, app: Application): Promise<void>
+    private InitializeUpdateSet(wsm: WorkspaceStateManager, nm: StatusBarManager): Promise<void>
     {
         return new Promise((resolve, reject) =>
         {
@@ -574,90 +574,55 @@ export class Instance
     /**
      * Caches and retrieves all supported records
      */
-    Cache(): Promise<Array<Array<ISysMetadataIWorkspaceConvertable>>>
+    async Cache(): Promise<Array<Array<ISysMetadataIWorkspaceConvertable>>>
     {
-        let promises = new Array<Promise<Array<ISysMetadataIWorkspaceConvertable>>>();
-        let availableRecords = SupportedRecordsHelper.GetRecordsDisplayValue();
-        availableRecords.forEach(element =>
+        try
         {
-            //@ts-ignore Index error is false positive. 
-            let type = SupportedRecords[element];
-            let records = this.GetRecordsUpstream(type);
-            promises.push(records);
+            const promises = new Array<Promise<Array<ISysMetadataIWorkspaceConvertable>>>();
+            let availableRecords = SupportedRecordsHelper.GetRecordsDisplayValue();
 
-            records.then((res) =>
+            availableRecords.forEach(element =>
             {
-                if (this._wsm)
+                //@ts-ignore Index error is false positive. 
+                let type = SupportedRecords[element];
+                promises.push(this.GetRecordsUpstream(type).then((res) =>
                 {
                     //@ts-ignore Index error is false positive. 
-                    this._wsm.SetRecords(SupportedRecords[element], res);
-                }
-            }).catch((e) =>
-            {
-                throw e;
+                    this.WorkspaceStateManager.SetRecords(SupportedRecords[element], res);
+                    return res;
+                }).catch((e) =>
+                {
+                    console.error(e);
+                    throw e;
+                }));
             });
 
-        });
-        return Promise.all(promises);
+            return Promise.all(promises);
+        } catch (error)
+        {
+            console.error(error);
+            throw error;
+        }
     }
 
-    GetRecordsUpstream(type: SupportedRecords): Promise<Array<ISysMetadataIWorkspaceConvertable>>
+    async GetRecordsUpstream(type: SupportedRecords): Promise<Array<ISysMetadataIWorkspaceConvertable>>
     {
-        return new Promise((resolve, reject) =>
+        try
         {
-            try
+            let records = await this.ApiProxy.GetRecords(type);
+
+            let arrOut = new Array<ISysMetadataIWorkspaceConvertable>();
+
+            records.data.result.forEach((element) =>
             {
-                let errMsg: string | undefined;
+                arrOut.push(Converter.CastSysMetaData(element));
+            });
 
-                if (this.ApiProxy)
-                {
-                    let records = this.ApiProxy.GetRecords(type);
-
-                    if (records)
-                    {
-                        records.then((res) =>
-                        {
-                            try
-                            {
-                                let arrOut = new Array<ISysMetadataIWorkspaceConvertable>();
-                                res.data.result.forEach((element) =>
-                                {
-                                    try
-                                    {
-                                        arrOut.push(Converter.CastSysMetaData(element));
-                                    } catch (error)
-                                    {
-                                        reject(error);
-                                    }
-                                });
-                                resolve(arrOut);
-                            } catch (error)
-                            {
-                                reject(error);
-                            }
-
-                        });
-                    }
-                    else
-                    {
-                        errMsg = "Get Records returned undefined";
-                    }
-                }
-                else
-                {
-                    errMsg = "API not initilized";
-                }
-
-                if (errMsg)
-                {
-                    console.error(errMsg);
-                    reject(errMsg);
-                }
-            } catch (error)
-            {
-                reject(error);
-            }
-        });
+            return arrOut;
+        } catch (error)
+        {
+            throw error;
+        }
     }
 
     /**
