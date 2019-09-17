@@ -432,30 +432,31 @@ export class Api
     {
         let url = `${this._SNTableSuffix}/${type}`;
         //set specific queries where necessary
-        //defualt is all writable elements.
         switch (type)
         {
             case SupportedRecords.Widget:
-                url = url + `?sysparm_query=internal=false^sys_policy=^sys_scope=global`;
+                url = url + `?sysparm_query=internal=false^sys_policy!=protected`;
                 break;
             case SupportedRecords["Header or Footer Widget"]:
-                url = url + `?sysparm_query=internal=false^sys_policy=^sys_scope=global`;
+                url = url + `?sysparm_query=internal=false^sys_policy!=protected`;
                 break;
             case SupportedRecords.Processor:
-                url = url + `?sysparm_query=sys_policy=^type=script^sys_scope=global`;
+                url = url + `?sysparm_query=sys_policy!=protected^type=script`;
                 break;
             case SupportedRecords["Scripted Rest API"]:
-                url = url + `?sysparm_query=sys_policy=`;
+                url = url + `?sysparm_query=sys_policy!=protected`;
                 break;
             case SupportedRecords["UI Action"]:
-                url = url + `?sysparm_query=sys_policy=&sysparm_fields=table,order,comments,active,script,condition,hint,name,sys_class_name,sys_id,sys_policy,sys_updated_on,sys_created_on,sys_package,sys_scope`;
+                url = url + `?sysparm_query=sys_policy!=protected&sysparm_fields=table,order,comments,active,script,condition,hint,name,sys_class_name,sys_id,sys_policy,sys_updated_on,sys_created_on,sys_package,sys_scope`;
+                break;
+            case SupportedRecords["Script Include"]:
+                url = url + `?sysparm_query=sys_policy!=protected&sysparm_fields=client_callable,access,active,description,script,api_name,name,sys_class_name,sys_id,sys_policy,sys_updated_on,sys_created_on,sys_package,sys_scope`;
                 break;
             default:
-                url = url + `?sysparm_query=sys_policy=^sys_scope=global^sys_class_name=${type}`;
+                url = url + `?sysparm_query=sys_policy!=protected^sys_class_name=${type}`;
                 break;
         }
-
-        return this.HttpClient.get<IServiceNowResponse<Array<ISysMetadata>>>(url, { timeout: 20000 });
+        return this.HttpClient.get<IServiceNowResponse<Array<ISysMetadata>>>(url, { timeout: 30000 });
     }
 
     /**
