@@ -26,7 +26,7 @@ export * from './types/MailScript';
 export * from './interface/ISysWsOperation';
 export * from './interface/ISysWsDefinition';
 export * from './Converter';
-export * from './types/SupportedRecords';
+export * from './SupportedRecords';
 export * from './interface/ISysEventScriptAction';
 export * from './types/ScriptAction';
 export * from './interface/ISysProcessor';
