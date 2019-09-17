@@ -23,6 +23,7 @@ export class WorkspaceStateManager
         this._context.workspaceState.update(StateKeys.url.toString(), undefined);
         this._context.workspaceState.update(StateKeys.user.toString(), undefined);
         this._context.workspaceState.update(StateKeys.updateSet.toString(), undefined);
+        this._context.workspaceState.update(StateKeys.application.toString(), undefined);
     }
 
     /**

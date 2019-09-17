@@ -3,7 +3,7 @@ import { Record, ISysMetadata, UpdateSet, Converter, SupportedRecords, SearchRes
 import { Api } from "../../Api/all";
 import { WorkspaceStateManager, StatusBarManager, Mixpanel } from "../../Manager/all";
 import { ISysMetadataIWorkspaceConvertable } from "../../MixIns/all";
-import opn = require('open');   
+import opn = require('open');
 import { WorkspaceConfiguration } from "vscode";
 
 
