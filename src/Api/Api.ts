@@ -517,7 +517,7 @@ export class Api
     public async GetUpdateSets(scopeId: string): Promise<Axios.AxiosResponse<IServiceNowResponse<Array<ISysUpdateSet>>>>
     {
         //update sets in global and in progress
-        let url = `${this._SNSysUpdateSet}?sysparm_query=state=in progress^sys_scope=${scopeId}`;
+        let url = `${this._SNSysUpdateSet}?sysparm_query=state=in progress^application=${scopeId}`;
         return await this.HttpClient.get(url);
     }
 
