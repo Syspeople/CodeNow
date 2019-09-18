@@ -158,102 +158,85 @@ export class Instance
         return currentApp;
     }
 
-    /**set last update or revert to default update set */
-    private InitializeUpdateSet(wsm: WorkspaceStateManager, nm: StatusBarManager): Promise<void>
+    private async setDefaultUpdateSet(): Promise<UpdateSet>
     {
-        return new Promise((resolve, reject) =>
+        try
         {
+            let updateSets = await this.GetUpdateSets();
+
+            let defaultUs = updateSets.find((element) =>
+            {
+                return (element.is_default === "true");
+            });
+
+            if (defaultUs)
+            {
+                let updateset = await this.SetUpdateSet(defaultUs);
+                return updateset;
+            } else
+            {
+                throw new Error("Unable to find default updateset");
+            }
+        } catch (error)
+        {
+            console.log(error);
+            throw error;
+        }
+    }
+
+    /**set last update or revert to default update set */
+    private async InitializeUpdateSet(wsm: WorkspaceStateManager, nm: StatusBarManager): Promise<void>
+    {
+        try
+        {
+            //-ensure last update set is not from another scope. in case then default. 
             let LocalUpdateSetSysId = wsm.GetUpdateSet();
 
-            let p = this.GetUpdateSets();
+            //Only finds in progress updatesets
+            let sets = await this.GetUpdateSets();
 
-            p.then((res) =>
+            let us: UpdateSet;
+
+            if (LocalUpdateSetSysId)
             {
-                if (LocalUpdateSetSysId)
+                let appPromise = this.getCurrentApplication();
+
+                let UpdateSetActive = sets.find((element) =>
                 {
-                    let UpdateSet = res.find((element) =>
-                    {
-                        //@ts-ignore LocalUpdateSetSysId Already validated.
-                        return element.sys_id === LocalUpdateSetSysId.sys_id;
-                    });
+                    //@ts-ignore LocalUpdateSetSysId already checked.
+                    return element.sys_id === LocalUpdateSetSysId.sys_id;
+                });
 
-                    if (UpdateSet)
-                    {
-                        let e = this.SetUpdateSet(UpdateSet);
-                        if (e)
-                        {
-                            e.then((us) =>
-                            {
-                                //@ts-ignore updateSet already nullchecked
-                                nm.SetNotificationUpdateSet(us);
-                                resolve();
-                            }).catch((er) =>
-                            {
-                                console.error(er);
-                                reject(er);
-                            });
-                        }
-                    }
-                    else
-                    {
-                        let defaultUs = res.find((element) =>
-                        {
-                            return (element.is_default === "true");
-                        });
+                //revert to default if we have a mismatch. 
+                let app = await appPromise;
+                if (LocalUpdateSetSysId.application.value !== app.sysId)
+                {
+                    us = await this.setDefaultUpdateSet();
+                }
 
-                        if (defaultUs)
-                        {
-                            let e = this.SetUpdateSet(defaultUs);
-                            if (e)
-                            {
-                                e.then((us) =>
-                                {
-                                    //@ts-ignore updateSet already nullchecked
-                                    nm.SetNotificationUpdateSet(defaultUs);
-                                    wsm.SetUpdateSet(us);
-                                    resolve();
-                                }).catch((er) =>
-                                {
-                                    console.error(er);
-                                    reject(er);
-                                });
-                            }
-                        }
-                    }
+                if (UpdateSetActive)
+                {
+                    us = await this.SetUpdateSet(UpdateSetActive);
                 }
                 else
                 {
-                    let defaultUs = res.find((element) =>
-                    {
-                        return (element.is_default === "true");
-                    });
-
-                    if (defaultUs)
-                    {
-                        let e = this.SetUpdateSet(defaultUs);
-                        if (e)
-                        {
-                            e.then((us) =>
-                            {
-                                //@ts-ignore updateSet already nullchecked
-                                nm.SetNotificationUpdateSet(defaultUs);
-                                wsm.SetUpdateSet(us);
-                                resolve();
-                            }).catch((er) =>
-                            {
-                                console.error(er);
-                                reject(er);
-                            });
-                        }
-                    }
+                    //set default.
+                    us = await this.setDefaultUpdateSet();
                 }
-            }).catch((er) =>
+            }
+            else
             {
-                console.error(er);
-                reject(er);
-            });
-        });
+                us = await this.setDefaultUpdateSet();
+            }
 
+            nm.SetNotificationUpdateSet(us);
+
+            return;
+        } catch (error)
+        {
+            console.error(error);
+            throw error;
+        }
     }
 
     public setConfig(config: WorkspaceConfiguration): void
@@ -497,11 +480,18 @@ export class Instance
         try
         {
             //get current app.
-            let app = await this.getCurrentApplication();
+            this.WorkspaceStateManager.getApplication();
+            let app = this.WorkspaceStateManager.getApplication();
+
+            if (!app)
+            {
+                app = await this.getCurrentApplication();
+            }
 
             let p = await this.ApiProxy.GetUpdateSets(app.sysId);
 
             let arr: Array<UpdateSet> = [];
+
             p.data.result.forEach((element) =>
             {
                 arr.push(new UpdateSet(element));
@@ -551,24 +541,24 @@ export class Instance
         return current;
     }
 
-    setApplication(selectedApp: Application): Promise<Application>
+    public async setApplication(selectedApp: Application): Promise<Application>
     {
-        return new Promise(async (resolve, reject) =>
+        try
         {
-            try
-            {
-                await this.ApiProxy.setApplication(selectedApp.sysId);
+            await this.ApiProxy.setApplication(selectedApp.sysId);
+            let currentApp = await this.getCurrentApplication();
+            this.WorkspaceStateManager.setApplication(currentApp);
 
-                let currentApp = await this.getCurrentApplication();
+            //use Default updateset from scope.
+            this.setDefaultUpdateSet();
 
-                this.WorkspaceStateManager.setApplication(currentApp);
-                resolve(currentApp);
+            return currentApp;
 
-            } catch (error)
-            {
-                reject(error);
-            }
-        });
+        } catch (error)
+        {
+            console.error(error);
+            throw error;
+        }
     }
 
     /**
@@ -630,12 +620,11 @@ export class Instance
      * 
      * Sets the update to the one provided.
      */
-    public SetUpdateSet(updateSet: UpdateSet): Promise<UpdateSet> | undefined
+    public async SetUpdateSet(updateSet: UpdateSet): Promise<UpdateSet>
     {
-        if (this.ApiProxy)
-        {
-            return this.ApiProxy.SetUpdateSet(updateSet);
-        }
+        let us = await this.ApiProxy.SetUpdateSet(updateSet);
+        this.WorkspaceStateManager.SetUpdateSet(us);
+        return us;
     }
 
     /**

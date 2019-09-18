@@ -83,6 +83,7 @@ export class WorkspaceStateManager
 
     public SetUpdateSet(us: UpdateSet): void
     {
+        console.log(us);
         this._context.workspaceState.update(StateKeys.updateSet.toString(), us);
     }
 
@@ -96,6 +97,9 @@ export class WorkspaceStateManager
         this._context.workspaceState.update(StateKeys.application.toString(), app);
     }
 
+    /**
+     * Last set app.
+     */
     getApplication(): Application | undefined
     {
         return this._context.workspaceState.get(StateKeys.application.toString());

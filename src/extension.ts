@@ -159,8 +159,6 @@ export function activate(context: vscode.ExtensionContext)
                     {
                         set.then((us) =>
                         {
-                            wsm.SetUpdateSet(us);
-
                             nm.SetNotificationUpdateSet(us);
                             let msg = `UpdateSet Changed: ${us.name}`;
                             console.log(msg);
@@ -367,23 +365,23 @@ export function activate(context: vscode.ExtensionContext)
                                             "Table Name", "Template Value", "Time", "Timer", "Translated", "Translated HTML", "Translated Text", "Tree Code", "Tree Path", "True/False", "Two Line Text Area",
                                             "UI Action List", "URL", "User Input", "User Roles", "Variable Conditions", "Variable template value", "Variables",
                                             "Version", "Video", "Week of Month", "Wide Text", "Wiki", "WMS Job", "Workflow", "Workflow Conditions", "XML"], {
-                                                placeHolder: "Choose Type"
-                                            }).then((item) =>
-                                            {
-                                                let r = instance.CreateRecord(SupportedRecords[recordtype], {
-                                                    'description': name,
-                                                    'internal_type': item
-                                                });
-
-                                                //@ts-ignore already null checked
-                                                r.then((newRecord) =>
-                                                {
-                                                    wm.AddRecord(newRecord, instance);
-                                                }).catch((err) =>
-                                                {
-                                                    throw new Error(err);
-                                                });
+                                            placeHolder: "Choose Type"
+                                        }).then((item) =>
+                                        {
+                                            let r = instance.CreateRecord(SupportedRecords[recordtype], {
+                                                'description': name,
+                                                'internal_type': item
                                             });
+
+                                            //@ts-ignore already null checked
+                                            r.then((newRecord) =>
+                                            {
+                                                wm.AddRecord(newRecord, instance);
+                                            }).catch((err) =>
+                                            {
+                                                throw new Error(err);
+                                            });
+                                        });
 
                                         break;
                                     }
@@ -613,17 +611,17 @@ export function activate(context: vscode.ExtensionContext)
                     location: vscode.ProgressLocation.Notification,
                     title: "Code Search"
                 }, async (progress) =>
-                    {
-                        progress.report({ message: `Searching for: ${term}` });
+                {
+                    progress.report({ message: `Searching for: ${term}` });
 
-                        //@ts-ignore term already null checked
-                        var res = await instance.search(term);
+                    //@ts-ignore term already null checked
+                    var res = await instance.search(term);
 
-                        mixpanel.track('cn.extension.command.codeSearch.success');
+                    mixpanel.track('cn.extension.command.codeSearch.success');
 
-                        //@ts-ignore term already null checked
-                        return searchProvider.addSearch(res, term);
-                    });
+                    //@ts-ignore term already null checked
+                    return searchProvider.addSearch(res, term);
+                });
             }
         }
         else
@@ -720,8 +718,6 @@ export function activate(context: vscode.ExtensionContext)
                                     let set = await instance.SetUpdateSet(newUpdateset);
                                     if (set)
                                     {
-                                        wsm.SetUpdateSet(set);
-
                                         nm.SetNotificationUpdateSet(set);
                                         let msg = `UpdateSet Created and set as current: ${set.name}`;
                                         console.log(msg);
