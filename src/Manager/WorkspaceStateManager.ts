@@ -216,11 +216,28 @@ export class WorkspaceStateManager
     }
 
     /**
-     * dynamically retrieves cached records.
+     * dynamically retrieves cached records. Only retrieves the record that are in the scope currently set.
      * @param type 
      */
     public GetRecords(type: SupportedRecords): Array<ISysMetadata> | undefined
     {
-        return this._memCache.Get<Array<ISysMetadata>>(type);
+        let cached = this._memCache.Get<Array<ISysMetadata>>(type);
+
+        let scope = this.getApplication();
+
+        if (scope)
+        {
+            let scopeId = scope.sysId;
+            if (cached)
+            {
+
+                let filtered = cached.filter((i) =>
+                {
+                    return i.sys_scope.value === scopeId;
+                });
+
+                return filtered;
+            }
+        }
     }
 }

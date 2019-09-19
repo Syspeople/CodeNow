@@ -13,7 +13,6 @@ export class Api
     private _Cookies: Array<ICookie> = [];
     private _csrfToken: string = "";
     private _Properties: Array<ISysProperty> = new Array<ISysProperty>();
-    private _keepAlive = false;
 
     private _SNHost: string = "";
     private _SNApiEndpoint = "/api";
@@ -34,6 +33,7 @@ export class Api
     private _SNApplication: string = `${this._SNUISuffix}/concoursepicker/application`;
 
     public storeCookies: boolean = true;
+    public KeepAlive: boolean = false;
 
 
     private get _session_store(): string
@@ -94,9 +94,18 @@ export class Api
              */
             setInterval(async () =>
             {
-                if (this._keepAlive)
+                if (this.KeepAlive)
                 {
+                    let currentappLocal = Instance.WorkspaceStateManager.getApplication();
+
                     let apps = await this.getApplication();
+
+                    if (currentappLocal && currentappLocal.sysId !== apps.data.result.current)
+                    {
+                        console.warn("recover scope");
+                        let i = this.setApplication(currentappLocal.sysId);
+                        await i;
+                    }
                     console.log(`keepAlive:`);
                     console.log(apps);
                     console.log('Current');
@@ -195,8 +204,6 @@ export class Api
     }
 
     /**
-     * configures a persistent session for the api client. 
-     * 
      * Required for cookie based authentication. persistent Session is used for all subsequent request. 
      * Remember to clearCookieAuth afterwards.
      */

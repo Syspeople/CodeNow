@@ -25,6 +25,7 @@ export class Instance
 
     Config: WorkspaceConfiguration;
 
+    //@ts-ignore
     private _mp: Mixpanel;
 
     private _wsm: WorkspaceStateManager | undefined;
@@ -129,6 +130,8 @@ export class Instance
 
             await this.InitializeUpdateSet(wsm, nm);
 
+            this.ApiProxy.KeepAlive = true;
+
             return;
         } catch (error)
         {
@@ -207,8 +210,9 @@ export class Instance
                     return element.sys_id === LocalUpdateSetSysId.sys_id;
                 });
 
-                //revert to default if we have a mismatch. 
+                //revert to default if we have a scope mismatch. 
                 let app = await appPromise;
+
                 if (LocalUpdateSetSysId.application.value !== app.sysId)
                 {
                     us = await this.setDefaultUpdateSet();
@@ -405,41 +409,27 @@ export class Instance
     }
 
     /**
-     * returns all cached records of a specific type. 
+     * returns all cached records of a specific type. Only returns Records that are in currently selected scope. 
      * @param type 
      */
-    public GetRecords(type: SupportedRecords): Promise<Array<ISysMetadataIWorkspaceConvertable>>
+    public async GetRecords(type: SupportedRecords): Promise<Array<ISysMetadataIWorkspaceConvertable>>
     {
-        return new Promise((resolve, reject) =>
+        let rec = this.WorkspaceStateManager.GetRecords(type);
+        if (rec)
         {
-            if (this._wsm)
-            {
-                let rec = this._wsm.GetRecords(type);
-                if (rec)
-                {
-                    let arrOut = new Array<ISysMetadataIWorkspaceConvertable>();
+            let arrOut = new Array<ISysMetadataIWorkspaceConvertable>();
 
-                    rec.forEach(element =>
-                    {
-                        arrOut.push(Converter.CastSysMetaData(element));
-                    });
-
-                    resolve(arrOut);
-                }
-                else
-                {
-                    this._mp.track("Records not cached", {
-                        class: "instance",
-                        method: "GetRecords",
-                        type: type
-                    });
-                    reject("No records found");
-                }
-            } else
+            rec.forEach(element =>
             {
-                reject("Workspace Manager undefined");
-            }
-        });
+                arrOut.push(Converter.CastSysMetaData(element));
+            });
+
+            return arrOut;
+        }
+        else
+        {
+            throw new Error(`No Cached Records found: ${type}`);
+        }
     }
 
     /**
@@ -465,9 +455,16 @@ export class Instance
     /**
      * RebuildCache
      */
-    public RebuildCache()
+    public async RebuildCache(): Promise<void>
     {
-        this.Cache();
+        //disable cookies and keepali
+        this.ApiProxy.storeCookies = false;
+
+        let i = this.Cache();
+        await i;
+
+        this.ApiProxy.storeCookies = false;
+        return;
     }
 
     /**
