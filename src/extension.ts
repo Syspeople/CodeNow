@@ -593,9 +593,9 @@ export function activate(context: vscode.ExtensionContext)
         mixpanel.track('cn.extension.command.clearWorkSpaceState.success');
     });
 
-    let rebuildCache = vscode.commands.registerCommand("cn.rebuildCache", () =>
+    let rebuildCache = vscode.commands.registerCommand("cn.rebuildCache", async () =>
     {
-        instance.RebuildCache();
+        await instance.RebuildCache();
         mixpanel.track('cn.extension.command.rebuildCache.success');
     });
 
