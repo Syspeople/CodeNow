@@ -83,7 +83,6 @@ export class WorkspaceStateManager
 
     public SetUpdateSet(us: UpdateSet): void
     {
-        console.log(us);
         this._context.workspaceState.update(StateKeys.updateSet.toString(), us);
     }
 
@@ -212,7 +211,6 @@ export class WorkspaceStateManager
      */
     public SetRecords(type: SupportedRecords, records: Array<IWorkspaceConvertable>): void
     {
-        console.log(`cache: ${type}, count: ${records.length}`);
         this._memCache.Set(type, records);
     }
 

@@ -453,7 +453,6 @@ export class Api
                 url = url + `?sysparm_query=${EncodedQueryProtection}^${EncodedQueryClass}`;
                 break;
         }
-        console.log(url);
         return this.HttpClient.get<IServiceNowResponse<Array<ISysMetadata>>>(url, { timeout: 30000 });
     }
 

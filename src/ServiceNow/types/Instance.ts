@@ -182,7 +182,7 @@ export class Instance
             }
         } catch (error)
         {
-            console.log(error);
+            console.error(error);
             throw error;
         }
     }
@@ -270,7 +270,6 @@ export class Instance
             {
                 let i = this.setApplication(currentappLocal, false);
                 await i;
-                console.log(i);
                 return;
             }
         } catch (error)
@@ -386,7 +385,7 @@ export class Instance
                 resolve(res);
             } catch (error)
             {
-                console.log(error);
+                console.error(error);
                 reject(error);
             }
         });
@@ -542,7 +541,6 @@ export class Instance
             try
             {
                 let app = await this.ApiProxy.getApplication();
-                console.log(app.data.result);
                 resolve(new ApplicationCollection(app.data.result));
             } catch (error)
             {
@@ -631,7 +629,6 @@ export class Instance
         try
         {
             let records = await this.ApiProxy.GetRecords(type);
-            //console.log(`Records Fretched: ${records.data.result.length}`);
             let arrOut = new Array<ISysMetadataIWorkspaceConvertable>();
 
             records.data.result.forEach((element) =>
