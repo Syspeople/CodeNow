@@ -85,7 +85,11 @@ export function activate(context: vscode.ExtensionContext)
                 let p = instance.Initialize(new URL(url), usr, pw, wsm, nm);
                 nm.SetNotificationState(NotifationState.Downloading);
                 await p;
+
                 wm.AddInstanceFolder(instance);
+
+                wm.RefreshRecords(instance);
+
                 nm.SetNotificationState(NotifationState.Connected);
 
                 mixpanel.track("cn.extension.command.connect.success", {
@@ -600,7 +604,9 @@ export function activate(context: vscode.ExtensionContext)
 
     let rebuildCache = vscode.commands.registerCommand("cn.rebuildCache", async () =>
     {
-        await instance.RebuildCache();
+        let c = instance.RebuildCache();
+        await c;
+        wm.RefreshRecords(instance);
         mixpanel.track('cn.extension.command.rebuildCache.success');
     });
 

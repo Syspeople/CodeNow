@@ -212,6 +212,7 @@ export class WorkspaceStateManager
      */
     public SetRecords(type: SupportedRecords, records: Array<IWorkspaceConvertable>): void
     {
+        console.log(`cache: ${type}, count: ${records.length}`);
         this._memCache.Set(type, records);
     }
 

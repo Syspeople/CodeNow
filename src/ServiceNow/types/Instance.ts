@@ -270,6 +270,7 @@ export class Instance
             {
                 let i = this.setApplication(currentappLocal, false);
                 await i;
+                console.log(i);
                 return;
             }
         } catch (error)
@@ -485,12 +486,13 @@ export class Instance
     public async RebuildCache(): Promise<void>
     {
         //disable cookies and keepali
+        this.ApiProxy.KeepAlive = false;
         this.ApiProxy.storeCookies = false;
-
         let i = this.Cache();
         await i;
-
+        this.ApiProxy.KeepAlive = true;
         this.ApiProxy.storeCookies = false;
+
         return;
     }
 
@@ -629,7 +631,7 @@ export class Instance
         try
         {
             let records = await this.ApiProxy.GetRecords(type);
-
+            //console.log(`Records Fretched: ${records.data.result.length}`);
             let arrOut = new Array<ISysMetadataIWorkspaceConvertable>();
 
             records.data.result.forEach((element) =>

@@ -126,6 +126,9 @@ export class WorkspaceManager
         }
     }
 
+    /**
+     * retrieves the latest available version on ServiceNow
+     */
     public RefreshRecords(i: Instance): void
     {
         var pathIns = this.GetPathInstance(i);
