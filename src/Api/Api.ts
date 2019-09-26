@@ -90,26 +90,14 @@ export class Api
             });
 
             /**
-             * Keep session alive every 1.5 s. 
+             * Keep session alive every 1 s. 
              */
             setInterval(async () =>
             {
                 if (this.KeepAlive)
                 {
-                    let currentappLocal = Instance.WorkspaceStateManager.getApplication();
-
-                    let apps = await this.getApplication();
-
-                    if (currentappLocal && currentappLocal.sysId !== apps.data.result.current)
-                    {
-                        console.warn("recover scope");
-                        let i = this.setApplication(currentappLocal.sysId);
-                        await i;
-                    }
+                    await Instance.ensureApplication();
                     console.log(`keepAlive:`);
-                    console.log(apps);
-                    console.log('Current');
-                    console.log(apps.data.result.current);
                 }
             }, 10000);
 
@@ -278,7 +266,6 @@ export class Api
                 });
             }
         });
-
     }
 
     /**
@@ -375,14 +362,13 @@ export class Api
     }
 
     /**
-     * Patch a record.
-     * 
+     * Patch a record
+     * @param record 
      */
     public PatchRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Axios.AxiosPromise<IServiceNowResponse<T>> | undefined
     {
         if (this.HttpClient)
         {
-            //trim data to speed up patch
             let url: string = `${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`;
             return this.HttpClient.patch<IServiceNowResponse<T>>(url, record.GetPatchable());
         }

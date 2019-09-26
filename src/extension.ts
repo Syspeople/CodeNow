@@ -475,54 +475,59 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-    let saveRecord = vscode.commands.registerCommand("cn.saveRecord", (uri) =>
+    let saveRecord = vscode.commands.registerCommand("cn.saveRecord", async (uri) =>
     {
-        if (instance.IsInitialized())
+        try
         {
-            let p = instance.UpdateSetIsValid();
-
-            p.then((res) =>
+            if (instance.IsInitialized())
             {
-                let record = wm.GetRecord(uri);
+                await instance.ensureApplication();
+                let usValid = await instance.UpdateSetIsValid();
 
-                if (record)
+                if (usValid)
                 {
-                    let o = instance.SaveRecord(record);
-                    if (o)
-                    {
-                        o.then((res) =>
-                        {
-                            vscode.window.showInformationMessage(`Saved`);
-                            wm.UpdateRecord(res, uri);
+                    let record = wm.GetRecord(uri);
 
-                            mixpanel.track('cn.extension.command.saveRecord.success', {
-                                sys_class_name: res.sys_class_name
-                            });
-                        }).catch((er) =>
+                    if (record)
+                    {
+                        let o = instance.SaveRecord(record);
+                        if (o)
                         {
-                            vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
-                            mixpanel.track('cn.extension.command.saveRecord.fail', {
-                                error: er.error.message
+                            o.then((res) =>
+                            {
+                                vscode.window.showInformationMessage(`Saved`);
+                                wm.UpdateRecord(res, uri);
+
+                                mixpanel.track('cn.extension.command.saveRecord.success', {
+                                    sys_class_name: res.sys_class_name
+                                });
+                            }).catch((er) =>
+                            {
+                                vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
+                                mixpanel.track('cn.extension.command.saveRecord.fail', {
+                                    error: er.error.message
+                                });
                             });
-                        });
+                        }
                     }
                 }
-            }).catch((err) =>
+            }
+            else
             {
-                vscode.window.showErrorMessage("Update set no longer in progress. Changes not saves to instance.");
-                mixpanel.track('cn.extension.command.saveRecord.break', {
-                    reason: "UpdateSetNoLongerAvailable"
+                vscode.window.showErrorMessage("Connect to an instance");
+                mixpanel.track('cn.extension.command.saveRecord.fail', {
+                    error: "NotConnected"
                 });
-            });
-        }
-        else
+            }
+        } catch (error)
         {
-            vscode.window.showErrorMessage("Connect to an instance");
-            mixpanel.track('cn.extension.command.saveRecord.fail', {
-                error: "NotConnected"
+            vscode.window.showErrorMessage("Update set no longer in progress. Changes not saves to instance.");
+            mixpanel.track('cn.extension.command.saveRecord.break', {
+                reason: "UpdateSetNoLongerAvailable"
             });
         }
     });
+
 
     let updateRecord = vscode.commands.registerCommand("cn.updateRecord", (uri) =>
     {
@@ -750,10 +755,11 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-    var listenerOnDidSave = vscode.workspace.onDidSaveTextDocument((e) =>
+    var listenerOnDidSave = vscode.workspace.onDidSaveTextDocument(async (e) =>
     {
         if (instance.IsInitialized())
         {
+            await instance.ensureApplication();
             let p = instance.UpdateSetIsValid();
 
             p.then((res) =>

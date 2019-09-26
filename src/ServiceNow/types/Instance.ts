@@ -187,6 +187,7 @@ export class Instance
         }
     }
 
+
     /**set last update or revert to default update set */
     private async InitializeUpdateSet(wsm: WorkspaceStateManager, nm: StatusBarManager): Promise<void>
     {
@@ -252,6 +253,32 @@ export class Instance
             this.ApiProxy.setTimeout(config);
         }
     }
+
+    /**
+     * Ensures that the currently selected application is still set in ServiceNow.
+     * if not then the application is set again.
+     */
+    public async ensureApplication(): Promise<void>
+    {
+        try
+        {
+            let currentappLocal = this.WorkspaceStateManager.getApplication();
+
+            let apps = await this.ApiProxy.getApplication();
+
+            if (currentappLocal && currentappLocal.sysId !== apps.data.result.current)
+            {
+                let i = this.setApplication(currentappLocal, false);
+                await i;
+                return;
+            }
+        } catch (error)
+        {
+            console.error(error);
+            throw error;
+        }
+    }
+
 
     /**
      * Verifies current update set. Ensures update set is still in progress before saving.
@@ -538,7 +565,12 @@ export class Instance
         return current;
     }
 
-    public async setApplication(selectedApp: Application): Promise<Application>
+    /**
+     * Changes application on instance.
+     * @param selectedApp Application to be set.
+     * @param setDefault Set default updateset.
+     */
+    public async setApplication(selectedApp: Application, setDefault: boolean = true): Promise<Application>
     {
         try
         {
