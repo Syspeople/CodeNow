@@ -14,7 +14,7 @@ chai.use(chaiAsPromised);
 //surpress log output
 // console.log = function () { };
 // console.warn = function () { };
-console.error = function () { };
+//console.error = function () { };
 
 
 /** todo
@@ -67,7 +67,7 @@ suite("CodeNow Integration", async function ()
         });
     });
 
-    suite.skip("CRUD Operations in Workspace", async () =>
+    suite("CRUD Operations in Workspace", async () =>
     {
         test("Supported Records found", () =>
         {
