@@ -604,9 +604,11 @@ export function activate(context: vscode.ExtensionContext)
 
     let rebuildCache = vscode.commands.registerCommand("cn.rebuildCache", async () =>
     {
+        nm.SetNotificationState(NotifationState.Downloading);
         let c = instance.RebuildCache();
         await c;
         wm.RefreshRecords(instance);
+        nm.SetNotificationState(NotifationState.Connected);
         mixpanel.track('cn.extension.command.rebuildCache.success');
     });
 

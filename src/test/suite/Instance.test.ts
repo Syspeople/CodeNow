@@ -48,10 +48,30 @@ suite("CodeNow Integration", async function ()
         {
             assert.ok(allSupported.length > 0);
         });
-
+        //Initial caching
         allSupported.forEach(async (type) =>
         {
             test(`${type} cached`, async () =>
+            {
+                //@ts-ignore index error false
+                let recType: SupportedRecords = SupportedRecords[type];
+
+                if (instance)
+                {
+                    let cached = await instance.GetRecords(recType);
+                    assert.ok(cached.length > 0, `${cached.length} found`);
+                }
+            });
+        });
+
+        test("Refresh Records", async () =>
+        {
+            await chai.expect(commands.executeCommand('cn.rebuildCache')).to.be.fulfilled;
+        });
+
+        allSupported.forEach(async (type) =>
+        {
+            test(`${type} cached after refresh`, async () =>
             {
                 //@ts-ignore index error false
                 let recType: SupportedRecords = SupportedRecords[type];
