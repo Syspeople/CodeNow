@@ -14,7 +14,7 @@ chai.use(chaiAsPromised);
 //surpress log output
 // console.log = function () { };
 // console.warn = function () { };
-//console.error = function () { };
+// console.error = function () { };
 
 
 /** todo
@@ -58,9 +58,7 @@ suite("CodeNow Integration", async function ()
 
                 if (instance)
                 {
-                    console.log(instance);
                     let cached = await instance.GetRecords(recType);
-                    console.log(cached);
                     assert.ok(cached.length > 0, `${cached.length} found`);
                 }
             });
@@ -156,7 +154,7 @@ suite("CodeNow Integration", async function ()
         });
     });
 
-    suite.skip('Record Operations  - instance', async () =>
+    suite('Record Operations  - instance', async () =>
     {
         test("Supported Records found", () =>
         {
@@ -430,7 +428,6 @@ suite("CodeNow Integration", async function ()
                             {
                                 if (instance)
                                 {
-                                    //implement me ensure updates are saved on instance
                                     let fileTypes = Converter.getFileTypes();
 
                                     let testValue = "testvalue";
