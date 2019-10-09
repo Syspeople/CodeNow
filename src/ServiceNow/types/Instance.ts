@@ -285,14 +285,6 @@ export class Instance
      */
     public async UpdateSetIsValid(): Promise<Boolean>
     {
-        let app = this.WorkspaceStateManager.getApplication();
-
-        if (!app)
-        {
-            //get current from instance.
-            app = await this.getCurrentApplication();
-        }
-
         let us = await this.GetUpdateSets();
 
         let set: UpdateSet | undefined;
@@ -460,18 +452,21 @@ export class Instance
     }
 
     /**
-     * IsLatest 
+     * verifies that local IsLatest 
      * resolves if newer is found upstream
      * rejects if latest
      */
-    public async IsLatest(record: ISysMetadata): Promise<ISysMetadata>
+    public async IsLatest(record: ISysMetadata): Promise<Boolean>
     {
         try
         {
             //get upstream record
             let p = await this.GetRecordMetadata(record);
 
-            return p;
+            var upstreamValue = p.sys_updated_on.valueOf();
+            var localValue = record.sys_updated_on.valueOf();
+
+            return (localValue >= upstreamValue);
         } catch (error)
         {
             console.error(error);

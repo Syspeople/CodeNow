@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext)
     {
         instance = new ServiceNow.Instance(config, mixpanel);
 
-        vscode.window.showWarningMessage("Not connected to an instanse - Record synchronization disabled");
+        vscode.window.showWarningMessage("Not connected to an instance - Record synchronization disabled");
     }
 
     //Configure instance object
@@ -766,9 +766,9 @@ export function activate(context: vscode.ExtensionContext)
         if (instance.IsInitialized())
         {
             await instance.ensureApplication();
-            let p = instance.UpdateSetIsValid();
+            let updateSetValid = await instance.UpdateSetIsValid();
 
-            p.then((res) =>
+            if (updateSetValid)
             {
                 if (config.uploadOnSave)
                 {
@@ -778,46 +778,40 @@ export function activate(context: vscode.ExtensionContext)
                     {
                         if (record.canWrite)
                         {
-                            let p = instance.IsLatest(record);
-
-                            p.then((res) =>
+                            try
                             {
-                                vscode.window.showWarningMessage(`Newer Version of record ${res.sys_id} Found on instance`);
+                                let isLatest = await instance.IsLatest(record);
 
-                                mixpanel.track('cn.extension.event.onDidSaveTextDocument.break', {
-                                    reason: "Local Record outdated"
-                                });
-                            }).catch((er) =>
-                            {
-                                if (record)
+                                if (isLatest)
                                 {
-                                    let o = instance.SaveRecord(record);
+                                    let o = await instance.SaveRecord(record);
 
                                     if (o)
                                     {
-                                        o.then((res) =>
-                                        {
-                                            vscode.window.showInformationMessage(`Saved`);
-                                            wm.UpdateRecord(res, e.uri);
+                                        vscode.window.showInformationMessage(`Saved`);
+                                        wm.UpdateRecord(o, e.uri);
 
-                                            mixpanel.track('cn.extension.event.onDidSaveTextDocument.success', {
-                                                sys_class_name: res.sys_class_name
-                                            });
-                                        }).catch((er) =>
-                                        {
-                                            vscode.window.showErrorMessage(`Save Failed: ${er.error}`);
-
-                                            mixpanel.track('cn.extension.event.onDidSaveTextDocument.fail', {
-                                                error: er.error.message
-                                            });
+                                        mixpanel.track('cn.extension.event.onDidSaveTextDocument.success', {
+                                            sys_class_name: o.sys_class_name
                                         });
                                     }
                                 }
-                            });
+                                else
+                                {
+                                    vscode.window.showWarningMessage(`Newer Version of record found on instance`);
+                                }
+                            }
+                            catch (error)
+                            {
+                                vscode.window.showErrorMessage(`Save Failed: ${error}`);
+                                mixpanel.track('cn.extension.event.onDidSaveTextDocument.fail', {
+                                    error: error.message
+                                });
+                            }
                         }
                         else
                         {
-                            vscode.window.showWarningMessage(`Record Protection policy: ${record.sys_policy}, Not saved`);
+                            vscode.window.showWarningMessage(`Record Protection policy: ${record.name}, Not saved`);
 
                             mixpanel.track('cn.extension.event.onDidSaveTextDocument.break', {
                                 reason: "Record Policy Read Only"
@@ -825,13 +819,13 @@ export function activate(context: vscode.ExtensionContext)
                         }
                     }
                 }
-            }).catch((err) =>
+            } else
             {
-                vscode.window.showErrorMessage("Update set no longer in progress. Changes not saves to instance.");
+                vscode.window.showErrorMessage("Update set Available not in Scope");
                 mixpanel.track('cn.extension.event.onDidSaveTextDocument.break', {
                     reason: "Updateset No Longer Available"
                 });
-            });
+            }
         }
         else
         {
@@ -839,7 +833,7 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-    var listenerOnDidOpen = vscode.workspace.onDidOpenTextDocument((e) =>
+    var listenerOnDidOpen = vscode.workspace.onDidOpenTextDocument(async (e) =>
     {
         if (instance.IsInitialized())
         {
@@ -850,34 +844,17 @@ export function activate(context: vscode.ExtensionContext)
                     var recordLocal = wm.GetRecord(e.uri);
                     if (recordLocal)
                     {
-                        var p = instance.IsLatest(recordLocal);
+                        var isLatest = await instance.IsLatest(recordLocal);
 
-                        p.then((res) =>
+                        if (!isLatest)
                         {
-                            let r = instance.GetRecord(res);
-                            r.then((res) =>
-                            {
-                                wm.UpdateRecord(res, e.uri);
+                            let r = await instance.GetRecord(recordLocal);
+                            wm.UpdateRecord(r, e.uri);
 
-                                mixpanel.track('cn.extension.event.onDidOpenTextDocument.success', {
-                                    sys_class_name: res.sys_class_name
-                                });
-
-                            }).catch((er) =>
-                            {
-                                console.error(er);
-
-                                mixpanel.track('cn.extension.event.onDidOpenTextDocument.fail', {
-                                    error: er
-                                });
+                            mixpanel.track('cn.extension.event.onDidOpenTextDocument.success', {
+                                sys_class_name: r.sys_class_name
                             });
-                        }).catch((e) =>
-                        {
-                            console.info("local Record Up to date");
-                            mixpanel.track('cn.extension.event.onDidOpenTextDocument.break', {
-                                reason: "Local Record Up To Date"
-                            });
-                        });
+                        }
                     }
                 }
             }
