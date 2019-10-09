@@ -27,7 +27,7 @@ console.error = function () { };
 // Defines a Mocha test suite to group tests of similar kind together
 suite("CodeNow Integration", async function ()
 {
-    this.timeout(30000);
+    this.timeout(60000);
 
     let instance: Instance | undefined;
 
@@ -58,15 +58,16 @@ suite("CodeNow Integration", async function ()
 
                 if (instance)
                 {
+                    console.log(instance);
                     let cached = await instance.GetRecords(recType);
-
+                    console.log(cached);
                     assert.ok(cached.length > 0, `${cached.length} found`);
                 }
             });
         });
     });
 
-    suite("CRUD Operations in Workspace", async () =>
+    suite.skip("CRUD Operations in Workspace", async () =>
     {
         test("Supported Records found", () =>
         {
@@ -155,7 +156,7 @@ suite("CodeNow Integration", async function ()
         });
     });
 
-    suite('Record Operations  - instance', async () =>
+    suite.skip('Record Operations  - instance', async () =>
     {
         test("Supported Records found", () =>
         {
