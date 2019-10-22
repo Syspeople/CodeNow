@@ -12,10 +12,9 @@ import * as chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 
 //surpress log output
-// console.log = function () { };
-// console.warn = function () { };
-// console.error = function () { };
-
+//console.log = function () { };
+//console.warn = function () { };
+console.error = function () { };
 
 /** todo
  * 
@@ -42,12 +41,13 @@ suite("CodeNow Integration", async function ()
 
     let allSupported: Array<string> = SupportedRecordsHelper.GetRecordsDisplayValue();
 
-    suite("Record Caching", async () =>
+    suite.skip("Record Caching", async () =>
     {
         test("Supported Records found", () =>
         {
             assert.ok(allSupported.length > 0);
         });
+
         //Initial caching
         allSupported.forEach(async (type) =>
         {
@@ -55,11 +55,12 @@ suite("CodeNow Integration", async function ()
             {
                 //@ts-ignore index error false
                 let recType: SupportedRecords = SupportedRecords[type];
-
+                console.error(`Instance is defined: ${(instance)}`);
                 if (instance)
                 {
                     let cached = await instance.GetRecords(recType);
-                    assert.ok(cached.length > 0, `${cached.length} found`);
+                    console.error(`${cached.length} Cached of ${type}`);
+                    return chai.expect(cached.length).to.be.greaterThan(0);
                 }
             });
         });
