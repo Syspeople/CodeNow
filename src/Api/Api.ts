@@ -152,6 +152,14 @@ export class Api
     }
 
     /**
+     * clearCookies
+     */
+    public clearCookies(): void
+    {
+        this._Cookies = new Array<ICookie>();
+    }
+
+    /**
      * Add or update cokkies.
      * @param cookies 
      */

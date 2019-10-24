@@ -480,12 +480,13 @@ export class Instance
     public async RebuildCache(): Promise<void>
     {
         //disable cookies and keepali
+        this.ApiProxy.clearCookies();
         this.ApiProxy.KeepAlive = false;
         this.ApiProxy.storeCookies = false;
         let i = this.Cache();
         await i;
         this.ApiProxy.KeepAlive = true;
-        this.ApiProxy.storeCookies = false;
+        this.ApiProxy.storeCookies = true;
 
         return;
     }
