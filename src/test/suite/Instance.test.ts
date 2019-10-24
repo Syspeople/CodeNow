@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { Instance, SupportedRecordsHelper, SupportedRecords, Converter, AngularProvider, UiPage, ValidationScript, ScriptedRestResource } from '../../ServiceNow/all';
+import { Instance, SupportedRecordsHelper, SupportedRecords, Converter, AngularProvider, UiPage, ValidationScript, ScriptedRestResource, UpdateSet, Application } from '../../ServiceNow/all';
 //import { ISysMetadataIWorkspaceConvertable } from "../../MixIns/all";
 import { commands } from "vscode";
 import { WorkspaceManager, MetaData } from '../../Manager/all';
@@ -19,8 +19,6 @@ chai.use(chaiAsPromised);
 /** todo
  * 
  * update set validation
- * 
- * save record validation
  */
 
 // Defines a Mocha test suite to group tests of similar kind together
@@ -69,7 +67,7 @@ suite("CodeNow Integration", async function ()
                 {
                     //@ts-ignore index error false
                     let recType: SupportedRecords = SupportedRecords[type];
-                    console.error(`Instance is defined: ${(instance)}`);
+
                     if (instance)
                     {
                         let cached = await instance.GetRecords(recType);
@@ -594,5 +592,54 @@ suite("CodeNow Integration", async function ()
             }
         }
         //add/remove files to workspace tested through integration tests for adding records. No need to test twice. 
+    });
+
+    suite('Instance Updateset and Scope', () =>
+    {
+        test('Instance defined', () =>
+        {
+            assert.equal(instance !== undefined, true);
+        });
+
+        test('Change Update Set', async () =>
+        {
+            if (instance)
+            {
+                let us = await instance.GetUpdateSets();
+
+                let usNotDefault = us.filter((item) =>
+                {
+                    return item.is_default === 'false';
+                });
+
+                await chai.expect(instance.SetUpdateSet(usNotDefault[0])).to.be.fulfilled;
+                chai.expect(instance.WorkspaceStateManager.GetUpdateSet()).to.exist.and.be.eq(usNotDefault[0]);
+            }
+        });
+
+        test('Change Scope', async () =>
+        {
+            if (instance)
+            {
+                let scope = await instance.getApplication();
+
+                let scopeNotDefaultOrCurrent = scope.list.filter((item) =>
+                {
+                    return item.sysId !== "global" && item.sysId !== scope.current;
+                });
+
+                await instance.setApplication(scopeNotDefaultOrCurrent[0]);
+
+                let currentScopeOnInstance = await instance.getCurrentApplication();
+
+                chai.expect(currentScopeOnInstance.sysId).to.be.eq(scopeNotDefaultOrCurrent[0].sysId);
+                //us should be default
+                let UpdateSetLocal = instance.WorkspaceStateManager.GetUpdateSet();
+                chai.expect(UpdateSetLocal).to.be.instanceOf(UpdateSet).and.to.have.property('is_default', "true");
+
+                //selected app should be cached
+                chai.expect(instance.WorkspaceStateManager.getApplication()).to.be.instanceOf(Application).and.to.have.property("sysId", scopeNotDefaultOrCurrent[0].sysId);
+            }
+        });
     });
 });
