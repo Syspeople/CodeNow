@@ -14,7 +14,7 @@ chai.use(chaiAsPromised);
 //surpress log output
 //console.log = function () { };
 //console.warn = function () { };
-console.error = function () { };
+//console.error = function () { };
 
 /** todo
  * 
@@ -29,6 +29,7 @@ suite("CodeNow Integration", async function ()
     this.timeout(60000);
 
     let instance: Instance | undefined;
+    let allSupported: Array<string> = SupportedRecordsHelper.GetRecordsDisplayValue();
 
     test("Extension can connect", async () =>
     {
@@ -36,10 +37,50 @@ suite("CodeNow Integration", async function ()
         if (instance)
         {
             assert.equal((instance.IsInitialized()), true);
+
+            //Initial caching
+            allSupported.forEach(async (type) =>
+            {
+                test(`${type} cached`, async () =>
+                {
+                    //@ts-ignore index error false
+                    let recType: SupportedRecords = SupportedRecords[type];
+                    if (instance)
+                    {
+                        let cached = await instance.GetRecords(recType);
+                        console.error(`${cached.length} Cached of ${type}`);
+                        return chai.expect(cached.length).to.be.greaterThan(0);
+                    }
+                });
+            });
+
+            test('Refresh of records', () =>
+            {
+                if (instance)
+                {
+                    chai.expect(instance.RebuildCache()).to.not.Throw();
+                }
+            });
+
+            //Initial caching
+            allSupported.forEach(async (type) =>
+            {
+                test(`${type} cached after Refresh`, async () =>
+                {
+                    //@ts-ignore index error false
+                    let recType: SupportedRecords = SupportedRecords[type];
+                    console.error(`Instance is defined: ${(instance)}`);
+                    if (instance)
+                    {
+                        let cached = await instance.GetRecords(recType);
+                        console.error(`${cached.length} Cached of ${type}`);
+                        return chai.expect(cached.length).to.be.greaterThan(0);
+                    }
+                });
+            });
+
         }
     });
-
-    let allSupported: Array<string> = SupportedRecordsHelper.GetRecordsDisplayValue();
 
     suite.skip("Record Caching", async () =>
     {
