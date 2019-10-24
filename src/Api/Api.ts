@@ -372,13 +372,10 @@ export class Api
      * Patch a record
      * @param record 
      */
-    public PatchRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Axios.AxiosPromise<IServiceNowResponse<T>> | undefined
+    public async PatchRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Promise<Axios.AxiosResponse<IServiceNowResponse<T>>>
     {
-        if (this.HttpClient)
-        {
-            let url: string = `${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`;
-            return this.HttpClient.patch<IServiceNowResponse<T>>(url, record.GetPatchable());
-        }
+        let url: string = `${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`;
+        return this.HttpClient.patch<IServiceNowResponse<T>>(url, record.GetPatchable());
     }
 
     /**

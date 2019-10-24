@@ -338,28 +338,37 @@ export class Instance
      * @param record 
      * @returns new record object from instance. if failed undefined.
      */
-    public SaveRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Promise<ISysMetadataIWorkspaceConvertable> | undefined
+    public async SaveRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Promise<ISysMetadataIWorkspaceConvertable>
     {
-        return new Promise((resolve, reject) =>
+        try
         {
-            try
+            let isValid = await this.saveValid(record);
+
+            if (isValid)
             {
-                let p = this.ApiProxy.PatchRecord(record);
-                if (p)
-                {
-                    p.then((res) =>
-                    {
-                        resolve(Converter.CastSysMetaData(res.data.result));
-                    }).catch((er) =>
-                    {
-                        reject(er);
-                    });
-                }
-            } catch (error)
-            {
-                reject(error);
+                let p = await this.ApiProxy.PatchRecord(record);
+                return Converter.CastSysMetaData(p.data.result);
             }
-        });
+            else
+            {
+                throw new Error("Record not in current scope");
+            }
+        }
+        catch (error)
+        {
+            throw error;
+        }
+    }
+
+    /**
+     * Validates that records resides in the scope that is currently being saved to.
+     * @param record 
+     */
+    private async saveValid<T extends ISysMetadataIWorkspaceConvertable>(record: T): Promise<Boolean>
+    {
+        let currApp = await this.getCurrentApplication();
+
+        return currApp.sysId === record.sys_scope.value;
     }
 
     /**
