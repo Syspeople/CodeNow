@@ -111,9 +111,9 @@ suite("CodeNow Integration", async function ()
                 {
                     let wm = new WorkspaceManager(instance.WorkspaceStateManager);
 
-                    let cached = await instance.GetRecords(recType);
+                    let records = await instance.GetRecordsUpstream(recType);
 
-                    added = await wm.AddRecord(cached[0], instance);
+                    added = await wm.AddRecord(records[0], instance);
 
                     test('Record have been Added', () =>
                     {
@@ -140,11 +140,6 @@ suite("CodeNow Integration", async function ()
                         assert.equal(baseName.endsWith(ext), true, `Extension is not: ${ext}`);
                     });
                 }
-            });
-
-            test(`Update saved properly: ${type}`, () =>
-            {
-                //implement me ensure updates are saved on instance
             });
 
             test(`Delete ${type} from workspace`, async () =>
@@ -199,7 +194,7 @@ suite("CodeNow Integration", async function ()
 
             let name = `${process.env.workspaceName}_${recType}`;
 
-            //handle record types with special requiements.
+            //handle record types with special requirements.
             switch (recType)
             {
                 case SupportedRecords["Angular Provider"]:
