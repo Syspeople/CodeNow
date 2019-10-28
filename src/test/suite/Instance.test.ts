@@ -632,11 +632,9 @@ suite("CodeNow Integration", async function ()
                 chai.expect(currentScopeOnInstance.sysId).to.be.eq(scopeNotDefaultOrCurrent[0].sysId);
                 //us should be default
                 let UpdateSetLocal = instance.WorkspaceStateManager.GetUpdateSet();
-
                 chai.expect(UpdateSetLocal).to.be.instanceOf(UpdateSet).and.to.have.property('is_default', "true");
-
                 //selected app should be cached
-                chai.expect(instance.WorkspaceStateManager.getApplication()).to.be.instanceOf(Application).and.to.have.property("sysId", scopeNotDefaultOrCurrent[0].sysId);
+                chai.expect(instance.WorkspaceStateManager.getApplication()).to.exist.and.to.have.property("sysId", scopeNotDefaultOrCurrent[0].sysId);
             }
         });
     });
