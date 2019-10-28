@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { Instance, SupportedRecordsHelper, SupportedRecords, Converter, AngularProvider, UiPage, ValidationScript, ScriptedRestResource, UpdateSet, Application } from '../../ServiceNow/all';
+import { Instance, SupportedRecordsHelper, SupportedRecords, Converter, AngularProvider, UiPage, ValidationScript, ScriptedRestResource, UpdateSet } from '../../ServiceNow/all';
 //import { ISysMetadataIWorkspaceConvertable } from "../../MixIns/all";
 import { commands } from "vscode";
 import { WorkspaceManager, MetaData } from '../../Manager/all';
