@@ -1,9 +1,8 @@
 import { StatusBarItem, window, StatusBarAlignment } from "vscode";
-import { UpdateSet } from "../ServiceNow/all";
+import { UpdateSet, Application } from "../ServiceNow/all";
 
 export class StatusBarManager
 {
-
     /**
      * Manage status bar notifications. 
      */
@@ -11,13 +10,18 @@ export class StatusBarManager
     {
         this.state = window.createStatusBarItem(StatusBarAlignment.Left, -500);
         this.SetNotificationState(NotifationState.NotConnected);
+
         this.updateSet = window.createStatusBarItem(StatusBarAlignment.Left, -501);
         this.updateSet.command = "cn.setUpdateset";
+
+        this.application = window.createStatusBarItem(StatusBarAlignment.Left, -502);
+        this.application.command = "cn.setApplication";
+
     }
 
     private state: StatusBarItem;
     private updateSet: StatusBarItem;
-
+    private application: StatusBarItem;
 
     /**
      * SetNotificationUpdateSet
@@ -27,6 +31,16 @@ export class StatusBarManager
         this.updateSet.text = us.name;
         this.updateSet.tooltip = "Change Update Set";
         this.updateSet.show();
+    }
+
+    /**
+     * setNotificationApplication
+     */
+    public setNotificationApplication(app: Application)
+    {
+        this.application.text = app.name;
+        this.application.tooltip = "Change Application";
+        this.application.show();
     }
 
     /**

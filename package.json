@@ -2,7 +2,7 @@
     "name": "cn",
     "displayName": "CodeNow",
     "description": "Write high quality code fast and intuitively with ServiceNow",
-    "version": "0.10.0",
+    "version": "0.11.0",
     "publisher": "ambsoerensen",
     "license": "MIT",
     "icon": "images/icons/icon.png",

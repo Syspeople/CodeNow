@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext)
     {
         instance = new ServiceNow.Instance(config, mixpanel);
 
-        vscode.window.showWarningMessage("Not connected to an instanse - Record synchronization disabled");
+        vscode.window.showWarningMessage("Not connected to an instance - Record synchronization disabled");
     }
 
     //Configure instance object
@@ -87,6 +87,9 @@ export function activate(context: vscode.ExtensionContext)
                 await p;
 
                 wm.AddInstanceFolder(instance);
+
+                wm.RefreshRecords(instance);
+
                 nm.SetNotificationState(NotifationState.Connected);
 
                 mixpanel.track("cn.extension.command.connect.success", {
@@ -98,8 +101,13 @@ export function activate(context: vscode.ExtensionContext)
             }
         } catch (error)
         {
-            wsm.ClearState();
+            if (error.code === "ENOTFOUND")
+            {
+                wsm.ClearState();
+            }
+
             nm.SetNotificationState(NotifationState.NotConnected);
+
             vscode.window.showErrorMessage(error.message);
             mixpanel.track("cn.extension.command.connect.fail", {
                 error: error.message
@@ -137,50 +145,63 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-    let setUpdateSet = vscode.commands.registerCommand("cn.setUpdateset", () =>
+    let setUpdateSet = vscode.commands.registerCommand("cn.setUpdateset", async () =>
     {
-        if (instance.IsInitialized())
+        try
         {
-            let us = instance.GetUpdateSets();
-
-            us.then((res) =>
+            if (instance.IsInitialized())
             {
-                vscode.window.showQuickPick(res).then((item) =>
+                let us = await instance.GetUpdateSets();
+
+                let setPicked = await vscode.window.showQuickPick(us);
+
+                if (setPicked)
                 {
-                    if (item)
+                    let set = instance.SetUpdateSet(setPicked);
+
+                    if (set)
                     {
-                        let set = instance.SetUpdateSet(item);
-
-                        if (set)
+                        set.then((us) =>
                         {
-                            set.then((us) =>
-                            {
-                                wsm.SetUpdateSet(us);
+                            nm.SetNotificationUpdateSet(us);
+                            let msg = `UpdateSet Changed: ${us.name}`;
+                            console.log(msg);
+                            vscode.window.showInformationMessage(msg);
 
-                                nm.SetNotificationUpdateSet(us);
-                                let msg = `UpdateSet Changed: ${us.name}`;
-                                console.log(msg);
-                                vscode.window.showInformationMessage(msg);
+                            mixpanel.track('cn.extension.command.setUpdateSet.success');
+                        }).catch((er) =>
+                        {
+                            console.error(er);
 
-                                mixpanel.track('cn.extension.command.setUpdateSet.success');
-                            }).catch((er) =>
-                            {
-                                console.error(er);
-
-                                mixpanel.track('cn.extension.command.setUpdateSet.fail', {
-                                    error: er
-                                });
+                            mixpanel.track('cn.extension.command.setUpdateSet.fail', {
+                                error: er
                             });
-                        }
+                        });
                     }
-                });
-            }).catch((er) =>
-            {
-                console.error(er);
-                mixpanel.track('cn.extension.command.setUpdateSet.fail', {
-                    error: er
-                });
+                }
+            }
+        } catch (error)
+        {
+            console.error(error);
+            mixpanel.track('cn.extension.command.setUpdateSet.fail', {
+                error: error
             });
+        }
+
+    });
+
+    let setApplication = vscode.commands.registerCommand("cn.setApplication", async () =>
+    {
+        if (instance)
+        {
+            let app = await instance.getApplication();
+
+            let selectedApp = await vscode.window.showQuickPick(app.list);
+            if (selectedApp)
+            {
+                await instance.setApplication(selectedApp);
+                nm.setNotificationApplication(selectedApp);
+            }
         }
     });
 
@@ -348,23 +369,23 @@ export function activate(context: vscode.ExtensionContext)
                                             "Table Name", "Template Value", "Time", "Timer", "Translated", "Translated HTML", "Translated Text", "Tree Code", "Tree Path", "True/False", "Two Line Text Area",
                                             "UI Action List", "URL", "User Input", "User Roles", "Variable Conditions", "Variable template value", "Variables",
                                             "Version", "Video", "Week of Month", "Wide Text", "Wiki", "WMS Job", "Workflow", "Workflow Conditions", "XML"], {
-                                                placeHolder: "Choose Type"
-                                            }).then((item) =>
-                                            {
-                                                let r = instance.CreateRecord(SupportedRecords[recordtype], {
-                                                    'description': name,
-                                                    'internal_type': item
-                                                });
-
-                                                //@ts-ignore already null checked
-                                                r.then((newRecord) =>
-                                                {
-                                                    wm.AddRecord(newRecord, instance);
-                                                }).catch((err) =>
-                                                {
-                                                    throw new Error(err);
-                                                });
+                                            placeHolder: "Choose Type"
+                                        }).then((item) =>
+                                        {
+                                            let r = instance.CreateRecord(SupportedRecords[recordtype], {
+                                                'description': name,
+                                                'internal_type': item
                                             });
+
+                                            //@ts-ignore already null checked
+                                            r.then((newRecord) =>
+                                            {
+                                                wm.AddRecord(newRecord, instance);
+                                            }).catch((err) =>
+                                            {
+                                                throw new Error(err);
+                                            });
+                                        });
 
                                         break;
                                     }
@@ -458,54 +479,59 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-    let saveRecord = vscode.commands.registerCommand("cn.saveRecord", (uri) =>
+    let saveRecord = vscode.commands.registerCommand("cn.saveRecord", async (uri) =>
     {
-        if (instance.IsInitialized())
+        try
         {
-            let p = instance.UpdateSetIsValid();
-
-            p.then((res) =>
+            if (instance.IsInitialized())
             {
-                let record = wm.GetRecord(uri);
+                await instance.ensureApplication();
+                let usValid = await instance.UpdateSetIsValid();
 
-                if (record)
+                if (usValid)
                 {
-                    let o = instance.SaveRecord(record);
-                    if (o)
-                    {
-                        o.then((res) =>
-                        {
-                            vscode.window.showInformationMessage(`Saved`);
-                            wm.UpdateRecord(res, uri);
+                    let record = wm.GetRecord(uri);
 
-                            mixpanel.track('cn.extension.command.saveRecord.success', {
-                                sys_class_name: res.sys_class_name
-                            });
-                        }).catch((er) =>
+                    if (record)
+                    {
+                        let o = instance.SaveRecord(record);
+                        if (o)
                         {
-                            vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
-                            mixpanel.track('cn.extension.command.saveRecord.fail', {
-                                error: er.error.message
+                            o.then((res) =>
+                            {
+                                vscode.window.showInformationMessage(`Saved`);
+                                wm.UpdateRecord(res, uri);
+
+                                mixpanel.track('cn.extension.command.saveRecord.success', {
+                                    sys_class_name: res.sys_class_name
+                                });
+                            }).catch((er) =>
+                            {
+                                vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
+                                mixpanel.track('cn.extension.command.saveRecord.fail', {
+                                    error: er.error.message
+                                });
                             });
-                        });
+                        }
                     }
                 }
-            }).catch((err) =>
+            }
+            else
             {
-                vscode.window.showErrorMessage("Update set no longer in progress. Changes not saves to instance.");
-                mixpanel.track('cn.extension.command.saveRecord.break', {
-                    reason: "UpdateSetNoLongerAvailable"
+                vscode.window.showErrorMessage("Connect to an instance");
+                mixpanel.track('cn.extension.command.saveRecord.fail', {
+                    error: "NotConnected"
                 });
-            });
-        }
-        else
+            }
+        } catch (error)
         {
-            vscode.window.showErrorMessage("Connect to an instance");
-            mixpanel.track('cn.extension.command.saveRecord.fail', {
-                error: "NotConnected"
+            vscode.window.showErrorMessage("Update set no longer in progress. Changes not saves to instance.");
+            mixpanel.track('cn.extension.command.saveRecord.break', {
+                reason: "UpdateSetNoLongerAvailable"
             });
         }
     });
+
 
     let updateRecord = vscode.commands.registerCommand("cn.updateRecord", (uri) =>
     {
@@ -576,9 +602,13 @@ export function activate(context: vscode.ExtensionContext)
         mixpanel.track('cn.extension.command.clearWorkSpaceState.success');
     });
 
-    let rebuildCache = vscode.commands.registerCommand("cn.rebuildCache", () =>
+    let rebuildCache = vscode.commands.registerCommand("cn.rebuildCache", async () =>
     {
-        instance.RebuildCache();
+        nm.SetNotificationState(NotifationState.Downloading);
+        let c = instance.RebuildCache();
+        await c;
+        wm.RefreshRecords(instance);
+        nm.SetNotificationState(NotifationState.Connected);
         mixpanel.track('cn.extension.command.rebuildCache.success');
     });
 
@@ -594,17 +624,17 @@ export function activate(context: vscode.ExtensionContext)
                     location: vscode.ProgressLocation.Notification,
                     title: "Code Search"
                 }, async (progress) =>
-                    {
-                        progress.report({ message: `Searching for: ${term}` });
+                {
+                    progress.report({ message: `Searching for: ${term}` });
 
-                        //@ts-ignore term already null checked
-                        var res = await instance.search(term);
+                    //@ts-ignore term already null checked
+                    var res = await instance.search(term);
 
-                        mixpanel.track('cn.extension.command.codeSearch.success');
+                    mixpanel.track('cn.extension.command.codeSearch.success');
 
-                        //@ts-ignore term already null checked
-                        return searchProvider.addSearch(res, term);
-                    });
+                    //@ts-ignore term already null checked
+                    return searchProvider.addSearch(res, term);
+                });
             }
         }
         else
@@ -701,8 +731,6 @@ export function activate(context: vscode.ExtensionContext)
                                     let set = await instance.SetUpdateSet(newUpdateset);
                                     if (set)
                                     {
-                                        wsm.SetUpdateSet(set);
-
                                         nm.SetNotificationUpdateSet(set);
                                         let msg = `UpdateSet Created and set as current: ${set.name}`;
                                         console.log(msg);
@@ -735,13 +763,14 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-    var listenerOnDidSave = vscode.workspace.onDidSaveTextDocument((e) =>
+    var listenerOnDidSave = vscode.workspace.onDidSaveTextDocument(async (e) =>
     {
         if (instance.IsInitialized())
         {
-            let p = instance.UpdateSetIsValid();
+            await instance.ensureApplication();
+            let updateSetValid = await instance.UpdateSetIsValid();
 
-            p.then((res) =>
+            if (updateSetValid)
             {
                 if (config.uploadOnSave)
                 {
@@ -751,46 +780,40 @@ export function activate(context: vscode.ExtensionContext)
                     {
                         if (record.canWrite)
                         {
-                            let p = instance.IsLatest(record);
-
-                            p.then((res) =>
+                            try
                             {
-                                vscode.window.showWarningMessage(`Newer Version of record ${res.sys_id} Found on instance`);
+                                let isLatest = await instance.IsLatest(record);
 
-                                mixpanel.track('cn.extension.event.onDidSaveTextDocument.break', {
-                                    reason: "Local Record outdated"
-                                });
-                            }).catch((er) =>
-                            {
-                                if (record)
+                                if (isLatest)
                                 {
-                                    let o = instance.SaveRecord(record);
+                                    let o = await instance.SaveRecord(record);
 
                                     if (o)
                                     {
-                                        o.then((res) =>
-                                        {
-                                            vscode.window.showInformationMessage(`Saved`);
-                                            wm.UpdateRecord(res, e.uri);
+                                        vscode.window.showInformationMessage(`Saved`);
+                                        wm.UpdateRecord(o, e.uri);
 
-                                            mixpanel.track('cn.extension.event.onDidSaveTextDocument.success', {
-                                                sys_class_name: res.sys_class_name
-                                            });
-                                        }).catch((er) =>
-                                        {
-                                            vscode.window.showErrorMessage(`Save Failed: ${er.error.message}`);
-
-                                            mixpanel.track('cn.extension.event.onDidSaveTextDocument.fail', {
-                                                error: er.error.message
-                                            });
+                                        mixpanel.track('cn.extension.event.onDidSaveTextDocument.success', {
+                                            sys_class_name: o.sys_class_name
                                         });
                                     }
                                 }
-                            });
+                                else
+                                {
+                                    vscode.window.showWarningMessage(`Newer Version of record found on instance`);
+                                }
+                            }
+                            catch (error)
+                            {
+                                vscode.window.showErrorMessage(`Save Failed: ${error}`);
+                                mixpanel.track('cn.extension.event.onDidSaveTextDocument.fail', {
+                                    error: error.message
+                                });
+                            }
                         }
                         else
                         {
-                            vscode.window.showWarningMessage(`Record Protection policy: ${record.sys_policy}, Not saved`);
+                            vscode.window.showWarningMessage(`Record Protection policy: ${record.name}, Not saved`);
 
                             mixpanel.track('cn.extension.event.onDidSaveTextDocument.break', {
                                 reason: "Record Policy Read Only"
@@ -798,13 +821,13 @@ export function activate(context: vscode.ExtensionContext)
                         }
                     }
                 }
-            }).catch((err) =>
+            } else
             {
-                vscode.window.showErrorMessage("Update set no longer in progress. Changes not saves to instance.");
+                vscode.window.showErrorMessage("Update set Available not in Scope");
                 mixpanel.track('cn.extension.event.onDidSaveTextDocument.break', {
                     reason: "Updateset No Longer Available"
                 });
-            });
+            }
         }
         else
         {
@@ -812,7 +835,7 @@ export function activate(context: vscode.ExtensionContext)
         }
     });
 
-    var listenerOnDidOpen = vscode.workspace.onDidOpenTextDocument((e) =>
+    var listenerOnDidOpen = vscode.workspace.onDidOpenTextDocument(async (e) =>
     {
         if (instance.IsInitialized())
         {
@@ -823,34 +846,17 @@ export function activate(context: vscode.ExtensionContext)
                     var recordLocal = wm.GetRecord(e.uri);
                     if (recordLocal)
                     {
-                        var p = instance.IsLatest(recordLocal);
+                        var isLatest = await instance.IsLatest(recordLocal);
 
-                        p.then((res) =>
+                        if (!isLatest)
                         {
-                            let r = instance.GetRecord(res);
-                            r.then((res) =>
-                            {
-                                wm.UpdateRecord(res, e.uri);
+                            let r = await instance.GetRecord(recordLocal);
+                            wm.UpdateRecord(r, e.uri);
 
-                                mixpanel.track('cn.extension.event.onDidOpenTextDocument.success', {
-                                    sys_class_name: res.sys_class_name
-                                });
-
-                            }).catch((er) =>
-                            {
-                                console.error(er);
-
-                                mixpanel.track('cn.extension.event.onDidOpenTextDocument.fail', {
-                                    error: er
-                                });
+                            mixpanel.track('cn.extension.event.onDidOpenTextDocument.success', {
+                                sys_class_name: r.sys_class_name
                             });
-                        }).catch((e) =>
-                        {
-                            console.info("local Record Up to date");
-                            mixpanel.track('cn.extension.event.onDidOpenTextDocument.break', {
-                                reason: "Local Record Up To Date"
-                            });
-                        });
+                        }
                     }
                 }
             }
@@ -878,6 +884,7 @@ export function activate(context: vscode.ExtensionContext)
     context.subscriptions.push(openInPlatformList);
     context.subscriptions.push(deleteRecord);
     context.subscriptions.push(setUpdateSet);
+    context.subscriptions.push(setApplication);
     context.subscriptions.push(codeSearch);
     context.subscriptions.push(codeSearchClear);
     context.subscriptions.push(codeSearchProvider);
