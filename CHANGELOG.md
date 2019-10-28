@@ -1,3 +1,14 @@
+## 0.11.20191028
+* Feature:
+  * Added ability to change Application/scope from vs code.
+    * when adding existing records only items from current scope is selectable. 
+* Improvements:
+  * Improve caching - Trim retrieved attributes for Script includes.
+  * On connect with instance all local files are refreshed with latest version from instance. 
+* Fixes
+  * Remove deprecated API - workspace.rootPath
+  * Errors that occurred when refreshing records have been fixed.
+
 ## 0.10.20190813
 * Bug fixes:
   * Angular templates: Incorrect file extension used.
