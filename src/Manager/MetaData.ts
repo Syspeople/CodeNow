@@ -20,7 +20,7 @@ export class MetaData extends Record implements ILocalMetaData
 
         if (workspace.workspaceFolders)
         {
-            this.basePath = Uri.parse(`file:${workspace.workspaceFolders[0]}/${this.instanceName}`);
+            this.basePath = Uri.parse(`file:${workspace.workspaceFolders[0].uri.fsPath}/${this.instanceName}`);
         }
         else
         {
