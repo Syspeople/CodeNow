@@ -175,6 +175,7 @@ export class Instance
             if (defaultUs)
             {
                 let updateset = await this.SetUpdateSet(defaultUs);
+                this.WorkspaceStateManager.SetUpdateSet(defaultUs);
                 return updateset;
             } else
             {

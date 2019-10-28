@@ -154,10 +154,7 @@ suite("CodeNow Integration", async function ()
 
                     added = await wm.AddRecord(records[0], instance);
 
-                    test('Record have been Added', () =>
-                    {
-                        assert.equal(added === undefined, false);
-                    });
+                    assert.equal(added === undefined, false);
                 }
             });
 
