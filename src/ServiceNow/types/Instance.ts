@@ -585,7 +585,7 @@ export class Instance
             this.WorkspaceStateManager.setApplication(currentApp);
 
             //use Default updateset from scope.
-            this.setDefaultUpdateSet();
+            await this.setDefaultUpdateSet();
 
             return currentApp;
 
