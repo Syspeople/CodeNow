@@ -1,5 +1,5 @@
 import * as Axios from "axios";
-import { Instance, ISysMetadata, ISysProperty, SysProperty, ISysUserSession, ISysUpdateSet, UpdateSet, SupportedRecords, ICodeSearchResult, IIdentifiable } from "../ServiceNow/all";
+import { Instance, ISysMetadata, ISysProperty, SysProperty, ISysUserSession, ISysUpdateSet, UpdateSet, SupportedRecords, ICodeSearchResult, IIdentifiable, ApplicationCollection } from "../ServiceNow/all";
 import { IServiceNowResponse, ICookie } from "./all";
 import * as qs from "querystring";
 import { ISysMetadataIWorkspaceConvertable } from "../MixIns/all";
@@ -20,6 +20,7 @@ export class Api
     private _SNTableSuffix: string = `${this._SNApiEndpoint}/now/table`;
     private _SNCodeSearchSuffix: string = `${this._SNApiEndpoint}/sn_codesearch/code_search`;
     private _SNXmlHttp: string = `xmlhttp.do`;
+    private _SNUISuffix: string = `${this._SNApiEndpoint}/now/ui`;
 
     private _SNUserTable: string = `${this._SNTableSuffix}/sys_user`;
     private _SNMetaData: string = `${this._SNTableSuffix}/sys_metadata`;
@@ -29,7 +30,13 @@ export class Api
 
     private _SNCodeSearch: string = `${this._SNCodeSearchSuffix}/search`;
 
-    private get _session_store(): string | undefined
+    private _SNApplication: string = `${this._SNUISuffix}/concoursepicker/application`;
+
+    public storeCookies: boolean = true;
+    public KeepAlive: boolean = false;
+
+
+    private get _session_store(): string
     {
         if (this._Cookies.length > 0)
         {
@@ -42,6 +49,7 @@ export class Api
                 return cookie.value;
             }
         }
+        throw new Error("Cookie not set: glide_session_store");
     }
 
     /**
@@ -81,38 +89,51 @@ export class Api
                 timeout: timeout
             });
 
+            /**
+             * Keep session alive every 1 s. 
+             */
+            setInterval(async () =>
+            {
+                if (this.KeepAlive)
+                {
+                    await Instance.ensureApplication();
+                }
+            }, 10000);
+
+
             this._HttpClient.interceptors.request.use((r) =>
             {
-                //set cookies if any is stored. 
-
-                if (this._Cookies.length > 0)
+                let cookie: string = "";
+                this._Cookies.forEach(element =>
                 {
+                    cookie = cookie + `${element.name}=${element.value}; `;
+                });
 
-                    let cookie: string = "";
+                r.headers["Cookie"] = cookie;
 
-                    this._Cookies.forEach(element =>
-                    {
-                        cookie = cookie + `${element.name}=${element.value}; `;
-                    });
-
-                    r.headers["Cookie"] = cookie;
-                }
-
+                //use cookie/token auth if csrf token is set. 
                 if (this._csrfToken)
                 {
                     r.headers["X-UserToken"] = `${this._csrfToken} `;
                 }
-
-                //add auth for apis where required.
-                if (r.url)
+                else
                 {
-                    if (r.url.startsWith(this._SNTableSuffix) || r.url.startsWith(this._SNCodeSearchSuffix))
+                    if (r.url)
                     {
                         r.auth = {
                             username: this._username,
                             password: this._password
                         };
                     }
+                }
+                return r;
+            });
+
+            this._HttpClient.interceptors.response.use((r) =>
+            {
+                if (this.storeCookies)
+                {
+                    this.UpdateSessionCookies(<Array<string>>r.headers["set-cookie"]);
                 }
                 return r;
             });
@@ -130,66 +151,74 @@ export class Api
         }
     }
 
-    private UpdateSessionCookies(cookies: Array<string>): void
+    /**
+     * clearCookies
+     */
+    public clearCookies(): void
     {
-        this._Cookies = [];
-
-        cookies.forEach(element =>
-        {
-            let cookie = element.split(";")[0];
-            this._Cookies.push({
-                name: cookie.split("=")[0],
-                value: cookie.split("=")[1]
-            });
-        });
-    }
-
-    private ClearSessionCookies(): void
-    {
-        this._Cookies = [];
+        this._Cookies = new Array<ICookie>();
     }
 
     /**
-     * configures a persistent session for the api client. 
-     * 
-     * Required for cookie based authentication. persistent Session is used for all subsequent request. 
-     * Remember to clear session afterwards.
+     * Add or update cokkies.
+     * @param cookies 
      */
-    private NewSession(): Promise<void>
+    private UpdateSessionCookies(cookies: Array<string>): void
     {
-        return new Promise((resolve, reject) =>
+        if (cookies)
         {
-            if (this.HttpClient)
+            cookies.forEach(newCookie =>
             {
-                let p = this.HttpClient.get(`${this._SNSysUserSession}?sysparm_limit=1`);
+                let splitcookie = newCookie.split(";")[0];
 
-                if (p)
+                let cookieobject = {
+                    name: splitcookie.split("=")[0],
+                    value: splitcookie.split("=")[1]
+                };
+
+                let index = this._Cookies.findIndex((cookie) =>
                 {
-                    p.then((res) =>
-                    {
-                        if (this.HttpClient)
-                        {
-                            this.UpdateSessionCookies(<Array<string>>res.headers["set-cookie"]);
-                            let pToken = this.HttpClient.get<IServiceNowResponse<Array<ISysUserSession>>>(`${this._SNSysUserSession}?id=${this._session_store} `);
-                            //let pToken = this.GetCsrfToken(this._session_store);
-                            if (pToken)
-                            {
-                                pToken.then((resToken) =>
-                                {
-                                    this.UpdateSessionCookies(<Array<string>>res.headers["set-cookie"]);
-                                    this._csrfToken = resToken.data.result[0].csrf_token;
-                                    resolve();
-                                }).catch((er) =>
-                                {
-                                    console.error(er);
-                                });
-                            }
-                        }
-                    }).catch((er) =>
-                    {
-                        reject(er);
-                    });
+                    return cookie.name === cookieobject.name;
+                });
+
+                if (index === -1)
+                {
+                    this._Cookies.push(cookieobject);
                 }
+                else
+                {
+                    this._Cookies[index] = cookieobject;
+                }
+            });
+        }
+    }
+
+    private clearCookieAuth(): void
+    {
+        this._csrfToken = "";
+    }
+
+    /**
+     * Required for cookie based authentication. persistent Session is used for all subsequent request. 
+     * Remember to clearCookieAuth afterwards.
+     */
+    private useCookieAuth(): Promise<void>
+    {
+        return new Promise(async (resolve, reject) =>
+        {
+            try
+            {
+                if (this.HttpClient)
+                {
+                    let ResponseCsrfToken = await this.HttpClient.get<IServiceNowResponse<Array<ISysUserSession>>>(`${this._SNSysUserSession}?id=${this._session_store}`);
+                    this._csrfToken = ResponseCsrfToken.data.result[0].csrf_token;
+                    resolve();
+                }
+                throw new Error("Httpclient undefined");
+            }
+            catch (error)
+            {
+                reject(error);
             }
         });
     }
@@ -207,7 +236,7 @@ export class Api
 
             if (this.HttpClient)
             {
-                var i = this.NewSession();
+                var i = this.useCookieAuth();
 
                 i.then((res) =>
                 {
@@ -229,11 +258,11 @@ export class Api
 
                         setUpdateSet.then((result) =>
                         {
-                            this.ClearSessionCookies();
+                            this.clearCookieAuth();
                             resolve(<UpdateSet>us);
                         }).catch((err) =>
                         {
-                            this.ClearSessionCookies();
+                            this.clearCookieAuth();
                             console.error(err);
                             reject(err);
                         });
@@ -244,7 +273,6 @@ export class Api
                 });
             }
         });
-
     }
 
     /**
@@ -279,12 +307,19 @@ export class Api
         }
     }
 
-    public get HttpClient(): Axios.AxiosInstance | undefined
+    public get HttpClient(): Axios.AxiosInstance
     {
-        return this._HttpClient;
+        if (this._HttpClient)
+        {
+            return this._HttpClient;
+        }
+        else
+        {
+            throw new Error("Http Clinet undefined");
+        }
     }
 
-    public set HttpClient(v: Axios.AxiosInstance | undefined)
+    public set HttpClient(v: Axios.AxiosInstance)
     {
         this._HttpClient = v;
     }
@@ -334,17 +369,13 @@ export class Api
     }
 
     /**
-     * Patch a record.
-     * 
+     * Patch a record
+     * @param record 
      */
-    public PatchRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Axios.AxiosPromise<IServiceNowResponse<T>> | undefined
+    public async PatchRecord<T extends ISysMetadataIWorkspaceConvertable>(record: T): Promise<Axios.AxiosResponse<IServiceNowResponse<T>>>
     {
-        if (this.HttpClient)
-        {
-            //trim data to speed up patch
-            let url: string = `${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`;
-            return this.HttpClient.patch<IServiceNowResponse<T>>(url, record.GetPatchable());
-        }
+        let url: string = `${this._SNTableSuffix}/${record.sys_class_name}/${record.sys_id}`;
+        return this.HttpClient.patch<IServiceNowResponse<T>>(url, record.GetPatchable());
     }
 
     /**
@@ -394,57 +425,47 @@ export class Api
     /**
      * Retrieves all eligible records of a specific type. 
      */
-    public GetRecords(type: SupportedRecords): Axios.AxiosPromise<IServiceNowResponse<Array<ISysMetadata>>>
+    public async GetRecords(type: SupportedRecords): Promise<Axios.AxiosResponse<IServiceNowResponse<Array<ISysMetadata>>>>
     {
-        if (this.HttpClient)
+        let url = `${this._SNTableSuffix}/${type}`;
+
+        let EncodedQueryProtection = "sys_policy=^ORsys_policy=read";
+        let EncodedQueryClass = `sys_class_name=${type}`;
+
+
+        //set specific queries where necessary
+        switch (type)
         {
-            let url = `${this._SNTableSuffix}/${type}`;
-            //set specific queries where necessary
-            //defualt is all writable elements.
-            switch (type)
-            {
-                case SupportedRecords.Widget:
-                    url = url + `?sysparm_query=internal=false^sys_policy=^sys_scope=global`;
-                    break;
-                case SupportedRecords["Header or Footer Widget"]:
-                    url = url + `?sysparm_query=internal=false^sys_policy=^sys_scope=global`;
-                    break;
-                case SupportedRecords.Processor:
-                    url = url + `?sysparm_query=sys_policy=^type=script^sys_scope=global`;
-                    break;
-                case SupportedRecords["Scripted Rest API"]:
-                    url = url + `?sysparm_query=sys_policy=`;
-                    break;
-                case SupportedRecords["UI Action"]:
-                    url = url + `?sysparm_query=sys_policy=&sysparm_fields=table,order,comments,active,script,condition,hint,name,sys_class_name,sys_id,sys_policy,sys_updated_on,sys_created_on,sys_package,sys_scope`;
-                    break;
-                default:
-                    url = url + `?sysparm_query=sys_policy=^sys_scope=global^sys_class_name=${type}`;
-                    break;
-            }
-            return this.HttpClient.get(url, { timeout: 20000 });
+            case SupportedRecords.Widget:
+                url = url + `?sysparm_query=internal=false^${EncodedQueryProtection}^${EncodedQueryClass}`;
+                break;
+            case SupportedRecords["Header or Footer Widget"]:
+                url = url + `?sysparm_query=internal=false^${EncodedQueryProtection}^${EncodedQueryClass}`;
+                break;
+            case SupportedRecords.Processor:
+                url = url + `?sysparm_query=type=script^${EncodedQueryProtection}^${EncodedQueryClass}`;
+                break;
+            case SupportedRecords["Scripted Rest API"]:
+                url = url + `?sysparm_query=${EncodedQueryProtection}^${EncodedQueryClass}`;
+                break;
+            case SupportedRecords["UI Action"]:
+                url = url + `?sysparm_query=${EncodedQueryProtection}^${EncodedQueryClass}&sysparm_fields=table,order,comments,active,script,condition,hint,name,sys_class_name,sys_id,sys_policy,sys_updated_on,sys_created_on,sys_package,sys_scope`;
+                break;
+            case SupportedRecords["Script Include"]:
+                url = url + `?sysparm_query=${EncodedQueryProtection}^${EncodedQueryClass}&sysparm_fields=client_callable,access,active,description,script,api_name,name,sys_class_name,sys_id,sys_policy,sys_updated_on,sys_created_on,sys_package,sys_scope`;
+                break;
+            default:
+                url = url + `?sysparm_query=${EncodedQueryProtection}^${EncodedQueryClass}`;
+                break;
         }
-        else
-        {
-            throw new Error("Httpclient not found");
-        }
+        return this.HttpClient.get<IServiceNowResponse<Array<ISysMetadata>>>(url, { timeout: 60000 });
     }
 
     /**
-     * GetUpdateSets
-     * 
-     * Returns all update sets that are in progress, limited to global scope
+     * Creates a new record on instance
+     * @param type record type
+     * @param body object representing the record to create
      */
-    public GetUpdateSets(): Axios.AxiosPromise<IServiceNowResponse<Array<ISysUpdateSet>>> | undefined
-    {
-        if (this.HttpClient)
-        {
-            //update sets in global and in progress
-            let url = `${this._SNSysUpdateSet}?sysparm_query=state=in progress^application.scope=global`;
-            return this.HttpClient.get(url);
-        }
-    }
-
     public CreateRecord(type: SupportedRecords, body: object): Axios.AxiosPromise<IServiceNowResponse<ISysMetadata>>
     {
         if (this.HttpClient)
@@ -458,6 +479,55 @@ export class Api
         }
     }
 
+    /**
+     * returns the list of applications.
+     */
+    public getApplication(): Axios.AxiosPromise<IServiceNowResponse<ApplicationCollection>>
+    {
+        if (this.HttpClient)
+        {
+            let url = `${this._SNApplication}`;
+            return this.HttpClient.get(url);
+        }
+        else
+        {
+            throw new Error("Httpclient not found");
+        }
+    }
+
+    /**
+     * Sets the current application
+     */
+    public setApplication(app_id: string): Axios.AxiosPromise<IServiceNowResponse<{ app_id: string }>>
+    {
+        if (this.HttpClient)
+        {
+            let url = `${this._SNApplication}`;
+            return this.HttpClient.put(url, { app_id: app_id });
+        }
+        else
+        {
+            throw new Error("Httpclient not found");
+        }
+    }
+
+    /**
+     * GetUpdateSets
+     * 
+     * Returns all update sets that are in progress, limited to global scope
+     */
+    public async GetUpdateSets(scopeId: string): Promise<Axios.AxiosResponse<IServiceNowResponse<Array<ISysUpdateSet>>>>
+    {
+        //update sets in global and in progress
+        let url = `${this._SNSysUpdateSet}?sysparm_query=state=in progress^application=${scopeId}`;
+        return await this.HttpClient.get(url);
+    }
+
+    /**
+     * Create updateset on instance
+     * @param name 
+     * @param parent 
+     */
     public CreateUpdateSet(name: string, parent: string): Axios.AxiosPromise<IServiceNowResponse<any>> | undefined
     {
         return new Promise(async (resolve, reject) =>
@@ -467,7 +537,7 @@ export class Api
                 let url = `${this._SNSysUpdateSet}`;
                 if (this.HttpClient)
                 {
-                    await this.NewSession();
+                    await this.useCookieAuth();
 
                     //@ts-ignore already null checked
                     let response = await this.HttpClient.post(url, {
@@ -476,7 +546,7 @@ export class Api
                     });
 
                     resolve(response);
-                    this.ClearSessionCookies();
+                    this.clearCookieAuth();
                 }
                 else
                 {

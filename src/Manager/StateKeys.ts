@@ -1,3 +1,4 @@
+//explicit set value key ensure backward compatiblity.
 export enum StateKeys
 {
     instance = 0,
@@ -6,4 +7,5 @@ export enum StateKeys
     password = 3,
     updateSet = 7,
     metaData = 13,
+    application = 14
 }

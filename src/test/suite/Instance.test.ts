@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { Instance, SupportedRecordsHelper, SupportedRecords, Converter, AngularProvider, UiPage, ValidationScript, ScriptedRestResource } from '../../ServiceNow/all';
+import { Instance, SupportedRecordsHelper, SupportedRecords, Converter, AngularProvider, UiPage, ValidationScript, ScriptedRestResource, UpdateSet } from '../../ServiceNow/all';
 //import { ISysMetadataIWorkspaceConvertable } from "../../MixIns/all";
 import { commands } from "vscode";
 import { WorkspaceManager, MetaData } from '../../Manager/all';
@@ -12,24 +12,22 @@ import * as chaiAsPromised from 'chai-as-promised';
 chai.use(chaiAsPromised);
 
 //surpress log output
-// console.log = function () { };
-// console.warn = function () { };
-console.error = function () { };
-
+//console.log = function () { };
+//console.warn = function () { };
+//console.error = function () { };
 
 /** todo
  * 
  * update set validation
- * 
- * save record validation
  */
 
 // Defines a Mocha test suite to group tests of similar kind together
 suite("CodeNow Integration", async function ()
 {
-    this.timeout(30000);
+    this.timeout(60000);
 
     let instance: Instance | undefined;
+    let allSupported: Array<string> = SupportedRecordsHelper.GetRecordsDisplayValue();
 
     test("Extension can connect", async () =>
     {
@@ -37,21 +35,83 @@ suite("CodeNow Integration", async function ()
         if (instance)
         {
             assert.equal((instance.IsInitialized()), true);
+
+            //Initial caching
+            allSupported.forEach(async (type) =>
+            {
+                test(`${type} cached`, async () =>
+                {
+                    //@ts-ignore index error false
+                    let recType: SupportedRecords = SupportedRecords[type];
+                    if (instance)
+                    {
+                        let cached = await instance.GetRecords(recType);
+                        console.error(`${cached.length} Cached of ${type}`);
+                        return chai.expect(cached.length).to.be.greaterThan(0);
+                    }
+                });
+            });
+
+            test('Refresh of records', () =>
+            {
+                if (instance)
+                {
+                    chai.expect(instance.RebuildCache()).to.not.Throw();
+                }
+            });
+
+            //Initial caching
+            allSupported.forEach(async (type) =>
+            {
+                test(`${type} cached after Refresh`, async () =>
+                {
+                    //@ts-ignore index error false
+                    let recType: SupportedRecords = SupportedRecords[type];
+
+                    if (instance)
+                    {
+                        let cached = await instance.GetRecords(recType);
+                        console.error(`${cached.length} Cached of ${type}`);
+                        return chai.expect(cached.length).to.be.greaterThan(0);
+                    }
+                });
+            });
+
         }
     });
 
-    let allSupported: Array<string> = SupportedRecordsHelper.GetRecordsDisplayValue();
-
-    suite("Record Caching", async () =>
+    suite.skip("Record Caching", async () =>
     {
         test("Supported Records found", () =>
         {
             assert.ok(allSupported.length > 0);
         });
 
+        //Initial caching
         allSupported.forEach(async (type) =>
         {
             test(`${type} cached`, async () =>
+            {
+                //@ts-ignore index error false
+                let recType: SupportedRecords = SupportedRecords[type];
+                console.error(`Instance is defined: ${(instance)}`);
+                if (instance)
+                {
+                    let cached = await instance.GetRecords(recType);
+                    console.error(`${cached.length} Cached of ${type}`);
+                    return chai.expect(cached.length).to.be.greaterThan(0);
+                }
+            });
+        });
+
+        test("Refresh Records", async () =>
+        {
+            await chai.expect(commands.executeCommand('cn.rebuildCache')).to.be.fulfilled;
+        });
+
+        allSupported.forEach(async (type) =>
+        {
+            test(`${type} cached after refresh`, async () =>
             {
                 //@ts-ignore index error false
                 let recType: SupportedRecords = SupportedRecords[type];
@@ -59,7 +119,6 @@ suite("CodeNow Integration", async function ()
                 if (instance)
                 {
                     let cached = await instance.GetRecords(recType);
-
                     assert.ok(cached.length > 0, `${cached.length} found`);
                 }
             });
@@ -91,14 +150,11 @@ suite("CodeNow Integration", async function ()
                 {
                     let wm = new WorkspaceManager(instance.WorkspaceStateManager);
 
-                    let cached = await instance.GetRecords(recType);
+                    let records = await instance.GetRecordsUpstream(recType);
 
-                    added = await wm.AddRecord(cached[0], instance);
+                    added = await wm.AddRecord(records[0], instance);
 
-                    test('Record have been Added', () =>
-                    {
-                        assert.equal(added === undefined, false);
-                    });
+                    assert.equal(added === undefined, false);
                 }
             });
 
@@ -120,11 +176,6 @@ suite("CodeNow Integration", async function ()
                         assert.equal(baseName.endsWith(ext), true, `Extension is not: ${ext}`);
                     });
                 }
-            });
-
-            test(`Update saved properly: ${type}`, () =>
-            {
-                //implement me ensure updates are saved on instance
             });
 
             test(`Delete ${type} from workspace`, async () =>
@@ -179,7 +230,7 @@ suite("CodeNow Integration", async function ()
 
             let name = `${process.env.workspaceName}_${recType}`;
 
-            //handle record types with special requiements.
+            //handle record types with special requirements.
             switch (recType)
             {
                 case SupportedRecords["Angular Provider"]:
@@ -429,7 +480,6 @@ suite("CodeNow Integration", async function ()
                             {
                                 if (instance)
                                 {
-                                    //implement me ensure updates are saved on instance
                                     let fileTypes = Converter.getFileTypes();
 
                                     let testValue = "testvalue";
@@ -539,5 +589,53 @@ suite("CodeNow Integration", async function ()
             }
         }
         //add/remove files to workspace tested through integration tests for adding records. No need to test twice. 
+    });
+
+    suite('Instance Updateset and Scope', () =>
+    {
+        test('Instance defined', () =>
+        {
+            assert.equal(instance !== undefined, true);
+        });
+
+        test('Change Update Set', async () =>
+        {
+            if (instance)
+            {
+                let us = await instance.GetUpdateSets();
+
+                let usNotDefault = us.filter((item) =>
+                {
+                    return item.is_default === 'false';
+                });
+
+                await chai.expect(instance.SetUpdateSet(usNotDefault[0])).to.be.fulfilled;
+                chai.expect(instance.WorkspaceStateManager.GetUpdateSet()).to.exist.and.be.eq(usNotDefault[0]);
+            }
+        });
+
+        test('Change Scope', async () =>
+        {
+            if (instance)
+            {
+                let scope = await instance.getApplication();
+
+                let scopeNotDefaultOrCurrent = scope.list.filter((item) =>
+                {
+                    return item.sysId !== "global" && item.sysId !== scope.current;
+                });
+
+                await instance.setApplication(scopeNotDefaultOrCurrent[0]);
+
+                let currentScopeOnInstance = await instance.getCurrentApplication();
+
+                chai.expect(currentScopeOnInstance.sysId).to.be.eq(scopeNotDefaultOrCurrent[0].sysId);
+                //us should be default
+                let UpdateSetLocal = instance.WorkspaceStateManager.GetUpdateSet();
+                chai.expect(UpdateSetLocal).to.be.instanceOf(UpdateSet).and.to.have.property('is_default', "true");
+                //selected app should be cached
+                chai.expect(instance.WorkspaceStateManager.getApplication()).to.exist.and.to.have.property("sysId", scopeNotDefaultOrCurrent[0].sysId);
+            }
+        });
     });
 });

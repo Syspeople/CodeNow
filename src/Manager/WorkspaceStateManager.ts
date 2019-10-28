@@ -1,10 +1,11 @@
 import { Uri, ExtensionContext } from 'vscode';
 import { StateKeys, MemCache, MetaData, IWorkspaceConvertable } from "./all";
-import { UpdateSet, SupportedRecords, ISysMetadata } from "../ServiceNow/all";
+import { UpdateSet, SupportedRecords, ISysMetadata, Application } from "../ServiceNow/all";
 
 //get update and manage workpace state.
 export class WorkspaceStateManager
 {
+
     constructor(context: ExtensionContext)
     {
         this._context = context;
@@ -22,6 +23,7 @@ export class WorkspaceStateManager
         this._context.workspaceState.update(StateKeys.url.toString(), undefined);
         this._context.workspaceState.update(StateKeys.user.toString(), undefined);
         this._context.workspaceState.update(StateKeys.updateSet.toString(), undefined);
+        this._context.workspaceState.update(StateKeys.application.toString(), undefined);
     }
 
     /**
@@ -77,6 +79,29 @@ export class WorkspaceStateManager
     public GetUserName(): string | undefined
     {
         return this._context.workspaceState.get(StateKeys.user.toString()) as string;
+    }
+
+    public SetUpdateSet(us: UpdateSet): void
+    {
+        this._context.workspaceState.update(StateKeys.updateSet.toString(), us);
+    }
+
+    public GetUpdateSet(): UpdateSet | undefined
+    {
+        return this._context.workspaceState.get(StateKeys.updateSet.toString());
+    }
+
+    setApplication(app: Application): void
+    {
+        this._context.workspaceState.update(StateKeys.application.toString(), app);
+    }
+
+    /**
+     * Last set app.
+     */
+    getApplication(): Application | undefined
+    {
+        return this._context.workspaceState.get(StateKeys.application.toString());
     }
 
     /**
@@ -177,15 +202,7 @@ export class WorkspaceStateManager
         return;
     }
 
-    public SetUpdateSet(us: UpdateSet): void
-    {
-        this._context.workspaceState.update(StateKeys.updateSet.toString(), us);
-    }
 
-    public GetUpdateSet(): UpdateSet | undefined
-    {
-        return this._context.workspaceState.get(StateKeys.updateSet.toString());
-    }
 
     /**
      * Dynamically caches records from instance. overwrites existing elements.
@@ -198,11 +215,28 @@ export class WorkspaceStateManager
     }
 
     /**
-     * dynamically retrieves cached records.
+     * dynamically retrieves cached records. Only retrieves the record that are in the scope currently set.
      * @param type 
      */
     public GetRecords(type: SupportedRecords): Array<ISysMetadata> | undefined
     {
-        return this._memCache.Get<Array<ISysMetadata>>(type);
+        let cached = this._memCache.Get<Array<ISysMetadata>>(type);
+
+        let scope = this.getApplication();
+
+        if (scope)
+        {
+            let scopeId = scope.sysId;
+            if (cached)
+            {
+
+                let filtered = cached.filter((i) =>
+                {
+                    return i.sys_scope.value === scopeId;
+                });
+
+                return filtered;
+            }
+        }
     }
 }
