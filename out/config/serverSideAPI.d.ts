@@ -2814,7 +2814,106 @@ sm.setWSSecurity("70d65e074f3812001f6eac118110c71a","Quote keys","UXr82cqX75Z7Ma
 
     class SOAPResponseV2
     {
-        //to be added
+        /**
+         * NO constructor available. Returned by SOAPMessageV2.
+         */
+        constructor();
+
+        /**
+         * Return all headers contained in the response, including any duplicate headers.
+         * ```
+var r = new sn_ws.SOAPMessageV2('<A SOAP message>', 'get');
+var response = r.execute();
+var headers = response.getAllHeaders();
+for(var i in headers){
+  gs.print(headers[i].name + ': ' + headers[i].value);
+}
+```
+         */
+        getAllHeaders(): Array<{ name: string, value: string }>;
+
+        /**
+         * Get the content of the SOAP response body.
+         * ```
+var body = response.getBody();
+```
+         */
+        getBody(): stirng;
+
+        /**
+         * Returns all cookies included in the response.
+         * ```
+var cookies = response.getCookies();
+var i;
+for(i=0;i<cookies.size();i++) {
+   gs.print(‘cookie: ‘ + cookies.get(i));
+}
+```
+         */
+        getCookies(): Array<Object>;
+
+        /**
+         * Get the numeric error code if there was an error during the SOAP transaction.
+         * This error code is specific to the Now Platform, it is not an HTTP error code.
+         * Provide this error code if you require assistance from ServiceNow Customer Support.
+         * ```
+var errorCode = response.getErrorCode();
+```
+         */
+        getErrorCode(): number;
+
+        /**
+         * Get the error message if there was an error during the SOAP transaction.
+         * ```
+var errorMsg = response.getErrorMessage();
+```
+         */
+        getErrorMessage(): string;
+
+        /**
+         * Get the value for a specified HTTP header.
+         * ```
+var headerVal = response.getHeader("Accept");
+```
+         * @param name The name of the header that you want the value for, such as Set-Cookie.
+         */
+        getHeader(name: string): string;
+
+        /**
+         * Get all HTTP headers returned in the SOAP response and the associated values.
+         * **Note:** If a header is present more than once in the response, such as a Set-Cookie header, this function returns only the last of the duplicate headers.
+         * To return all headers including duplicates, use the getAllHeaders() function.
+         * ```
+var headers = response.getHeaders();
+```
+         */
+        getHeaders(): object;
+
+        /**
+         * Get the numeric HTTP status code returned by the SOAP provider.
+         * ```
+var statusCode = response.getStatusCode();
+```
+         */
+        getStatusCode(): number;
+
+        /**
+         * Indicate if there was an error during the SOAP transaction.
+         * ```
+var error = response.haveError();
+```
+         */
+        haveError(): boolean;
+
+        /**
+         * Set the amount of time the instance waits for a response from the web service provider.
+         * This method overrides the property glide.soap.outbound.ecc_response.timeout for this SOAP response.
+         * ```
+response.waitForResponse(60);
+```
+         * @param timeoutSecs The amount of time, in seconds, to wait for this response.
+         */
+        waitForResponse(timeoutSecs: number): void;
     }
 }
 
