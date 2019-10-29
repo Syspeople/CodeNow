@@ -2838,7 +2838,7 @@ for(var i in headers){
 var body = response.getBody();
 ```
          */
-        getBody(): stirng;
+        getBody(): string;
 
         /**
          * Returns all cookies included in the response.
@@ -2916,6 +2916,7 @@ response.waitForResponse(60);
         waitForResponse(timeoutSecs: number): void;
     }
 }
+
 
 /* SN SP SERVERSIDE */
 
