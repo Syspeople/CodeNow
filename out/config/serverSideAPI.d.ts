@@ -2917,7 +2917,7 @@ response.waitForResponse(60);
     }
 }
 
-namespace sn_auth
+declare namespace sn_auth
 {
     class GlideOAuthClient
     {
@@ -2975,6 +2975,7 @@ var token = tokenResponse.getToken();
 
     }
 }
+
 /* SN SP SERVERSIDE */
 
 /**
