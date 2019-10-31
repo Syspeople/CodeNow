@@ -77,6 +77,23 @@ suite("CodeNow Integration", async function ()
                 });
             });
 
+            test('Application stored in local cache', async () =>
+            {
+                if (instance)
+                {
+                    let app = instance.WorkspaceStateManager.getApplication();
+                    await chai.expect(app).to.exist;
+                }
+            });
+
+            test('Updateset stored in local cache', async () =>
+            {
+                if (instance)
+                {
+                    let app = instance.WorkspaceStateManager.GetUpdateSet();
+                    await chai.expect(app).to.exist;
+                }
+            });
         }
     });
 
