@@ -154,6 +154,7 @@ export class Instance
         {
             //take instance default
             currentApp = await this.getCurrentApplication();
+            this.WorkspaceStateManager.setApplication(currentApp);
         }
 
         nm.setNotificationApplication(currentApp);

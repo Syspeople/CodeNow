@@ -2503,7 +2503,10 @@ writer.writeStream(attachmentStream);
          * A RESTResponseV2 object is returned by the RESTMessageV2 functions execute() and executeAsync().
          */
         constructor()
-        /**Return all headers contained in the response, including any duplicate headers. */
+
+        /**
+         * Return all headers contained in the response, including any duplicate headers.
+         */
         getAllHeader(): Array<GlideHTTPHeader>;
 
         /**
@@ -2573,6 +2576,404 @@ writer.writeStream(attachmentStream);
     }
     //Not documentet
     class GlideHTTPHeader { }
+
+    class SOAPMessageV2
+    {
+        /**
+         * Instantiates an empty SOAPMessageV2 object.
+         * When using an object instantiated this way, you must manually specify a SOAP action and endpoint.
+         * ```
+var sm = new sn_ws.SOAPMessageV2();
+```
+         */
+        constructor()
+
+        /**
+         * Instantiate a SOAPMessageV2 object from a SOAP message record and a function associated with that record.
+         * Values such as the endpoint, authentication, or MID Server settings from the SOAP message record apply to this object.
+         * ```
+var sm = new sn_ws.SOAPMessageV2("StockQuote","GetQuote");
+```
+         * @param soapMessage The SOAP message record you want to use as the base for this object.
+         * @param soapFunction The SOAP function you want to execute. Available SOAP functions depend on the WSDL supplied by the web service provider.
+         */
+        constructor(soapMessage: string, soapFunction: string)
+
+        /**
+         * Send the SOAP message to the endpoint.
+         * ```
+var sm = new sn_ws.SOAPMessageV2("StockQuote","GetQuote");
+var response = sm.execute();
+```
+         */
+        execute(): SOAPResponseV2;
+
+        /**
+         * Send the SOAP message to the ECC queue.
+         * SOAP messages in the ECC queue are processed by the SOAPClient business rule. By default, this business rule does not run asynchronously.
+         *```
+var sm = new sn_ws.SOAPMessageV2("StockQuote","GetQuote");
+var response = sm.executeAsync();
+```
+         */
+        executeAsync(): SOAPResponseV2;
+
+        /**
+         * Get the endpoint for the SOAP message.
+         * ```
+var sm = new sn_ws.SOAPMessageV2("StockQuote","GetQuote");
+var endpoint = sm.getEndpoint();
+```
+         */
+        getEndpoint(): string;
+
+        /**
+         * Get the content of the SOAP message body.
+         *```
+var sm = new sn_ws.SOAPMessageV2("StockQuote","GetQuote");
+sm.execute();
+var requestBody = sm.getRequestBody();
+```
+         */
+        getRequestBody(): string;
+
+        /**
+         * Get the value for an HTTP header specified by the SOAP client.
+         * By default, this method **cannot** return the value for a header set automatically by the system. 
+         * To grant this method access to all headers, set the property glide.http.log_debug to true.
+         * ```
+var sm = new sn_ws.SOAPMessageV2("StockQuote","GetQuote");
+var header = sm.getRequestHeader("Accept");
+```
+         * @param headerName The request header you want to get the value for.
+         */
+        getRequestHeader(headerName: string): string;
+
+        /**
+         * Get HTTP headers that were set by the SOAP client and the associated values.
+         * This method does not return headers set automatically by the system. To configure this method to return all headers, set the property glide.http.log_debug to true.
+         * ```
+var sm = new sn_ws.SOAPMessageV2("StockQuote","GetQuote");
+var requestHeaders = sm.getRequestHeaders();
+```
+         */
+        getRequestHeaders(): object;
+
+        /**
+         * Set basic authentication headers for the SOAP message.
+         * 
+         * Setting basic authentication headers using this method overrides basic authentication values defined in the SOAP message record.
+         * ```
+var sm = new sn_ws.SOAPMessageV2("StockQuote","GetQuote");
+sm.setBasicAuth("username","password");
+```
+         * @param userName The username to use when authenticating the SOAP message.he username to use when authenticating the SOAP message.
+         * @param userPass The password for the specified user.
+         */
+        setBasicAuth(userName: string, userPass: string): void;
+
+        /**
+         * Associate outbound requests and the resulting response record in the ECC queue.
+         * This method only applies to SOAP messages sent through a MID Server. The correlator provided populates the Agent correlator field on the ECC queue record for the response.
+         * Provide a unique correlator for each outbound request to associate the correct results in the ECC queue with the request when designing asynchronous automation through a MID Server.
+         * ```
+var sm = new sn_ws.SOAPMessageV2("StockQuote","GetQuote");
+sm.setEccCorrelator("unique_id");
+```
+         * @param correlator 	A unique identifier.
+         */
+        setEccCorrelator(correlator: string): void;
+
+        /**
+         * Override a value from the database by writing to the SOAP message payload.
+         * This method only applies to SOAP messages sent through a MID Server. Use this method when a value from the SOAP message in the database is invalid, such as when the endpoint URL is longer than the maximum SOAP endpoint field length.
+         * These are valid values for the name parameter.
+         * * source: the endpoint URL.
+         * * name: the SOAP message function to run.
+         * ```
+var sm = new sn_ws.SOAPMessageV2("StockQuote","GetQuote");
+sm.setEccParameter("source","http://very.long.endpoint");
+```
+         * @param name The name of the ECC parameter.
+         * @param value The value to assign to the specified ECC parameter.
+         */
+        setEccParameter(name: string, value: string): void;
+
+        /**
+         * Set the endpoint for the SOAP message. By default, the SOAP message uses the endpoint specified in the SOAP message record. Use this method to override the default.
+         * 
+         * **You must call this method when using the SOAPMessageV2() constructor with no parameters.** 
+         * @param endpoint The URL of the SOAP web service provider you want to interface with.
+         * ```
+var sm = new sn_ws.SOAPMessageV2();
+sm.setEndpoint("http://web.service.endpoint");
+```
+         */
+        setEndpoint(endpoint: string): void;
+
+        /**
+         * Set the amount of time the SOAP message waits for a response from the web service provider before the request times out.
+         * @param timeoutMs The amount of time to wait for a response from the web service provider, in milliseconds.
+         * ```
+var sm = new sn_ws.SOAPMessageV2("StockQuote","GetQuote");
+sm.setHttpTimeout(6000);
+```
+         */
+        setHttpTimeout(timeoutMs: number): void;
+
+        /**
+         * Sets the log level for this message and the corresponding response.
+         * Setting a log level using the SOAPMessageV2 API overrides the log level configured on the SOAP message record. 
+         * This log level may not apply if the endpoint domain is blacklisted, or if the property glide.outbound_http_log.override is true. 
+         * To view outbound web service logs, navigate to System Logs > Outbound HTTP Requests.
+         * @param level The log level. Valid values are basic, elevated, and all.
+         */
+        setLogLevel(level: string): void;
+
+        /**
+         * Configure the SOAP message to be sent through a MID Server.
+         * By default, the SOAP message uses the MID Server specified in the SOAP message function record. Use this method to override the default.
+         * @param midServerName The name of the MID Server you want to send the SOAP message through. Your instance must have an active MID Server with the specified name.
+         */
+        setMIDServer(midServerName: string): void;
+
+        /**
+         * Set the mutual authentication protocol profile for the SOAP message.
+         * Setting a protocol profile using this method overrides the protocol profile selected for the SOAP message record.
+         * @param profileName The name of the protocol profile to use for mutual authentication.
+         */
+        setMutualAuth(profileName: string): void;
+
+        /**
+         * Set the body content to send to the web service provider.
+         * When you set the body content using this method, variables in the body are not substituted for parameters from the SOAP message function record. 
+         * You must explicitly define all values within the SOAP message body.
+         * ```
+var sm = new sn_ws.SOAPMessageV2("StockQuote","GetQuote");
+var body = "<SOAP message body>";
+sm.setRequestBody(body);
+```
+         * @param requestBody The body of the SOAP message.
+         */
+        setRequestBody(requestBody: string): void;
+
+        /**
+         * Set an HTTP header in the SOAP message to the specified value.
+         * ```
+var sm = new sn_ws.SOAPMessageV2("StockQuote","GetQuote");
+sm.setRequestHeader("Accept","Application/json");
+```
+         * @param headerName The name of the header.
+         * @param headerValue The value to assign to the specified header.
+         */
+        setRequestHeader(headerName: string, headerValue: string): void;
+
+        /**
+         * Define the SOAP action this SOAP message performs.
+         * The WSDL for your web service provider lists SOAP actions you can perform. 
+         * **You must call this method when using the SOAPMessageV2() constructor with no parameters.**
+         * ```
+var sm = new sn_ws.SOAPMessageV2();
+sm.setSOAPAction("GetQuote");
+//construct SOAP message by specifying endpoint and auth
+sm.execute();
+```
+         * @param soapAction The SOAP action this SOAP message performs.
+         */
+        setSOAPAction(soapAction: string): void;
+
+        /**
+         * Set a variable with the specified name from the SOAP message record to the specified value.
+         * XML reserved characters in the value are converted to the equivalent escaped characters.
+         * ```
+var sm = new sn_ws.SOAPMessageV2("StockQuote","GetQuote");
+sm.setStringParameter("symbol","NOW");
+sm.execute();
+```
+         * @param name The name of the SOAP message variable.
+         * @param value The value to assign to the specified variable.
+         */
+        setStringParameter(name: string, value: string): void;
+
+        /**
+         * Sets web service security values for the SOAP message.
+         * Setting security values using this method overwrites web service security values defined for the SOAP message record.
+         * ```
+var sm = new sn_ws.SOAPMessageV2("StockQuote","GetQuote"); //Might throw exception if message doesn't exist or not visible due to scope.
+sm.setWSSecurity("70d65e074f3812001f6eac118110c71a","Quote keys","UXr82cqX75Z7MaSa+EyjGA==","ba969a074f3812001f6eac118110c76d");
+```
+         * @param keystoreId The sys_id of the Java or PKCS12 key store to use.
+         * @param keystoreAlias The alias that identifies the public and private keys.
+         * @param keystorePassword The password assigned to the key store record.
+         * @param certificateId The sys_id of the trusted server certificate.
+         */
+        setWSSecurity(keystoreId: string, keystoreAlias: string, keystorePassword: string, certificateId: string): void;
+    }
+
+
+
+    class SOAPResponseV2
+    {
+        /**
+         * NO constructor available. Returned by SOAPMessageV2.
+         */
+        constructor();
+
+        /**
+         * Return all headers contained in the response, including any duplicate headers.
+         * ```
+var r = new sn_ws.SOAPMessageV2('<A SOAP message>', 'get');
+var response = r.execute();
+var headers = response.getAllHeaders();
+for(var i in headers){
+  gs.print(headers[i].name + ': ' + headers[i].value);
+}
+```
+         */
+        getAllHeaders(): Array<{ name: string, value: string }>;
+
+        /**
+         * Get the content of the SOAP response body.
+         * ```
+var body = response.getBody();
+```
+         */
+        getBody(): string;
+
+        /**
+         * Returns all cookies included in the response.
+         * ```
+var cookies = response.getCookies();
+var i;
+for(i=0;i<cookies.size();i++) {
+   gs.print(‘cookie: ‘ + cookies.get(i));
+}
+```
+         */
+        getCookies(): Array<Object>;
+
+        /**
+         * Get the numeric error code if there was an error during the SOAP transaction.
+         * This error code is specific to the Now Platform, it is not an HTTP error code.
+         * Provide this error code if you require assistance from ServiceNow Customer Support.
+         * ```
+var errorCode = response.getErrorCode();
+```
+         */
+        getErrorCode(): number;
+
+        /**
+         * Get the error message if there was an error during the SOAP transaction.
+         * ```
+var errorMsg = response.getErrorMessage();
+```
+         */
+        getErrorMessage(): string;
+
+        /**
+         * Get the value for a specified HTTP header.
+         * ```
+var headerVal = response.getHeader("Accept");
+```
+         * @param name The name of the header that you want the value for, such as Set-Cookie.
+         */
+        getHeader(name: string): string;
+
+        /**
+         * Get all HTTP headers returned in the SOAP response and the associated values.
+         * **Note:** If a header is present more than once in the response, such as a Set-Cookie header, this function returns only the last of the duplicate headers.
+         * To return all headers including duplicates, use the getAllHeaders() function.
+         * ```
+var headers = response.getHeaders();
+```
+         */
+        getHeaders(): object;
+
+        /**
+         * Get the numeric HTTP status code returned by the SOAP provider.
+         * ```
+var statusCode = response.getStatusCode();
+```
+         */
+        getStatusCode(): number;
+
+        /**
+         * Indicate if there was an error during the SOAP transaction.
+         * ```
+var error = response.haveError();
+```
+         */
+        haveError(): boolean;
+
+        /**
+         * Set the amount of time the instance waits for a response from the web service provider.
+         * This method overrides the property glide.soap.outbound.ecc_response.timeout for this SOAP response.
+         * ```
+response.waitForResponse(60);
+```
+         * @param timeoutSecs The amount of time, in seconds, to wait for this response.
+         */
+        waitForResponse(timeoutSecs: number): void;
+    }
+}
+
+declare namespace sn_auth
+{
+    class GlideOAuthClient
+    {
+        /**
+         * Retrieves the token for the client. You can use the token to check the expiration date and perform a token renewal.
+         * @param oauthEntityName The OAuth entity.
+         * @param requestor The request.
+         */
+        getToken(oauthEntityName: string, requestor: string): GlideOAuthToken;
+
+        /**
+         * Retrieves the token for the client, with the request parameters encoded in JSON format.
+         * ```
+var oAuthClient = new GlideOAuthClient();
+var params ={grant_type:"password", username:"itil", password:'itil'};
+var json =new JSON();
+var text = json.encode(params);
+var tokenResponse = oAuthClient.requestToken('TestClient', text);
+var token = tokenResponse.getToken();
+```
+         * @param clientName The client name.
+         * @param jsonString The JSON string for the client.
+         */
+        requestToken(clientName: string, jsonString: string): GlideOAuthClientResponse;
+
+        /**
+         * Retrieves the token for the client, with the client name and the request set into a GlideOAuthClientResponse object.
+         * @param clientName The client name.
+         * @param request The request.
+         */
+        requestTokenByRequest(clientName: string, request: GlideOAuthClientRequest): GlideOAuthClientResponse;
+
+        /**
+         * Revokes the access or refresh token for the client, with the request and optional header parameters set into a GlideOAuthClientRequest object.
+         * @param clientName The client name.
+         * @param accessToken The access token.
+         * @param refreshToken The refresh token.
+         * @param request The request.
+         */
+        revokeToken(clientName: string, accessToken: string, refreshToken: string, request: GlideOAuthClientRequest): GlideOAuthClientResponse;
+    }
+
+    class GlideOAuthToken
+    {
+
+    }
+
+    class GlideOAuthClientResponse
+    {
+
+    }
+
+    class GlideOAuthClientRequest
+    {
+
+    }
 }
 
 /* SN SP SERVERSIDE */
