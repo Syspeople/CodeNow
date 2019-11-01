@@ -1,3 +1,12 @@
+## 0.11.20191101
+* Improvements
+  * Intellisense for the following api's
+    * sn_ws.SOAPResponseV2
+    * sn_ws.SOAPMessageV2
+    * sn_auth.GlideOAuthClient
+* Fixes
+  * current application not stored on first run have been fixed. Issue resulted in no records being selectable on add record even though they were valid. 
+
 ## 0.11.20191028
 * Feature:
   * Added ability to change Application/scope from vs code.
