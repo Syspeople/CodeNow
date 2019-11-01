@@ -157,27 +157,16 @@ export function activate(context: vscode.ExtensionContext)
 
                 if (setPicked)
                 {
-                    let set = instance.SetUpdateSet(setPicked);
-
-                    if (set)
+                    vscode.window.withProgress({ title: `Changing update set: ${setPicked.name}`, location: vscode.ProgressLocation.Notification }, async () =>
                     {
-                        set.then((us) =>
+                        if (setPicked)
                         {
-                            nm.SetNotificationUpdateSet(us);
-                            let msg = `UpdateSet Changed: ${us.name}`;
-                            console.log(msg);
-                            vscode.window.showInformationMessage(msg);
+                            let set = await instance.SetUpdateSet(setPicked);
+                            nm.SetNotificationUpdateSet(set);
+                        }
+                    });
 
-                            mixpanel.track('cn.extension.command.setUpdateSet.success');
-                        }).catch((er) =>
-                        {
-                            console.error(er);
-
-                            mixpanel.track('cn.extension.command.setUpdateSet.fail', {
-                                error: er
-                            });
-                        });
-                    }
+                    mixpanel.track('cn.extension.command.setUpdateSet.success');
                 }
             }
         } catch (error)
@@ -199,8 +188,19 @@ export function activate(context: vscode.ExtensionContext)
             let selectedApp = await vscode.window.showQuickPick(app.list);
             if (selectedApp)
             {
-                await instance.setApplication(selectedApp);
-                nm.setNotificationApplication(selectedApp);
+                vscode.window.withProgress({ title: `Changing Application: ${selectedApp.name}`, location: vscode.ProgressLocation.Notification }, async () =>
+                {
+                    if (selectedApp)
+                    {
+                        await instance.setApplication(selectedApp);
+                        nm.setNotificationApplication(selectedApp);
+                        var us = wsm.GetUpdateSet();
+                        if (us)
+                        {
+                            nm.SetNotificationUpdateSet(us);
+                        }
+                    }
+                });
             }
         }
     });
