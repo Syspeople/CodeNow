@@ -83,7 +83,7 @@ export function activate(context: vscode.ExtensionContext)
             if (url && usr)
             {
                 let progressOpts: vscode.ProgressOptions = { title: "Getting Ready", location: vscode.ProgressLocation.Notification };
-                vscode.window.withProgress(progressOpts, async (progress) =>
+                await vscode.window.withProgress(progressOpts, async (progress) =>
                 {
                     if (url && usr && pw)
                     {
@@ -104,9 +104,9 @@ export function activate(context: vscode.ExtensionContext)
                             instance: instance.Url,
                             newWorkspace: isNew
                         });
-                        return instance;
                     }
                 });
+                return instance;
             }
         } catch (error)
         {
