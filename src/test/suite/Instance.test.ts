@@ -132,7 +132,6 @@ suite("CodeNow Integration", async function ()
             {
                 //@ts-ignore index error false
                 let recType: SupportedRecords = SupportedRecords[type];
-
                 if (instance)
                 {
                     let cached = await instance.GetRecords(recType);
