@@ -3063,12 +3063,12 @@ var token = tokenResponse.getToken();
         /**
          * Retrieves the scope.
          */
-        getScope()
+        getScope(): string;
 
         /**
          * Retrieves the user name.
          */
-        getUserName()
+        getUserName(): string;
 
         /**
          * Sets the grant type for the string you provide.
