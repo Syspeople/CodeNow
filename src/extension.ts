@@ -82,22 +82,31 @@ export function activate(context: vscode.ExtensionContext)
 
             if (url && usr)
             {
-                let p = instance.Initialize(new URL(url), usr, pw, wsm, nm);
-                nm.SetNotificationState(NotifationState.Downloading);
-                await p;
+                let progressOpts: vscode.ProgressOptions = { title: "Getting Ready", location: vscode.ProgressLocation.Notification };
+                vscode.window.withProgress(progressOpts, async (progress) =>
+                {
+                    if (url && usr && pw)
+                    {
+                        progress.report({ message: "Caching Records" });
+                        let p = instance.Initialize(new URL(url), usr, pw, wsm, nm);
+                        nm.SetNotificationState(NotifationState.Downloading);
+                        await p;
 
-                wm.AddInstanceFolder(instance);
+                        wm.AddInstanceFolder(instance);
 
-                wm.RefreshRecords(instance);
+                        progress.report({ message: "Update records in Workspace" });
+                        wm.RefreshRecords(instance);
 
-                nm.SetNotificationState(NotifationState.Connected);
+                        nm.SetNotificationState(NotifationState.Connected);
 
-                mixpanel.track("cn.extension.command.connect.success", {
-                    username: Md5.init(instance.UserName),
-                    instance: instance.Url,
-                    newWorkspace: isNew
+                        mixpanel.track("cn.extension.command.connect.success", {
+                            username: Md5.init(instance.UserName),
+                            instance: instance.Url,
+                            newWorkspace: isNew
+                        });
+                        return instance;
+                    }
                 });
-                return instance;
             }
         } catch (error)
         {
