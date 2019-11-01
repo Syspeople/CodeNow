@@ -1,3 +1,12 @@
+## 0.11.xxxx
+* Improvements
+  * Added progress indicator for:
+    * Changing update set
+    * Changing scope
+    * Connecting to instance
+* Fixes
+  * Update set name in status bar not updated on scope change.
+
 ## 0.11.20191101
 * Improvements
   * Intellisense for the following api's
