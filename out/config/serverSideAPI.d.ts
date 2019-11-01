@@ -2962,17 +2962,159 @@ var token = tokenResponse.getToken();
 
     class GlideOAuthToken
     {
+        /**
+         * Retrieves the access token.
+         */
+        getAccessToken(): string;
 
+        /**
+         * Retrieves the sys_id of the token ID.
+         */
+        getAccessTokenSysID(): string;
+
+        /**
+         * Retrieves the lifespan of the access token in seconds.
+         */
+        getExpiresIn(): number;
+
+        /**
+         * Retrieves the lifespan of the access token in seconds.
+         */
+        getRefreshToken(): number;
+
+        /**
+         * Retrieves the sys_id of the refresh token.
+         */
+        getRefreshTokenSysID(): number;
+
+        /**
+         * Retrieves the scope, which is the amount of access granted by the access token.
+         */
+        getScope(): string;
     }
 
     class GlideOAuthClientResponse
     {
+        /**
+         * Retrieves all of the response information, including instance information.
+         */
+        getBody(): string;
 
+        /**
+         * Retrieves the HTTP response content header from an external OAuth provider.
+         */
+        getContentType(): string;
+
+        /**
+         * Retrieves the error message if authentication is not successful.
+         */
+        getErrorMessage(): string;
+
+        /**
+         * Retrieves the HTTP response code from the external OAuth provider.
+         */
+        getResponseCode(): string;
+
+        /**
+         * Retrieves the error message if authentication is not successful.
+         */
+        getResponseParameters(): string;
+
+        /**
+         * Retrieves the refresh token.
+         */
+        getToken(): GlideOAuthToken;
     }
 
     class GlideOAuthClientRequest
     {
+        /**
+         * Retrieves the grant type.
+         */
+        getGrantType(): string;
 
+        /**
+         * Retrieves the HTTP headers for the string you provide.
+         * @param name 	The name of the parameter.
+         */
+        getHeader(name: string): object;
+
+        /**
+         * Retrieves the HTTP headers.
+         */
+        getHeaders(): object;
+
+        /**
+         * Retrieves the parameters for the parameter name you provide.
+         * @param name The parameter name for which you want the parameters.
+         */
+        getParameter(name: string): string;
+
+        /**
+         * Retrieves the password.
+         */
+        getPassword(): string;
+
+        /**
+         * Retrieves the refresh token.
+         */
+        getRefreshToken(): string;
+
+        /**
+         * Retrieves the scope.
+         */
+        getScope()
+
+        /**
+         * Retrieves the user name.
+         */
+        getUserName()
+
+        /**
+         * Sets the grant type for the string you provide.
+         * 
+         * **Note** You only need to set the grant type if it is not already defined in the OAuth provider profile.
+         */
+        setGrantType(grantType: string): void;
+
+        /**
+         * Retrieves the HTTP headers for the string you provide.
+         * @param name The name of the parameter.
+         * @param value	The value of the parameter.
+         */
+        setHead(name: string, value: string): void;
+
+        /**
+         * Sets the parameters for the name:value pair of strings you provide.
+         * @param name The parameter name for which you want the parameters.
+         * @param value The value of the parameter.
+         */
+        setParameter(name: string, value: string): void;
+
+        /**
+         * Sets the password with the string you provide.
+         * @param password 
+         */
+        setPassword(password: string): string;
+
+        /**
+         * Sets the refresh token with the string you provide.
+         * @param refreshToken The refresh token.
+         */
+        setRefreshToken(refreshToken: string): void;
+
+        /**
+         * Sets the scope for the string you provide.
+         * **Note** You only need to set the scope if it is not already defined in the OAuth provider.
+         * @param scope 
+         */
+        setScope(scope: string): void;
+
+        /**
+         * Sets the user name with the string you provide.
+         * @param userName 
+         */
+        setUserName(userName: string): void;
     }
 }
 
