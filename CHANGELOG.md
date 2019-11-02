@@ -1,5 +1,9 @@
 ## 0.11.xxxx
-* Improvements
+* improvements
+  * Intellisense for the following API's
+    * sn_auth.GlideOAuthClientRequest
+    * sn_auth.GlideOAuthClientResponse
+    * sn_auth.GlideOAuthToken
   * Added progress indicator for:
     * Changing update set
     * Changing scope
