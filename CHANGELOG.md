@@ -4,6 +4,12 @@
     * sn_auth.GlideOAuthClientRequest
     * sn_auth.GlideOAuthClientResponse
     * sn_auth.GlideOAuthToken
+  * Added progress indicator for:
+    * Changing update set
+    * Changing scope
+    * Connecting to instance
+* Fixes
+  * Update set name in status bar not updated on scope change.
 
 ## 0.11.20191101
 * Improvements
