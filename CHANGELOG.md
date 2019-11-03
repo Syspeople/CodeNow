@@ -1,4 +1,4 @@
-## 0.11.xxxx
+## 0.11.20191103
 * improvements
   * Intellisense for the following API's
     * sn_auth.GlideOAuthClientRequest
