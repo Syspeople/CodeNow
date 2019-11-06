@@ -681,10 +681,6 @@ export function activate(context: vscode.ExtensionContext)
 
         let record = await instance.GetRecord(item);
         console.log(record);
-        if (!record.canWrite)
-        {
-            vscode.window.showWarningMessage(`Record Read Only, Protection Policy: ${record.sys_policy}`);
-        }
         wm.AddRecord(record, instance);
     });
 
@@ -787,45 +783,34 @@ export function activate(context: vscode.ExtensionContext)
 
                     if (record)
                     {
-                        if (record.canWrite)
+                        try
                         {
-                            try
+                            let isLatest = await instance.IsLatest(record);
+
+                            if (isLatest)
                             {
-                                let isLatest = await instance.IsLatest(record);
+                                let o = await instance.SaveRecord(record);
 
-                                if (isLatest)
+                                if (o)
                                 {
-                                    let o = await instance.SaveRecord(record);
+                                    vscode.window.showInformationMessage(`Saved`);
+                                    wm.UpdateRecord(o, e.uri);
 
-                                    if (o)
-                                    {
-                                        vscode.window.showInformationMessage(`Saved`);
-                                        wm.UpdateRecord(o, e.uri);
-
-                                        mixpanel.track('cn.extension.event.onDidSaveTextDocument.success', {
-                                            sys_class_name: o.sys_class_name
-                                        });
-                                    }
-                                }
-                                else
-                                {
-                                    vscode.window.showWarningMessage(`Newer Version of record found on instance`);
+                                    mixpanel.track('cn.extension.event.onDidSaveTextDocument.success', {
+                                        sys_class_name: o.sys_class_name
+                                    });
                                 }
                             }
-                            catch (error)
+                            else
                             {
-                                vscode.window.showErrorMessage(`Save Failed: ${error}`);
-                                mixpanel.track('cn.extension.event.onDidSaveTextDocument.fail', {
-                                    error: error.message
-                                });
+                                vscode.window.showWarningMessage(`Newer Version of record found on instance`);
                             }
                         }
-                        else
+                        catch (error)
                         {
-                            vscode.window.showWarningMessage(`Record Protection policy: ${record.name}, Not saved`);
-
-                            mixpanel.track('cn.extension.event.onDidSaveTextDocument.break', {
-                                reason: "Record Policy Read Only"
+                            vscode.window.showErrorMessage(`Save Failed: ${error}`);
+                            mixpanel.track('cn.extension.event.onDidSaveTextDocument.fail', {
+                                error: error.message
                             });
                         }
                     }
