@@ -102,6 +102,7 @@ export function activate(context: vscode.ExtensionContext)
                         mixpanel.track("cn.extension.command.connect.success", {
                             username: Md5.init(instance.UserName),
                             instance: instance.Url,
+                            alias: Md5.init(`${instance.Url}@${instance.UserName}`),
                             newWorkspace: isNew
                         });
                     }

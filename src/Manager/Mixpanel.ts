@@ -32,6 +32,14 @@ export class Mixpanel
     session: string;
 
     /**
+     * setAlias
+     */
+    private setAlias(alias: string)
+    {
+        this.mixpanel.alias(this.distinct_id, alias);
+    }
+
+    /**
      * Send event to mixpanel. Using this function ensures mandatory properties get attached to the event.
      * 
      * Adds distinct id, vs env language, and vs env sessionid to all events.
@@ -44,7 +52,12 @@ export class Mixpanel
         properties.distinct_id = this.distinct_id;
         properties.language = this.language;
         properties.session = this.session;
+
+        if (properties.alias)
+        {
+            this.setAlias(properties.alias);
+        }
+
         this.mixpanel.track(name, properties);
     }
-
 }
