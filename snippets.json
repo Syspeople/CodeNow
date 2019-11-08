@@ -43,9 +43,9 @@
 		"prefix": "siFuncPrivate",
 		"body": [
 			"_${1:functionName}: function (${2:parameter})",
-			"    {",
+			"{",
 			"${0}",
-			"    },"
+			"},"
 		],
 		"description": "Creates an internal function in a script include"
 	},
@@ -53,9 +53,9 @@
 		"prefix": "siFuncPublic",
 		"body": [
 			"${1:functionName}: function (${2:parameter})",
-			"    {",
+			"{",
 			"${0}",
-			"    },"
+			"},"
 		],
 		"description": "Creates an public function in a script include"
 	}
