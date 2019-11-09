@@ -1,3 +1,12 @@
+## 0.11.201911xx
+* improvements
+  * Additional snippets for script includes
+    * Private functions.
+    * public functions
+* fixes
+  * Creation of new records could happen in wrong scope. 
+  * Protection Policies incorrectly enforced when developing in new scope. 
+
 ## 0.11.20191103
 * improvements
   * Intellisense for the following API's

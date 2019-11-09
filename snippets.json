@@ -37,5 +37,26 @@
 			"$0gr${1}.insert();"
 		],
 		"description": "New record"
+	},
+	// Script includes
+	"Script Include Private Function": {
+		"prefix": "siFuncPrivate",
+		"body": [
+			"_${1:functionName}: function (${2:parameter})",
+			"{",
+			"${0}",
+			"},"
+		],
+		"description": "Creates an internal function in a script include"
+	},
+	"Script Include Function Public": {
+		"prefix": "siFuncPublic",
+		"body": [
+			"${1:functionName}: function (${2:parameter})",
+			"{",
+			"${0}",
+			"},"
+		],
+		"description": "Creates an public function in a script include"
 	}
 }

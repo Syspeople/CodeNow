@@ -21,20 +21,4 @@ export class Record implements ISysMetadata
     sys_created_on: Date;
     sys_package: Relation;
     sys_scope: Relation;
-
-    /**
-     * Does ServiceNow protection policy allow Read
-     */
-    public get canRead(): boolean
-    {
-        return (this.sys_policy !== "protected");
-    }
-
-    /**
-     * Does ServiceNow protection policy allow for write actions.
-     */
-    public get canWrite(): boolean
-    {
-        return (this.sys_policy === "");
-    }
 }
