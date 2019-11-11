@@ -748,33 +748,31 @@ export class Instance
      * Create and add record to workspace
      * @param type 
      * @param record 
-     * @param template 
      */
     public async CreateRecord(type: SupportedRecords, record: any): Promise<ISysMetadataIWorkspaceConvertable>
     {
-        return new Promise(async (resolve, reject) =>
+        try
         {
-            try
-            {
-                //get template
-                let r = this.getTemplate(type, record);
+            //get template
+            let r = this.getTemplate(type, record);
 
-                //create record upstream and return converted class
-                if (r)
-                {
-                    if (this.ApiProxy)
-                    {
-                        let p = await this.ApiProxy.CreateRecord(type, r);
-                        resolve(Converter.CastSysMetaData(p.data.result));
-                    }
-                    throw new Error("API proxy not found");
-                }
-                throw new Error("Template not found");
-            } catch (error)
+            //create record upstream and return converted class
+            if (r)
             {
-                reject(error);
+                if (this.ApiProxy)
+                {
+                    await this.ensureApplication();
+                    let p = await this.ApiProxy.CreateRecord(type, r);
+                    return Converter.CastSysMetaData(p.data.result);
+                }
+                throw new Error("API proxy not found");
             }
-        });
+            throw new Error("Template not found");
+        } catch (error)
+        {
+            console.log(error);
+            throw error;
+        }
     }
 
     //returns an object for containing a template where applicable. 
