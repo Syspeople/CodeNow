@@ -277,7 +277,7 @@
         "@types/node": "^7.0.43",
         "chai": "^4.2.0",
         "chai-as-promised": "^7.1.1",
-        "memento": "0.0.8",
+        "memento": "0.1.51",
         "tslint": "^5.18.0",
         "typescript": "^3.0.0",
         "vscode": "^1.1.34"
